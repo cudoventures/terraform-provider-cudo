@@ -59,7 +59,7 @@ data "cudo_vm" "test" {
 				res, err := cl.VirtualMachines.TerminateVM(terminateParams)
 				t.Log(res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s, %s, %s", ins.Payload.VM.ID, ins.Payload.VM.LcmState, ins.Payload.VM.OneState)
+				return fmt.Errorf("vm resource not destroyed %s, %s", ins.Payload.VM.ID, ins.Payload.VM.ShortState)
 			}
 			return nil
 		},

@@ -56,7 +56,7 @@ resource "cudo_vm" "vm" {
 				res, err := cl.VirtualMachines.TerminateVM(terminateParams)
 				t.Logf("(%s) %#v: %v", ins.Payload.VM.ShortState, res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s , %s,  %s", ins.Payload.VM.ID, ins.Payload.VM.LcmState, ins.Payload.VM.OneState)
+				return fmt.Errorf("vm resource not destroyed %s , %s", ins.Payload.VM.ID, ins.Payload.VM.ShortState)
 			}
 			return nil
 		},
@@ -129,7 +129,7 @@ resource "cudo_vm" "vm-minimal" {
 				res, err := cl.VirtualMachines.TerminateVM(terminateParams)
 				t.Logf("(%s) %#v: %v", ins.Payload.VM.ShortState, res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s, %s, %s", ins.Payload.VM.ID, ins.Payload.VM.LcmState, ins.Payload.VM.OneState)
+				return fmt.Errorf("vm resource not destroyed %s, %s", ins.Payload.VM.ID, ins.Payload.VM.ShortState)
 			}
 			return nil
 		},
@@ -202,7 +202,7 @@ resource "cudo_vm" "vm-oob-delete" {
 				res, err := cl.VirtualMachines.TerminateVM(terminateParams)
 				t.Logf("(%s) %#v: %v", ins.Payload.VM.ShortState, res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s, %s, %s", ins.Payload.VM.ID, ins.Payload.VM.LcmState, ins.Payload.VM.OneState)
+				return fmt.Errorf("vm resource not destroyed %s, %s", ins.Payload.VM.ID, ins.Payload.VM.ShortState)
 			}
 			return nil
 		},
