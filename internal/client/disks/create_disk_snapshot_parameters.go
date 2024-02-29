@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // NewCreateDiskSnapshotParams creates a new CreateDiskSnapshotParams object,
@@ -62,7 +64,7 @@ CreateDiskSnapshotParams contains all the parameters to send to the API endpoint
 type CreateDiskSnapshotParams struct {
 
 	// Body.
-	Body CreateDiskSnapshotBody
+	Body *models.CreateDiskSnapshotBody
 
 	// ID.
 	ID string
@@ -124,13 +126,13 @@ func (o *CreateDiskSnapshotParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the create disk snapshot params
-func (o *CreateDiskSnapshotParams) WithBody(body CreateDiskSnapshotBody) *CreateDiskSnapshotParams {
+func (o *CreateDiskSnapshotParams) WithBody(body *models.CreateDiskSnapshotBody) *CreateDiskSnapshotParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the create disk snapshot params
-func (o *CreateDiskSnapshotParams) SetBody(body CreateDiskSnapshotBody) {
+func (o *CreateDiskSnapshotParams) SetBody(body *models.CreateDiskSnapshotBody) {
 	o.Body = body
 }
 
@@ -163,8 +165,10 @@ func (o *CreateDiskSnapshotParams) WriteToRequest(r runtime.ClientRequest, reg s
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
-		return err
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
 	}
 
 	// path param id

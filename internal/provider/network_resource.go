@@ -127,8 +127,8 @@ func waitForNetworkAvailable(ctx context.Context, projectID string, networkID st
 			return nil, "", err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Payload.Network.ShortState))
-		return res, res.Payload.Network.ShortState, nil
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, *res.Payload.Network.ShortState))
+		return res, *res.Payload.Network.ShortState, nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
@@ -145,7 +145,7 @@ func waitForNetworkAvailable(ctx context.Context, projectID string, networkID st
 	if res, err := stateConf.WaitForState(ctx); err != nil {
 		return nil, fmt.Errorf("error waiting for network %s in project %s to become available: %w", networkID, projectID, err)
 	} else if vm, ok := res.(*networks.GetNetworkOK); ok {
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for network %s in project %s (%s)", networkID, projectID, vm.Payload.Network.ShortState))
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for network %s in project %s (%s)", networkID, projectID, *vm.Payload.Network.ShortState))
 		return vm, nil
 	}
 
@@ -166,13 +166,13 @@ func waitForNetworkStop(ctx context.Context, projectID string, networkID string,
 			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
 			return nil, "", err
 		}
-		if res.Payload.Network.ShortState == "" {
+		if *res.Payload.Network.ShortState == "" {
 			tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is stopped: ", networkID, projectID))
 			return res, "done", nil
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Payload.Network.ShortState))
-		return res, res.Payload.Network.ShortState, nil
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, *res.Payload.Network.ShortState))
+		return res, *res.Payload.Network.ShortState, nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
@@ -206,13 +206,13 @@ func waitForNetworkDelete(ctx context.Context, projectID string, networkID strin
 			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
 			return nil, "", err
 		}
-		if res.Payload.Network.ShortState == "" {
+		if *res.Payload.Network.ShortState == "" {
 			tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is stopped: ", networkID, projectID))
 			return res, "stop", nil
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Payload.Network.ShortState))
-		return res, res.Payload.Network.ShortState, nil
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, *res.Payload.Network.ShortState))
+		return res, *res.Payload.Network.ShortState, nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
@@ -243,11 +243,11 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 
 	params := networks.NewCreateNetworkParamsWithContext(ctx)
 	params.ProjectID = r.client.DefaultProjectID
-	params.Body = networks.CreateNetworkBody{
+	params.Body = &models.CreateNetworkBody{
 		CidrPrefix:   state.IPRange.ValueStringPointer(),
 		DataCenterID: state.DataCenterId.ValueStringPointer(),
 		ID:           state.ID.ValueStringPointer(),
-		VrouterSize:  models.VRouterSizeVROUTERINSTANCESMALL.Pointer(),
+		VrouterSize:  models.V1VRouterSizeVROUTERINSTANCESMALL.Pointer(),
 	}
 	_, err := r.client.Client.Networks.CreateNetwork(params)
 
@@ -268,9 +268,9 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	state.Gateway = types.StringValue(res.Payload.Network.Gateway)
-	state.ExternalIPAddress = types.StringValue(res.Payload.Network.ExternalIPAddress)
-	state.InternalIPAddress = types.StringValue(res.Payload.Network.InternalIPAddress)
+	state.Gateway = types.StringValue(*res.Payload.Network.Gateway)
+	state.ExternalIPAddress = types.StringValue(*res.Payload.Network.ExternalIPAddress)
+	state.InternalIPAddress = types.StringValue(*res.Payload.Network.InternalIPAddress)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -301,12 +301,12 @@ func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	state.ID = types.StringValue(resget.Payload.Network.ID)
-	state.DataCenterId = types.StringValue(resget.Payload.Network.DataCenterID)
-	state.ExternalIPAddress = types.StringValue(resget.Payload.Network.ExternalIPAddress)
-	state.InternalIPAddress = types.StringValue(resget.Payload.Network.InternalIPAddress)
-	state.IPRange = types.StringValue(resget.Payload.Network.IPRange)
-	state.Gateway = types.StringValue(resget.Payload.Network.Gateway)
+	state.ID = types.StringValue(*resget.Payload.Network.ID)
+	state.DataCenterId = types.StringValue(*resget.Payload.Network.DataCenterID)
+	state.ExternalIPAddress = types.StringValue(*resget.Payload.Network.ExternalIPAddress)
+	state.InternalIPAddress = types.StringValue(*resget.Payload.Network.InternalIPAddress)
+	state.IPRange = types.StringValue(*resget.Payload.Network.IPRange)
+	state.Gateway = types.StringValue(*resget.Payload.Network.Gateway)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)

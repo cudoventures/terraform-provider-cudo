@@ -20,9 +20,6 @@ import (
 // swagger:model VM
 type VM struct {
 
-	// active state
-	ActiveState string `json:"activeState,omitempty"`
-
 	// boot disk
 	BootDisk *Disk `json:"bootDisk,omitempty"`
 
@@ -36,6 +33,11 @@ type VM struct {
 	// Read Only: true
 	CreateBy string `json:"createBy,omitempty"`
 
+	// create time
+	// Read Only: true
+	// Format: date-time
+	CreateTime strfmt.DateTime `json:"createTime,omitempty"`
+
 	// datacenter Id
 	// Read Only: true
 	DatacenterID string `json:"datacenterId,omitempty"`
@@ -45,6 +47,9 @@ type VM struct {
 
 	// gpu model
 	GpuModel string `json:"gpuModel,omitempty"`
+
+	// gpu model Id
+	GpuModelID string `json:"gpuModelId,omitempty"`
 
 	// gpu quantity
 	GpuQuantity int64 `json:"gpuQuantity,omitempty"`
@@ -58,14 +63,8 @@ type VM struct {
 	// image name
 	ImageName string `json:"imageName,omitempty"`
 
-	// init state
-	InitState string `json:"initState,omitempty"`
-
 	// internal Ip address
 	InternalIPAddress string `json:"internalIpAddress,omitempty"`
-
-	// lcm state
-	LcmState string `json:"lcmState,omitempty"`
 
 	// machine type
 	MachineType string `json:"machineType,omitempty"`
@@ -78,9 +77,6 @@ type VM struct {
 
 	// nics
 	Nics []*VMNIC `json:"nics"`
-
-	// one state
-	OneState string `json:"oneState,omitempty"`
 
 	// price hr
 	PriceHr float32 `json:"priceHr,omitempty"`
@@ -117,6 +113,9 @@ type VM struct {
 	// short state
 	ShortState string `json:"shortState,omitempty"`
 
+	// state
+	State *VMState `json:"state,omitempty"`
+
 	// storage disks
 	StorageDisks []*Disk `json:"storageDisks"`
 
@@ -132,11 +131,19 @@ func (m *VM) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateCreateTime(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateNics(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateRules(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateState(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -164,6 +171,18 @@ func (m *VM) validateBootDisk(formats strfmt.Registry) error {
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *VM) validateCreateTime(formats strfmt.Registry) error {
+	if swag.IsZero(m.CreateTime) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("createTime", "body", "date-time", m.CreateTime.String(), formats); err != nil {
+		return err
 	}
 
 	return nil
@@ -221,6 +240,25 @@ func (m *VM) validateRules(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *VM) validateState(formats strfmt.Registry) error {
+	if swag.IsZero(m.State) { // not required
+		return nil
+	}
+
+	if m.State != nil {
+		if err := m.State.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("state")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("state")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *VM) validateStorageDisks(formats strfmt.Registry) error {
 	if swag.IsZero(m.StorageDisks) { // not required
 		return nil
@@ -259,6 +297,10 @@ func (m *VM) ContextValidate(ctx context.Context, formats strfmt.Registry) error
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateCreateTime(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateDatacenterID(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -276,6 +318,10 @@ func (m *VM) ContextValidate(ctx context.Context, formats strfmt.Registry) error
 	}
 
 	if err := m.contextValidateRules(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateState(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -313,6 +359,15 @@ func (m *VM) contextValidateBootDisk(ctx context.Context, formats strfmt.Registr
 func (m *VM) contextValidateCreateBy(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "createBy", "body", string(m.CreateBy)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *VM) contextValidateCreateTime(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "createTime", "body", strfmt.DateTime(m.CreateTime)); err != nil {
 		return err
 	}
 
@@ -391,6 +446,27 @@ func (m *VM) contextValidateRules(ctx context.Context, formats strfmt.Registry) 
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *VM) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.State != nil {
+
+		if swag.IsZero(m.State) { // not required
+			return nil
+		}
+
+		if err := m.State.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("state")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("state")
+			}
+			return err
+		}
 	}
 
 	return nil

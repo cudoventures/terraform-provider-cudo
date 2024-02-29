@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // NewCreateVMParams creates a new CreateVMParams object,
@@ -62,7 +64,7 @@ CreateVMParams contains all the parameters to send to the API endpoint
 type CreateVMParams struct {
 
 	// Body.
-	Body CreateVMBody
+	Body *models.CreateVMBody
 
 	// ProjectID.
 	ProjectID string
@@ -121,13 +123,13 @@ func (o *CreateVMParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the create VM params
-func (o *CreateVMParams) WithBody(body CreateVMBody) *CreateVMParams {
+func (o *CreateVMParams) WithBody(body *models.CreateVMBody) *CreateVMParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the create VM params
-func (o *CreateVMParams) SetBody(body CreateVMBody) {
+func (o *CreateVMParams) SetBody(body *models.CreateVMBody) {
 	o.Body = body
 }
 
@@ -149,8 +151,10 @@ func (o *CreateVMParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Regi
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
-		return err
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
 	}
 
 	// path param projectId

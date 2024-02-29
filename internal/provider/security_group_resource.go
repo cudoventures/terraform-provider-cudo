@@ -164,27 +164,27 @@ func getRuleModels(rules []*models.Rule) []RuleModel {
 	var ruleModels []RuleModel
 	for _, rule := range rules {
 		protocol := ""
-		switch *rule.Protocol {
-		case models.ProtocolPROTOCOLALL:
+		switch rule.Protocol {
+		case models.RuleProtocolPROTOCOLALL.Pointer():
 			protocol = "all"
-		case models.ProtocolPROTOCOLICMP:
+		case models.RuleProtocolPROTOCOLICMP.Pointer():
 			protocol = "icmp"
-		case models.ProtocolPROTOCOLICMPv6:
+		case models.RuleProtocolPROTOCOLICMPv6.Pointer():
 			protocol = "icmpv6"
-		case models.ProtocolPROTOCOLIPSEC:
+		case models.RuleProtocolPROTOCOLIPSEC.Pointer():
 			protocol = "ipsec"
-		case models.ProtocolPROTOCOLTCP:
+		case models.RuleProtocolPROTOCOLTCP.Pointer():
 			protocol = "tcp"
-		case models.ProtocolPROTOCOLUDP:
+		case models.RuleProtocolPROTOCOLUDP.Pointer():
 			protocol = "udp"
 		}
 
 		ruleType := ""
 
 		switch *rule.RuleType {
-		case models.RuleTypeRULETYPEINBOUND:
+		case models.RuleRuleTypeRULETYPEINBOUND:
 			ruleType = "inbound"
-		case models.RuleTypeRULETYPEOUTBOUND:
+		case models.RuleRuleTypeRULETYPEOUTBOUND:
 			ruleType = "outbound"
 		}
 
@@ -208,28 +208,28 @@ func getRuleParams(stateRules []RuleModel) []*models.Rule {
 
 	for _, r := range stateRules {
 
-		var protocol *models.Protocol
+		var protocol *models.RuleProtocol
 		switch r.Protocol.ValueString() {
 		case "tcp":
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLTCP)
+			protocol = models.NewRuleProtocol(models.RuleProtocolPROTOCOLTCP)
 		case "udp":
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLUDP)
+			protocol = models.NewRuleProtocol(models.RuleProtocolPROTOCOLUDP)
 		case "icmp":
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLICMP)
+			protocol = models.NewRuleProtocol(models.RuleProtocolPROTOCOLICMP)
 		case "icmpv6":
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLICMPv6)
+			protocol = models.NewRuleProtocol(models.RuleProtocolPROTOCOLICMPv6)
 		case "ipsec":
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLIPSEC)
+			protocol = models.NewRuleProtocol(models.RuleProtocolPROTOCOLIPSEC)
 		default:
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLALL)
+			protocol = models.NewRuleProtocol(models.RuleProtocolPROTOCOLALL)
 		}
 
-		var ruleType *models.RuleType
+		var ruleType *models.RuleRuleType
 		switch r.RuleType.ValueString() {
 		case "inbound":
-			ruleType = models.NewRuleType(models.RuleTypeRULETYPEINBOUND)
+			ruleType = models.NewRuleRuleType(models.RuleRuleTypeRULETYPEINBOUND)
 		case "outbound":
-			ruleType = models.NewRuleType(models.RuleTypeRULETYPEOUTBOUND)
+			ruleType = models.NewRuleRuleType(models.RuleRuleTypeRULETYPEOUTBOUND)
 		}
 
 		rule := models.Rule{

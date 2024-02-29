@@ -6,15 +6,11 @@ package permissions
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
@@ -180,126 +176,5 @@ func (o *RemoveDataCenterUserPermissionDefault) readResponse(response runtime.Cl
 		return err
 	}
 
-	return nil
-}
-
-/*
-RemoveDataCenterUserPermissionBody remove data center user permission body
-swagger:model RemoveDataCenterUserPermissionBody
-*/
-type RemoveDataCenterUserPermissionBody struct {
-
-	// billing account Id
-	BillingAccountID string `json:"billingAccountId,omitempty"`
-
-	// project Id
-	ProjectID string `json:"projectId,omitempty"`
-
-	// role
-	// Required: true
-	Role *models.Role `json:"role"`
-
-	// user Id
-	// Required: true
-	UserID *string `json:"userId"`
-}
-
-// Validate validates this remove data center user permission body
-func (o *RemoveDataCenterUserPermissionBody) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateRole(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := o.validateUserID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *RemoveDataCenterUserPermissionBody) validateRole(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"role", "body", o.Role); err != nil {
-		return err
-	}
-
-	if err := validate.Required("body"+"."+"role", "body", o.Role); err != nil {
-		return err
-	}
-
-	if o.Role != nil {
-		if err := o.Role.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "role")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "role")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (o *RemoveDataCenterUserPermissionBody) validateUserID(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"userId", "body", o.UserID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// ContextValidate validate this remove data center user permission body based on the context it is used
-func (o *RemoveDataCenterUserPermissionBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.contextValidateRole(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *RemoveDataCenterUserPermissionBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
-
-	if o.Role != nil {
-
-		if err := o.Role.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "role")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "role")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *RemoveDataCenterUserPermissionBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *RemoveDataCenterUserPermissionBody) UnmarshalBinary(b []byte) error {
-	var res RemoveDataCenterUserPermissionBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

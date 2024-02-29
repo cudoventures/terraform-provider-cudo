@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // NewAddBillingAccountUserPermissionParams creates a new AddBillingAccountUserPermissionParams object,
@@ -65,7 +67,7 @@ type AddBillingAccountUserPermissionParams struct {
 	BillingAccountID string
 
 	// Body.
-	Body AddBillingAccountUserPermissionBody
+	Body *models.AddBillingAccountUserPermissionBody
 
 	timeout    time.Duration
 	Context    context.Context
@@ -132,13 +134,13 @@ func (o *AddBillingAccountUserPermissionParams) SetBillingAccountID(billingAccou
 }
 
 // WithBody adds the body to the add billing account user permission params
-func (o *AddBillingAccountUserPermissionParams) WithBody(body AddBillingAccountUserPermissionBody) *AddBillingAccountUserPermissionParams {
+func (o *AddBillingAccountUserPermissionParams) WithBody(body *models.AddBillingAccountUserPermissionBody) *AddBillingAccountUserPermissionParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the add billing account user permission params
-func (o *AddBillingAccountUserPermissionParams) SetBody(body AddBillingAccountUserPermissionBody) {
+func (o *AddBillingAccountUserPermissionParams) SetBody(body *models.AddBillingAccountUserPermissionBody) {
 	o.Body = body
 }
 
@@ -154,8 +156,10 @@ func (o *AddBillingAccountUserPermissionParams) WriteToRequest(r runtime.ClientR
 	if err := r.SetPathParam("billingAccountId", o.BillingAccountID); err != nil {
 		return err
 	}
-	if err := r.SetBodyParam(o.Body); err != nil {
-		return err
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
 	}
 
 	if len(res) > 0 {

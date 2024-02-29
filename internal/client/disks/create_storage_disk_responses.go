@@ -6,14 +6,11 @@ package disks
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
@@ -179,104 +176,5 @@ func (o *CreateStorageDiskDefault) readResponse(response runtime.ClientResponse,
 		return err
 	}
 
-	return nil
-}
-
-/*
-CreateStorageDiskBody create storage disk body
-swagger:model CreateStorageDiskBody
-*/
-type CreateStorageDiskBody struct {
-
-	// data center Id
-	DataCenterID string `json:"dataCenterId,omitempty"`
-
-	// disk
-	Disk *models.Disk `json:"disk,omitempty"`
-}
-
-// Validate validates this create storage disk body
-func (o *CreateStorageDiskBody) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateDisk(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *CreateStorageDiskBody) validateDisk(formats strfmt.Registry) error {
-	if swag.IsZero(o.Disk) { // not required
-		return nil
-	}
-
-	if o.Disk != nil {
-		if err := o.Disk.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "disk")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "disk")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// ContextValidate validate this create storage disk body based on the context it is used
-func (o *CreateStorageDiskBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.contextValidateDisk(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *CreateStorageDiskBody) contextValidateDisk(ctx context.Context, formats strfmt.Registry) error {
-
-	if o.Disk != nil {
-
-		if swag.IsZero(o.Disk) { // not required
-			return nil
-		}
-
-		if err := o.Disk.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "disk")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "disk")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *CreateStorageDiskBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *CreateStorageDiskBody) UnmarshalBinary(b []byte) error {
-	var res CreateStorageDiskBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

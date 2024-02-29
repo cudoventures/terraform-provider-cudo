@@ -7,7 +7,9 @@ package models
 
 import (
 	"context"
+	"strconv"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -16,6 +18,9 @@ import (
 //
 // swagger:model Region
 type Region struct {
+
+	// data centers
+	DataCenters []*RegionDataCenter `json:"dataCenters"`
 
 	// id
 	ID string `json:"id,omitempty"`
@@ -26,11 +31,80 @@ type Region struct {
 
 // Validate validates this region
 func (m *Region) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateDataCenters(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
 	return nil
 }
 
-// ContextValidate validates this region based on context it is used
+func (m *Region) validateDataCenters(formats strfmt.Registry) error {
+	if swag.IsZero(m.DataCenters) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.DataCenters); i++ {
+		if swag.IsZero(m.DataCenters[i]) { // not required
+			continue
+		}
+
+		if m.DataCenters[i] != nil {
+			if err := m.DataCenters[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("dataCenters" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("dataCenters" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ContextValidate validate this region based on the context it is used
 func (m *Region) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateDataCenters(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *Region) contextValidateDataCenters(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.DataCenters); i++ {
+
+		if m.DataCenters[i] != nil {
+
+			if swag.IsZero(m.DataCenters[i]) { // not required
+				return nil
+			}
+
+			if err := m.DataCenters[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("dataCenters" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("dataCenters" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 

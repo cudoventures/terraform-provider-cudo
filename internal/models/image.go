@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -30,6 +31,10 @@ type Image struct {
 	// id
 	// Required: true
 	ID *string `json:"id"`
+
+	// installed packages
+	// Required: true
+	InstalledPackages []*Package `json:"installedPackages"`
 
 	// name
 	// Required: true
@@ -57,6 +62,10 @@ func (m *Image) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateInstalledPackages(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -105,6 +114,33 @@ func (m *Image) validateID(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Image) validateInstalledPackages(formats strfmt.Registry) error {
+
+	if err := validate.Required("installedPackages", "body", m.InstalledPackages); err != nil {
+		return err
+	}
+
+	for i := 0; i < len(m.InstalledPackages); i++ {
+		if swag.IsZero(m.InstalledPackages[i]) { // not required
+			continue
+		}
+
+		if m.InstalledPackages[i] != nil {
+			if err := m.InstalledPackages[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("installedPackages" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("installedPackages" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 func (m *Image) validateName(formats strfmt.Registry) error {
 
 	if err := validate.Required("name", "body", m.Name); err != nil {
@@ -132,8 +168,42 @@ func (m *Image) validateSizeGib(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this image based on context it is used
+// ContextValidate validate this image based on the context it is used
 func (m *Image) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateInstalledPackages(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *Image) contextValidateInstalledPackages(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.InstalledPackages); i++ {
+
+		if m.InstalledPackages[i] != nil {
+
+			if swag.IsZero(m.InstalledPackages[i]) { // not required
+				return nil
+			}
+
+			if err := m.InstalledPackages[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("installedPackages" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("installedPackages" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 

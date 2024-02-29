@@ -61,9 +61,6 @@ GenerateObjectStorageKeyParams contains all the parameters to send to the API en
 */
 type GenerateObjectStorageKeyParams struct {
 
-	// Body.
-	Body interface{}
-
 	// ID.
 	ID string
 
@@ -123,17 +120,6 @@ func (o *GenerateObjectStorageKeyParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithBody adds the body to the generate object storage key params
-func (o *GenerateObjectStorageKeyParams) WithBody(body interface{}) *GenerateObjectStorageKeyParams {
-	o.SetBody(body)
-	return o
-}
-
-// SetBody adds the body to the generate object storage key params
-func (o *GenerateObjectStorageKeyParams) SetBody(body interface{}) {
-	o.Body = body
-}
-
 // WithID adds the id to the generate object storage key params
 func (o *GenerateObjectStorageKeyParams) WithID(id string) *GenerateObjectStorageKeyParams {
 	o.SetID(id)
@@ -163,11 +149,6 @@ func (o *GenerateObjectStorageKeyParams) WriteToRequest(r runtime.ClientRequest,
 		return err
 	}
 	var res []error
-	if o.Body != nil {
-		if err := r.SetBodyParam(o.Body); err != nil {
-			return err
-		}
-	}
 
 	// path param id
 	if err := r.SetPathParam("id", o.ID); err != nil {

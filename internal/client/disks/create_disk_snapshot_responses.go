@@ -6,15 +6,11 @@ package disks
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
@@ -180,79 +176,5 @@ func (o *CreateDiskSnapshotDefault) readResponse(response runtime.ClientResponse
 		return err
 	}
 
-	return nil
-}
-
-/*
-CreateDiskSnapshotBody create disk snapshot body
-swagger:model CreateDiskSnapshotBody
-*/
-type CreateDiskSnapshotBody struct {
-
-	// snapshot Id
-	// Required: true
-	SnapshotID *string `json:"snapshotId"`
-
-	// vm Id
-	// Required: true
-	VMID *string `json:"vmId"`
-}
-
-// Validate validates this create disk snapshot body
-func (o *CreateDiskSnapshotBody) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateSnapshotID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := o.validateVMID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *CreateDiskSnapshotBody) validateSnapshotID(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"snapshotId", "body", o.SnapshotID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (o *CreateDiskSnapshotBody) validateVMID(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"vmId", "body", o.VMID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// ContextValidate validates this create disk snapshot body based on context it is used
-func (o *CreateDiskSnapshotBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *CreateDiskSnapshotBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *CreateDiskSnapshotBody) UnmarshalBinary(b []byte) error {
-	var res CreateDiskSnapshotBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

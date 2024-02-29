@@ -86,11 +86,11 @@ func (o *DeleteObjectStorageKeyOK) Code() int {
 }
 
 func (o *DeleteObjectStorageKeyOK) Error() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/object-storage/users/{id}/keys][%d] deleteObjectStorageKeyOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/object-storage/users/{id}/keys/{accessKey}][%d] deleteObjectStorageKeyOK  %+v", 200, o.Payload)
 }
 
 func (o *DeleteObjectStorageKeyOK) String() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/object-storage/users/{id}/keys][%d] deleteObjectStorageKeyOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/object-storage/users/{id}/keys/{accessKey}][%d] deleteObjectStorageKeyOK  %+v", 200, o.Payload)
 }
 
 func (o *DeleteObjectStorageKeyOK) GetPayload() models.DeleteObjectStorageKeyResponse {
@@ -156,11 +156,11 @@ func (o *DeleteObjectStorageKeyDefault) Code() int {
 }
 
 func (o *DeleteObjectStorageKeyDefault) Error() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/object-storage/users/{id}/keys][%d] DeleteObjectStorageKey default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/object-storage/users/{id}/keys/{accessKey}][%d] DeleteObjectStorageKey default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *DeleteObjectStorageKeyDefault) String() string {
-	return fmt.Sprintf("[POST /v1/projects/{projectId}/object-storage/users/{id}/keys][%d] DeleteObjectStorageKey default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[DELETE /v1/projects/{projectId}/object-storage/users/{id}/keys/{accessKey}][%d] DeleteObjectStorageKey default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *DeleteObjectStorageKeyDefault) GetPayload() *models.Status {

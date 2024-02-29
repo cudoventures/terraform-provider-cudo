@@ -23,7 +23,7 @@ type Status struct {
 	Code int32 `json:"code,omitempty"`
 
 	// details
-	Details []*Any `json:"details"`
+	Details []*ProtobufAny `json:"details"`
 
 	// message
 	Message string `json:"message,omitempty"`

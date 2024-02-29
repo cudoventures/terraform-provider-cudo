@@ -35,6 +35,10 @@ type HostConfigCategory struct {
 	// Required: true
 	GpuModel *string `json:"gpuModel"`
 
+	// gpu model Id
+	// Required: true
+	GpuModelID *string `json:"gpuModelId"`
+
 	// gpu price hr
 	// Required: true
 	GpuPriceHr *Decimal `json:"gpuPriceHr"`
@@ -105,6 +109,10 @@ func (m *HostConfigCategory) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateGpuModel(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateGpuModelID(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -196,6 +204,15 @@ func (m *HostConfigCategory) validateDataCenterID(formats strfmt.Registry) error
 func (m *HostConfigCategory) validateGpuModel(formats strfmt.Registry) error {
 
 	if err := validate.Required("gpuModel", "body", m.GpuModel); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *HostConfigCategory) validateGpuModelID(formats strfmt.Registry) error {
+
+	if err := validate.Required("gpuModelId", "body", m.GpuModelID); err != nil {
 		return err
 	}
 

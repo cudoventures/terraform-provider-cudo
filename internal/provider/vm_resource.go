@@ -455,7 +455,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	if !state.MaxPriceHr.IsNull() {
 		maxPriceHr = &models.Decimal{Value: state.MaxPriceHr.ValueString()}
 	}
-	params.Body = virtual_machines.CreateVMBody{
+	params.Body = &models.CreateVMBody{
 		BootDisk:         &bootDisk,
 		DataCenterID:     state.DataCenterID.ValueString(),
 		Gpus:             int32(state.GPUs.ValueInt64()),

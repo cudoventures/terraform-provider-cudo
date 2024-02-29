@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // NewCreateObjectStorageUserParams creates a new CreateObjectStorageUserParams object,
@@ -62,7 +64,7 @@ CreateObjectStorageUserParams contains all the parameters to send to the API end
 type CreateObjectStorageUserParams struct {
 
 	// Body.
-	Body CreateObjectStorageUserBody
+	Body *models.CreateObjectStorageUserBody
 
 	// ProjectID.
 	ProjectID string
@@ -121,13 +123,13 @@ func (o *CreateObjectStorageUserParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the create object storage user params
-func (o *CreateObjectStorageUserParams) WithBody(body CreateObjectStorageUserBody) *CreateObjectStorageUserParams {
+func (o *CreateObjectStorageUserParams) WithBody(body *models.CreateObjectStorageUserBody) *CreateObjectStorageUserParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the create object storage user params
-func (o *CreateObjectStorageUserParams) SetBody(body CreateObjectStorageUserBody) {
+func (o *CreateObjectStorageUserParams) SetBody(body *models.CreateObjectStorageUserBody) {
 	o.Body = body
 }
 
@@ -149,8 +151,10 @@ func (o *CreateObjectStorageUserParams) WriteToRequest(r runtime.ClientRequest, 
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
-		return err
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
 	}
 
 	// path param projectId

@@ -31,10 +31,10 @@ type SecurityGroupRule struct {
 	Ports string `json:"ports,omitempty"`
 
 	// protocol
-	Protocol *Protocol `json:"protocol,omitempty"`
+	Protocol *SecurityGroupRuleProtocol `json:"protocol,omitempty"`
 
 	// rule type
-	RuleType *RuleType `json:"ruleType,omitempty"`
+	RuleType *SecurityGroupRuleRuleType `json:"ruleType,omitempty"`
 }
 
 // Validate validates this security group rule

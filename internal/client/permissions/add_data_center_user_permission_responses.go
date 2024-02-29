@@ -6,15 +6,11 @@ package permissions
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
@@ -180,126 +176,5 @@ func (o *AddDataCenterUserPermissionDefault) readResponse(response runtime.Clien
 		return err
 	}
 
-	return nil
-}
-
-/*
-AddDataCenterUserPermissionBody add data center user permission body
-swagger:model AddDataCenterUserPermissionBody
-*/
-type AddDataCenterUserPermissionBody struct {
-
-	// billing account Id
-	BillingAccountID string `json:"billingAccountId,omitempty"`
-
-	// project Id
-	ProjectID string `json:"projectId,omitempty"`
-
-	// role
-	// Required: true
-	Role *models.Role `json:"role"`
-
-	// user email
-	// Required: true
-	UserEmail *string `json:"userEmail"`
-}
-
-// Validate validates this add data center user permission body
-func (o *AddDataCenterUserPermissionBody) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateRole(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := o.validateUserEmail(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *AddDataCenterUserPermissionBody) validateRole(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"role", "body", o.Role); err != nil {
-		return err
-	}
-
-	if err := validate.Required("body"+"."+"role", "body", o.Role); err != nil {
-		return err
-	}
-
-	if o.Role != nil {
-		if err := o.Role.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "role")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "role")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (o *AddDataCenterUserPermissionBody) validateUserEmail(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"userEmail", "body", o.UserEmail); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// ContextValidate validate this add data center user permission body based on the context it is used
-func (o *AddDataCenterUserPermissionBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.contextValidateRole(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *AddDataCenterUserPermissionBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
-
-	if o.Role != nil {
-
-		if err := o.Role.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "role")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "role")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *AddDataCenterUserPermissionBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *AddDataCenterUserPermissionBody) UnmarshalBinary(b []byte) error {
-	var res AddDataCenterUserPermissionBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

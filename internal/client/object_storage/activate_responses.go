@@ -6,13 +6,11 @@ package object_storage
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
@@ -178,43 +176,5 @@ func (o *ActivateDefault) readResponse(response runtime.ClientResponse, consumer
 		return err
 	}
 
-	return nil
-}
-
-/*
-ActivateBody activate body
-swagger:model ActivateBody
-*/
-type ActivateBody struct {
-
-	// data center Id
-	DataCenterID string `json:"dataCenterId,omitempty"`
-}
-
-// Validate validates this activate body
-func (o *ActivateBody) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this activate body based on context it is used
-func (o *ActivateBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *ActivateBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *ActivateBody) UnmarshalBinary(b []byte) error {
-	var res ActivateBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

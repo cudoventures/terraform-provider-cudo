@@ -64,9 +64,6 @@ type DeleteNetworkParams struct {
 	// ID.
 	ID string
 
-	// NetworkID.
-	NetworkID string
-
 	// ProjectID.
 	ProjectID string
 
@@ -134,17 +131,6 @@ func (o *DeleteNetworkParams) SetID(id string) {
 	o.ID = id
 }
 
-// WithNetworkID adds the networkID to the delete network params
-func (o *DeleteNetworkParams) WithNetworkID(networkID string) *DeleteNetworkParams {
-	o.SetNetworkID(networkID)
-	return o
-}
-
-// SetNetworkID adds the networkId to the delete network params
-func (o *DeleteNetworkParams) SetNetworkID(networkID string) {
-	o.NetworkID = networkID
-}
-
 // WithProjectID adds the projectID to the delete network params
 func (o *DeleteNetworkParams) WithProjectID(projectID string) *DeleteNetworkParams {
 	o.SetProjectID(projectID)
@@ -167,16 +153,6 @@ func (o *DeleteNetworkParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 	// path param id
 	if err := r.SetPathParam("id", o.ID); err != nil {
 		return err
-	}
-
-	// query param networkId
-	qrNetworkID := o.NetworkID
-	qNetworkID := qrNetworkID
-	if qNetworkID != "" {
-
-		if err := r.SetQueryParam("networkId", qNetworkID); err != nil {
-			return err
-		}
 	}
 
 	// path param projectId

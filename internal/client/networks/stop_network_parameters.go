@@ -64,9 +64,6 @@ type StopNetworkParams struct {
 	// ID.
 	ID string
 
-	// NetworkID.
-	NetworkID string
-
 	// ProjectID.
 	ProjectID string
 
@@ -134,17 +131,6 @@ func (o *StopNetworkParams) SetID(id string) {
 	o.ID = id
 }
 
-// WithNetworkID adds the networkID to the stop network params
-func (o *StopNetworkParams) WithNetworkID(networkID string) *StopNetworkParams {
-	o.SetNetworkID(networkID)
-	return o
-}
-
-// SetNetworkID adds the networkId to the stop network params
-func (o *StopNetworkParams) SetNetworkID(networkID string) {
-	o.NetworkID = networkID
-}
-
 // WithProjectID adds the projectID to the stop network params
 func (o *StopNetworkParams) WithProjectID(projectID string) *StopNetworkParams {
 	o.SetProjectID(projectID)
@@ -167,16 +153,6 @@ func (o *StopNetworkParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.R
 	// path param id
 	if err := r.SetPathParam("id", o.ID); err != nil {
 		return err
-	}
-
-	// query param networkId
-	qrNetworkID := o.NetworkID
-	qNetworkID := qrNetworkID
-	if qNetworkID != "" {
-
-		if err := r.SetQueryParam("networkId", qNetworkID); err != nil {
-			return err
-		}
 	}
 
 	// path param projectId

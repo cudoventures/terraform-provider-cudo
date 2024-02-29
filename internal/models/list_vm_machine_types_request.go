@@ -31,6 +31,9 @@ type ListVMMachineTypesRequest struct {
 	// gpu model
 	GpuModel string `json:"gpuModel,omitempty"`
 
+	// gpu model Id
+	GpuModelID string `json:"gpuModelId,omitempty"`
+
 	// memory gib
 	// Required: true
 	MemoryGib *int32 `json:"memoryGib"`

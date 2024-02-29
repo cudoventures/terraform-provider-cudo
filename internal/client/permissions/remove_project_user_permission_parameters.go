@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // NewRemoveProjectUserPermissionParams creates a new RemoveProjectUserPermissionParams object,
@@ -62,7 +64,7 @@ RemoveProjectUserPermissionParams contains all the parameters to send to the API
 type RemoveProjectUserPermissionParams struct {
 
 	// Body.
-	Body RemoveProjectUserPermissionBody
+	Body *models.RemoveProjectUserPermissionBody
 
 	// ProjectID.
 	ProjectID string
@@ -121,13 +123,13 @@ func (o *RemoveProjectUserPermissionParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the remove project user permission params
-func (o *RemoveProjectUserPermissionParams) WithBody(body RemoveProjectUserPermissionBody) *RemoveProjectUserPermissionParams {
+func (o *RemoveProjectUserPermissionParams) WithBody(body *models.RemoveProjectUserPermissionBody) *RemoveProjectUserPermissionParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the remove project user permission params
-func (o *RemoveProjectUserPermissionParams) SetBody(body RemoveProjectUserPermissionBody) {
+func (o *RemoveProjectUserPermissionParams) SetBody(body *models.RemoveProjectUserPermissionBody) {
 	o.Body = body
 }
 
@@ -149,8 +151,10 @@ func (o *RemoveProjectUserPermissionParams) WriteToRequest(r runtime.ClientReque
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
-		return err
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
 	}
 
 	// path param projectId

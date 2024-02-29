@@ -22,7 +22,7 @@ type NetworkPriceHr struct {
 	PriceHr *Decimal `json:"priceHr,omitempty"`
 
 	// size
-	Size *VRouterSize `json:"size,omitempty"`
+	Size *VMDataCenterVRouterSize `json:"size,omitempty"`
 }
 
 // Validate validates this network price hr

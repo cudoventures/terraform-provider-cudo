@@ -23,6 +23,14 @@ type GpuModelCategory struct {
 	// Required: true
 	CountVMAvailable *int32 `json:"countVmAvailable"`
 
+	// id
+	// Required: true
+	ID *string `json:"id"`
+
+	// max free
+	// Required: true
+	MaxFree *int32 `json:"maxFree"`
+
 	// min price hr
 	// Required: true
 	MinPriceHr *Decimal `json:"minPriceHr"`
@@ -30,6 +38,10 @@ type GpuModelCategory struct {
 	// name
 	// Required: true
 	Name *string `json:"name"`
+
+	// total free
+	// Required: true
+	TotalFree *int32 `json:"totalFree"`
 }
 
 // Validate validates this gpu model category
@@ -40,11 +52,23 @@ func (m *GpuModelCategory) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateMaxFree(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateMinPriceHr(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateName(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTotalFree(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -57,6 +81,24 @@ func (m *GpuModelCategory) Validate(formats strfmt.Registry) error {
 func (m *GpuModelCategory) validateCountVMAvailable(formats strfmt.Registry) error {
 
 	if err := validate.Required("countVmAvailable", "body", m.CountVMAvailable); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *GpuModelCategory) validateID(formats strfmt.Registry) error {
+
+	if err := validate.Required("id", "body", m.ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *GpuModelCategory) validateMaxFree(formats strfmt.Registry) error {
+
+	if err := validate.Required("maxFree", "body", m.MaxFree); err != nil {
 		return err
 	}
 
@@ -86,6 +128,15 @@ func (m *GpuModelCategory) validateMinPriceHr(formats strfmt.Registry) error {
 func (m *GpuModelCategory) validateName(formats strfmt.Registry) error {
 
 	if err := validate.Required("name", "body", m.Name); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *GpuModelCategory) validateTotalFree(formats strfmt.Registry) error {
+
+	if err := validate.Required("totalFree", "body", m.TotalFree); err != nil {
 		return err
 	}
 

@@ -62,7 +62,7 @@ DeleteObjectStorageKeyParams contains all the parameters to send to the API endp
 type DeleteObjectStorageKeyParams struct {
 
 	// AccessKey.
-	AccessKey *string
+	AccessKey string
 
 	// ID.
 	ID string
@@ -124,13 +124,13 @@ func (o *DeleteObjectStorageKeyParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithAccessKey adds the accessKey to the delete object storage key params
-func (o *DeleteObjectStorageKeyParams) WithAccessKey(accessKey *string) *DeleteObjectStorageKeyParams {
+func (o *DeleteObjectStorageKeyParams) WithAccessKey(accessKey string) *DeleteObjectStorageKeyParams {
 	o.SetAccessKey(accessKey)
 	return o
 }
 
 // SetAccessKey adds the accessKey to the delete object storage key params
-func (o *DeleteObjectStorageKeyParams) SetAccessKey(accessKey *string) {
+func (o *DeleteObjectStorageKeyParams) SetAccessKey(accessKey string) {
 	o.AccessKey = accessKey
 }
 
@@ -164,21 +164,9 @@ func (o *DeleteObjectStorageKeyParams) WriteToRequest(r runtime.ClientRequest, r
 	}
 	var res []error
 
-	if o.AccessKey != nil {
-
-		// query param accessKey
-		var qrAccessKey string
-
-		if o.AccessKey != nil {
-			qrAccessKey = *o.AccessKey
-		}
-		qAccessKey := qrAccessKey
-		if qAccessKey != "" {
-
-			if err := r.SetQueryParam("accessKey", qAccessKey); err != nil {
-				return err
-			}
-		}
+	// path param accessKey
+	if err := r.SetPathParam("accessKey", o.AccessKey); err != nil {
+		return err
 	}
 
 	// path param id

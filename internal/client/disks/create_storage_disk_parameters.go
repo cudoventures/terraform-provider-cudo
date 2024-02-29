@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // NewCreateStorageDiskParams creates a new CreateStorageDiskParams object,
@@ -62,7 +64,7 @@ CreateStorageDiskParams contains all the parameters to send to the API endpoint
 type CreateStorageDiskParams struct {
 
 	// Body.
-	Body CreateStorageDiskBody
+	Body *models.CreateStorageDiskBody
 
 	// ProjectID.
 	ProjectID string
@@ -121,13 +123,13 @@ func (o *CreateStorageDiskParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the create storage disk params
-func (o *CreateStorageDiskParams) WithBody(body CreateStorageDiskBody) *CreateStorageDiskParams {
+func (o *CreateStorageDiskParams) WithBody(body *models.CreateStorageDiskBody) *CreateStorageDiskParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the create storage disk params
-func (o *CreateStorageDiskParams) SetBody(body CreateStorageDiskBody) {
+func (o *CreateStorageDiskParams) SetBody(body *models.CreateStorageDiskBody) {
 	o.Body = body
 }
 
@@ -149,8 +151,10 @@ func (o *CreateStorageDiskParams) WriteToRequest(r runtime.ClientRequest, reg st
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
-		return err
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
 	}
 
 	// path param projectId

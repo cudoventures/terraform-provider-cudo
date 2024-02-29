@@ -11,7 +11,10 @@ import (
 	"github.com/go-openapi/strfmt"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/api_keys"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/billing"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/data_centers"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/disks"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/machine_types"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/object_storage"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/permissions"
@@ -65,7 +68,10 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *CudoComput
 	cli := new(CudoComputeService)
 	cli.Transport = transport
 	cli.APIKeys = api_keys.New(transport, formats)
+	cli.Billing = billing.New(transport, formats)
+	cli.DataCenters = data_centers.New(transport, formats)
 	cli.Disks = disks.New(transport, formats)
+	cli.MachineTypes = machine_types.New(transport, formats)
 	cli.Networks = networks.New(transport, formats)
 	cli.ObjectStorage = object_storage.New(transport, formats)
 	cli.Permissions = permissions.New(transport, formats)
@@ -120,7 +126,13 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 type CudoComputeService struct {
 	APIKeys api_keys.ClientService
 
+	Billing billing.ClientService
+
+	DataCenters data_centers.ClientService
+
 	Disks disks.ClientService
+
+	MachineTypes machine_types.ClientService
 
 	Networks networks.ClientService
 
@@ -145,7 +157,10 @@ type CudoComputeService struct {
 func (c *CudoComputeService) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
 	c.APIKeys.SetTransport(transport)
+	c.Billing.SetTransport(transport)
+	c.DataCenters.SetTransport(transport)
 	c.Disks.SetTransport(transport)
+	c.MachineTypes.SetTransport(transport)
 	c.Networks.SetTransport(transport)
 	c.ObjectStorage.SetTransport(transport)
 	c.Permissions.SetTransport(transport)

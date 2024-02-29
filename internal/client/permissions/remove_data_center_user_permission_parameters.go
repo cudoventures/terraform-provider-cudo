@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // NewRemoveDataCenterUserPermissionParams creates a new RemoveDataCenterUserPermissionParams object,
@@ -62,7 +64,7 @@ RemoveDataCenterUserPermissionParams contains all the parameters to send to the 
 type RemoveDataCenterUserPermissionParams struct {
 
 	// Body.
-	Body RemoveDataCenterUserPermissionBody
+	Body *models.RemoveDataCenterUserPermissionBody
 
 	// DataCenterID.
 	DataCenterID string
@@ -121,13 +123,13 @@ func (o *RemoveDataCenterUserPermissionParams) SetHTTPClient(client *http.Client
 }
 
 // WithBody adds the body to the remove data center user permission params
-func (o *RemoveDataCenterUserPermissionParams) WithBody(body RemoveDataCenterUserPermissionBody) *RemoveDataCenterUserPermissionParams {
+func (o *RemoveDataCenterUserPermissionParams) WithBody(body *models.RemoveDataCenterUserPermissionBody) *RemoveDataCenterUserPermissionParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the remove data center user permission params
-func (o *RemoveDataCenterUserPermissionParams) SetBody(body RemoveDataCenterUserPermissionBody) {
+func (o *RemoveDataCenterUserPermissionParams) SetBody(body *models.RemoveDataCenterUserPermissionBody) {
 	o.Body = body
 }
 
@@ -149,8 +151,10 @@ func (o *RemoveDataCenterUserPermissionParams) WriteToRequest(r runtime.ClientRe
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
-		return err
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
 	}
 
 	// path param dataCenterId

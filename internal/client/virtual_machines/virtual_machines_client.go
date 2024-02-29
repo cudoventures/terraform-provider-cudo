@@ -28,6 +28,8 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
+	AttachSecurityGroup(params *AttachSecurityGroupParams, opts ...ClientOption) (*AttachSecurityGroupOK, error)
+
 	ConnectVM(params *ConnectVMParams, opts ...ClientOption) (*ConnectVMOK, error)
 
 	CountVMs(params *CountVMsParams, opts ...ClientOption) (*CountVMsOK, error)
@@ -37,6 +39,8 @@ type ClientService interface {
 	CreateVM(params *CreateVMParams, opts ...ClientOption) (*CreateVMOK, error)
 
 	DeletePrivateVMImage(params *DeletePrivateVMImageParams, opts ...ClientOption) (*DeletePrivateVMImageOK, error)
+
+	DetachSecurityGroup(params *DetachSecurityGroupParams, opts ...ClientOption) (*DetachSecurityGroupOK, error)
 
 	GetPrivateVMImage(params *GetPrivateVMImageParams, opts ...ClientOption) (*GetPrivateVMImageOK, error)
 
@@ -51,6 +55,8 @@ type ClientService interface {
 	ListVMDisks(params *ListVMDisksParams, opts ...ClientOption) (*ListVMDisksOK, error)
 
 	ListVMMachineTypes(params *ListVMMachineTypesParams, opts ...ClientOption) (*ListVMMachineTypesOK, error)
+
+	ListVMMachineTypes2(params *ListVMMachineTypes2Params, opts ...ClientOption) (*ListVMMachineTypes2OK, error)
 
 	ListVMs(params *ListVMsParams, opts ...ClientOption) (*ListVMsOK, error)
 
@@ -70,7 +76,46 @@ type ClientService interface {
 
 	UpdatePrivateVMImage(params *UpdatePrivateVMImageParams, opts ...ClientOption) (*UpdatePrivateVMImageOK, error)
 
+	UpdateVMMetadata(params *UpdateVMMetadataParams, opts ...ClientOption) (*UpdateVMMetadataOK, error)
+
 	SetTransport(transport runtime.ClientTransport)
+}
+
+/*
+AttachSecurityGroup attaches security group to VM
+*/
+func (a *Client) AttachSecurityGroup(params *AttachSecurityGroupParams, opts ...ClientOption) (*AttachSecurityGroupOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewAttachSecurityGroupParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "AttachSecurityGroup",
+		Method:             "PATCH",
+		PathPattern:        "/v1/projects/{projectId}/vm/{id}/security-group/attach",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &AttachSecurityGroupReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*AttachSecurityGroupOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*AttachSecurityGroupDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
@@ -255,6 +300,43 @@ func (a *Client) DeletePrivateVMImage(params *DeletePrivateVMImageParams, opts .
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*DeletePrivateVMImageDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+DetachSecurityGroup attaches security group to VM
+*/
+func (a *Client) DetachSecurityGroup(params *DetachSecurityGroupParams, opts ...ClientOption) (*DetachSecurityGroupOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewDetachSecurityGroupParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "DetachSecurityGroup",
+		Method:             "PATCH",
+		PathPattern:        "/v1/projects/{projectId}/vm/{id}/security-group/detach",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &DetachSecurityGroupReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*DetachSecurityGroupOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*DetachSecurityGroupDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -514,6 +596,43 @@ func (a *Client) ListVMMachineTypes(params *ListVMMachineTypesParams, opts ...Cl
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ListVMMachineTypesDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ListVMMachineTypes2 lists machine types v2
+*/
+func (a *Client) ListVMMachineTypes2(params *ListVMMachineTypes2Params, opts ...ClientOption) (*ListVMMachineTypes2OK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewListVMMachineTypes2Params()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ListVMMachineTypes2",
+		Method:             "GET",
+		PathPattern:        "/v1/vms/machine-types-2",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ListVMMachineTypes2Reader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ListVMMachineTypes2OK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ListVMMachineTypes2Default)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
@@ -847,6 +966,43 @@ func (a *Client) UpdatePrivateVMImage(params *UpdatePrivateVMImageParams, opts .
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*UpdatePrivateVMImageDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+UpdateVMMetadata updates VM metadata
+*/
+func (a *Client) UpdateVMMetadata(params *UpdateVMMetadataParams, opts ...ClientOption) (*UpdateVMMetadataOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdateVMMetadataParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "UpdateVMMetadata",
+		Method:             "POST",
+		PathPattern:        "/v1/projects/{projectId}/vm/{id}/metadata",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &UpdateVMMetadataReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdateVMMetadataOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*UpdateVMMetadataDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

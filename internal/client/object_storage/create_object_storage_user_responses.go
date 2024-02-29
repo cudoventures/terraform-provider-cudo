@@ -6,13 +6,11 @@ package object_storage
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
@@ -180,43 +178,5 @@ func (o *CreateObjectStorageUserDefault) readResponse(response runtime.ClientRes
 		return err
 	}
 
-	return nil
-}
-
-/*
-CreateObjectStorageUserBody create object storage user body
-swagger:model CreateObjectStorageUserBody
-*/
-type CreateObjectStorageUserBody struct {
-
-	// id
-	ID string `json:"id,omitempty"`
-}
-
-// Validate validates this create object storage user body
-func (o *CreateObjectStorageUserBody) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this create object storage user body based on context it is used
-func (o *CreateObjectStorageUserBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *CreateObjectStorageUserBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *CreateObjectStorageUserBody) UnmarshalBinary(b []byte) error {
-	var res CreateObjectStorageUserBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

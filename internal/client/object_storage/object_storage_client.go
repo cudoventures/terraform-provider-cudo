@@ -126,7 +126,7 @@ func (a *Client) CreateObjectStorageUser(params *CreateObjectStorageUserParams, 
 }
 
 /*
-DeleteObjectStorageKey deletes object storage user
+DeleteObjectStorageKey deletes object storage user key
 */
 func (a *Client) DeleteObjectStorageKey(params *DeleteObjectStorageKeyParams, opts ...ClientOption) (*DeleteObjectStorageKeyOK, error) {
 	// TODO: Validate the params before sending
@@ -135,8 +135,8 @@ func (a *Client) DeleteObjectStorageKey(params *DeleteObjectStorageKeyParams, op
 	}
 	op := &runtime.ClientOperation{
 		ID:                 "DeleteObjectStorageKey",
-		Method:             "POST",
-		PathPattern:        "/v1/projects/{projectId}/object-storage/users/{id}/keys",
+		Method:             "DELETE",
+		PathPattern:        "/v1/projects/{projectId}/object-storage/users/{id}/keys/{accessKey}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},

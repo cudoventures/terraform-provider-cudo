@@ -31,10 +31,10 @@ type Rule struct {
 	Ports string `json:"ports,omitempty"`
 
 	// protocol
-	Protocol *Protocol `json:"protocol,omitempty"`
+	Protocol *RuleProtocol `json:"protocol,omitempty"`
 
 	// rule type
-	RuleType *RuleType `json:"ruleType,omitempty"`
+	RuleType *RuleRuleType `json:"ruleType,omitempty"`
 }
 
 // Validate validates this rule

@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 )
 
 // NewActivateParams creates a new ActivateParams object,
@@ -62,7 +64,7 @@ ActivateParams contains all the parameters to send to the API endpoint
 type ActivateParams struct {
 
 	// Body.
-	Body ActivateBody
+	Body *models.ActivateBody
 
 	// ProjectID.
 	ProjectID string
@@ -121,13 +123,13 @@ func (o *ActivateParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the activate params
-func (o *ActivateParams) WithBody(body ActivateBody) *ActivateParams {
+func (o *ActivateParams) WithBody(body *models.ActivateBody) *ActivateParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the activate params
-func (o *ActivateParams) SetBody(body ActivateBody) {
+func (o *ActivateParams) SetBody(body *models.ActivateBody) {
 	o.Body = body
 }
 
@@ -149,8 +151,10 @@ func (o *ActivateParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Regi
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
-		return err
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
 	}
 
 	// path param projectId

@@ -76,6 +76,9 @@ type ListVMMachineTypesParams struct {
 	// GpuModel.
 	GpuModel *string
 
+	// GpuModelID.
+	GpuModelID *string
+
 	// MemoryGib.
 	//
 	// Format: int32
@@ -205,6 +208,17 @@ func (o *ListVMMachineTypesParams) WithGpuModel(gpuModel *string) *ListVMMachine
 // SetGpuModel adds the gpuModel to the list VM machine types params
 func (o *ListVMMachineTypesParams) SetGpuModel(gpuModel *string) {
 	o.GpuModel = gpuModel
+}
+
+// WithGpuModelID adds the gpuModelID to the list VM machine types params
+func (o *ListVMMachineTypesParams) WithGpuModelID(gpuModelID *string) *ListVMMachineTypesParams {
+	o.SetGpuModelID(gpuModelID)
+	return o
+}
+
+// SetGpuModelID adds the gpuModelId to the list VM machine types params
+func (o *ListVMMachineTypesParams) SetGpuModelID(gpuModelID *string) {
+	o.GpuModelID = gpuModelID
 }
 
 // WithMemoryGib adds the memoryGib to the list VM machine types params
@@ -366,6 +380,23 @@ func (o *ListVMMachineTypesParams) WriteToRequest(r runtime.ClientRequest, reg s
 		if qGpuModel != "" {
 
 			if err := r.SetQueryParam("gpuModel", qGpuModel); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.GpuModelID != nil {
+
+		// query param gpuModelId
+		var qrGpuModelID string
+
+		if o.GpuModelID != nil {
+			qrGpuModelID = *o.GpuModelID
+		}
+		qGpuModelID := qrGpuModelID
+		if qGpuModelID != "" {
+
+			if err := r.SetQueryParam("gpuModelId", qGpuModelID); err != nil {
 				return err
 			}
 		}

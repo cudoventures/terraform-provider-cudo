@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // Network network
@@ -18,49 +19,98 @@ import (
 // swagger:model Network
 type Network struct {
 
-	// active state
-	ActiveState string `json:"activeState,omitempty"`
+	// create time
+	// Required: true
+	// Read Only: true
+	// Format: date-time
+	CreateTime strfmt.DateTime `json:"createTime"`
 
 	// data center Id
-	DataCenterID string `json:"dataCenterId,omitempty"`
+	// Required: true
+	DataCenterID *string `json:"dataCenterId"`
 
 	// external Ip address
-	ExternalIPAddress string `json:"externalIpAddress,omitempty"`
+	// Required: true
+	ExternalIPAddress *string `json:"externalIpAddress"`
 
 	// gateway
-	Gateway string `json:"gateway,omitempty"`
+	// Required: true
+	Gateway *string `json:"gateway"`
 
 	// id
-	ID string `json:"id,omitempty"`
-
-	// init state
-	InitState string `json:"initState,omitempty"`
+	// Required: true
+	ID *string `json:"id"`
 
 	// internal Ip address
-	InternalIPAddress string `json:"internalIpAddress,omitempty"`
+	// Required: true
+	InternalIPAddress *string `json:"internalIpAddress"`
 
 	// ip range
-	IPRange string `json:"ipRange,omitempty"`
+	// Required: true
+	IPRange *string `json:"ipRange"`
 
 	// price hr
-	PriceHr *Decimal `json:"priceHr,omitempty"`
+	// Required: true
+	PriceHr *Decimal `json:"priceHr"`
 
 	// short state
-	ShortState string `json:"shortState,omitempty"`
+	// Required: true
+	ShortState *string `json:"shortState"`
 
 	// size
-	Size *VRouterSize `json:"size,omitempty"`
+	// Required: true
+	Size *V1VRouterSize `json:"size"`
+
+	// state
+	// Required: true
+	State *NetworkState `json:"state"`
 }
 
 // Validate validates this network
 func (m *Network) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateCreateTime(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDataCenterID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateExternalIPAddress(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateGateway(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateInternalIPAddress(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateIPRange(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validatePriceHr(formats); err != nil {
 		res = append(res, err)
 	}
 
+	if err := m.validateShortState(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateSize(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateState(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -70,9 +120,77 @@ func (m *Network) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Network) validateCreateTime(formats strfmt.Registry) error {
+
+	if err := validate.Required("createTime", "body", strfmt.DateTime(m.CreateTime)); err != nil {
+		return err
+	}
+
+	if err := validate.FormatOf("createTime", "body", "date-time", m.CreateTime.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Network) validateDataCenterID(formats strfmt.Registry) error {
+
+	if err := validate.Required("dataCenterId", "body", m.DataCenterID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Network) validateExternalIPAddress(formats strfmt.Registry) error {
+
+	if err := validate.Required("externalIpAddress", "body", m.ExternalIPAddress); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Network) validateGateway(formats strfmt.Registry) error {
+
+	if err := validate.Required("gateway", "body", m.Gateway); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Network) validateID(formats strfmt.Registry) error {
+
+	if err := validate.Required("id", "body", m.ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Network) validateInternalIPAddress(formats strfmt.Registry) error {
+
+	if err := validate.Required("internalIpAddress", "body", m.InternalIPAddress); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Network) validateIPRange(formats strfmt.Registry) error {
+
+	if err := validate.Required("ipRange", "body", m.IPRange); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *Network) validatePriceHr(formats strfmt.Registry) error {
-	if swag.IsZero(m.PriceHr) { // not required
-		return nil
+
+	if err := validate.Required("priceHr", "body", m.PriceHr); err != nil {
+		return err
 	}
 
 	if m.PriceHr != nil {
@@ -89,9 +207,23 @@ func (m *Network) validatePriceHr(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Network) validateShortState(formats strfmt.Registry) error {
+
+	if err := validate.Required("shortState", "body", m.ShortState); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *Network) validateSize(formats strfmt.Registry) error {
-	if swag.IsZero(m.Size) { // not required
-		return nil
+
+	if err := validate.Required("size", "body", m.Size); err != nil {
+		return err
+	}
+
+	if err := validate.Required("size", "body", m.Size); err != nil {
+		return err
 	}
 
 	if m.Size != nil {
@@ -108,9 +240,37 @@ func (m *Network) validateSize(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Network) validateState(formats strfmt.Registry) error {
+
+	if err := validate.Required("state", "body", m.State); err != nil {
+		return err
+	}
+
+	if err := validate.Required("state", "body", m.State); err != nil {
+		return err
+	}
+
+	if m.State != nil {
+		if err := m.State.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("state")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("state")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this network based on the context it is used
 func (m *Network) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
+
+	if err := m.contextValidateCreateTime(ctx, formats); err != nil {
+		res = append(res, err)
+	}
 
 	if err := m.contextValidatePriceHr(ctx, formats); err != nil {
 		res = append(res, err)
@@ -120,19 +280,28 @@ func (m *Network) ContextValidate(ctx context.Context, formats strfmt.Registry) 
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateState(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
 	return nil
 }
 
+func (m *Network) contextValidateCreateTime(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "createTime", "body", strfmt.DateTime(m.CreateTime)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *Network) contextValidatePriceHr(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.PriceHr != nil {
-
-		if swag.IsZero(m.PriceHr) { // not required
-			return nil
-		}
 
 		if err := m.PriceHr.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
@@ -151,15 +320,28 @@ func (m *Network) contextValidateSize(ctx context.Context, formats strfmt.Regist
 
 	if m.Size != nil {
 
-		if swag.IsZero(m.Size) { // not required
-			return nil
-		}
-
 		if err := m.Size.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("size")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("size")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Network) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.State != nil {
+
+		if err := m.State.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("state")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("state")
 			}
 			return err
 		}
