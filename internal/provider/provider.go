@@ -2,14 +2,17 @@ package provider
 
 import (
 	"context"
+	"crypto/x509"
+	"fmt"
+	"time"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/compute/network"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/compute/vm"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	"os"
-
-	httptransport "github.com/go-openapi/runtime/client"
-	"github.com/go-openapi/strfmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -40,7 +43,8 @@ type CudoProviderModel struct {
 }
 
 type CudoClientData struct {
-	Client                  *client.CudoComputeService
+	VMClient                vm.VMServiceClient
+	NetworkClient           network.NetworkServiceClient
 	DefaultBillingAccountID string
 	DefaultProjectID        string
 }
@@ -125,22 +129,25 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		billingAccountID = os.Getenv("CUDO_BILLING_ACCOUNT_ID")
 	}
 
-	var scheme []string
-	if config.DisableTLS.ValueBool() {
-		scheme = []string{"https"}
-	} else {
-		scheme = client.DefaultSchemes
+	conn, err := config.dial(ctx, p.version)
+	if err != nil {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("project_id"),
+			"Missing Cudo project ID",
+			"The provider cannot create the client without a project_id please pass it or set the CUDO_PROJECT_ID environment variable or set it in your cudo config file.",
+		)
 	}
 
-	tx := httptransport.New(remoteAddr, client.DefaultBasePath, scheme)
-	tx.DefaultAuthentication = httptransport.BearerToken(apiKey)
-	clientx := client.New(tx, strfmt.Default)
+	vmClient := vm.NewVMServiceClient(conn)
+	networkClient := network.NewNetworkServiceClient(conn)
 
 	ccd := &CudoClientData{
-		Client:                  clientx,
+		VMClient:                vmClient,
+		NetworkClient:           networkClient,
 		DefaultProjectID:        projectID,
 		DefaultBillingAccountID: billingAccountID,
 	}
+
 	resp.DataSourceData = ccd
 	resp.ResourceData = ccd
 }
@@ -171,4 +178,63 @@ func New(version string, defaultRemoteAddr string) func() provider.Provider {
 			defaultRemoteAddr: defaultRemoteAddr,
 		}
 	}
+}
+
+var retryPolicy = `{
+	"methodConfig": [{
+		// config per method or all methods under service
+		"name": [{"service": "grpc.examples.echo.Echo"}],
+		"waitForReady": true,
+
+		"retryPolicy": {
+			"MaxAttempts": 4,
+			"InitialBackoff": ".01s",
+			"MaxBackoff": ".01s",
+			"BackoffMultiplier": 1.0,
+			// this value is grpc code
+			"RetryableStatusCodes": [ "UNAVAILABLE" ]
+		}
+	}]
+}`
+
+func (c *CudoProviderModel) dial(ctx context.Context, version string) (*grpc.ClientConn, error) {
+	dialOptions := []grpc.DialOption{}
+	pool, err := x509.SystemCertPool()
+	if err != nil {
+		return nil, fmt.Errorf("could not get system cert pool for tls connection: %w", err)
+	}
+	creds := credentials.NewClientTLSFromCert(pool, "")
+	dialOptions = append(dialOptions, grpc.WithTransportCredentials(creds))
+	dialOptions = append(dialOptions,
+		grpc.WithPerRPCCredentials(&apiKeyCallOption{
+			disableTransportSecurity: c.DisableTLS.ValueBool(),
+			key:                      c.APIKey.String(),
+			version:                  version,
+		}),
+	)
+
+	dialTimeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	return grpc.DialContext(dialTimeoutCtx, c.RemoteAddr.String(), dialOptions...)
+}
+
+type apiKeyCallOption struct {
+	key                      string
+	disableTransportSecurity bool
+	version                  string
+}
+
+func (a *apiKeyCallOption) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	if a.key == "" {
+		return nil, nil
+	}
+	return map[string]string{
+		"x-terraform-version": a.version,
+		"authorization":       "Bearer " + a.key,
+	}, nil
+}
+
+func (a *apiKeyCallOption) RequireTransportSecurity() bool {
+	return !a.disableTransportSecurity
 }

@@ -6,10 +6,9 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/client/compute/vm"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
-	"github.com/hashicorp/go-retryablehttp"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -25,6 +24,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -304,25 +305,26 @@ func (r *VMResource) Configure(ctx context.Context, req resource.ConfigureReques
 	r.client = client
 }
 
-func waitForVmAvailable(ctx context.Context, projectID string, vmID string, c virtual_machines.ClientService) (*virtual_machines.GetVMOK, error) {
+func waitForVmAvailable(ctx context.Context, projectId string, vmID string, c vm.VMServiceClient) (*vm.GetVMResponse, error) {
 	refreshFunc := func() (interface{}, string, error) {
-		params := virtual_machines.NewGetVMParamsWithContext(ctx)
-		params.ID = vmID
-		params.ProjectID = projectID
-		res, err := c.GetVM(params)
-		if err != nil {
-			if apiErr, ok := err.(*virtual_machines.GetVMDefault); ok && apiErr.IsCode(404) {
-				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s not found: ", vmID, projectID))
+		params := &vm.GetVMRequest{
+			Id:        vmID,
+			ProjectId: projectId,
+		}
+		res, err := c.GetVM(ctx, params)
+		if ok, err := isErrCode(err, codes.NotFound); err != nil {
+			if ok {
+				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s not found: ", vmID, projectId))
 				return res, "done", nil
 			}
 			return nil, "", err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectID, res.Payload.VM.ShortState))
-		return res, res.Payload.VM.ShortState, nil
+		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectId, res.VM.ShortState))
+		return res, res.VM.ShortState, nil
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectID))
+	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectId))
 
 	stateConf := &helper.StateChangeConf{
 		Pending:    []string{"boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
@@ -334,39 +336,53 @@ func waitForVmAvailable(ctx context.Context, projectID string, vmID string, c vi
 	}
 
 	if res, err := stateConf.WaitForState(ctx); err != nil {
-		return nil, fmt.Errorf("error waiting for VM %s in project %s to become available: %w", vmID, projectID, err)
-	} else if vm, ok := res.(*virtual_machines.GetVMOK); ok {
+		return nil, fmt.Errorf("error waiting for VM %s in project %s to become available: %w", vmID, projectId, err)
+	} else if vm, ok := res.(*vm.GetVMResponse); ok {
 		var shortState string
-		if vm != nil && vm.Payload != nil && vm.Payload.VM != nil {
-			shortState = vm.Payload.VM.ShortState
+		if vm != nil && vm != nil && vm.VM != nil {
+			shortState = vm.VM.ShortState
 		}
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectID, shortState))
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectId, shortState))
 		return vm, nil
 	} else {
 		return nil, fmt.Errorf("error waiting for VM: %v", res)
 	}
 }
 
-func waitForVmDelete(ctx context.Context, projectID string, vmID string, c virtual_machines.ClientService) (*virtual_machines.GetVMOK, error) {
+func isErrCode(err error, wantCode codes.Code) (bool, error) {
+	if err != nil {
+		if e, ok := status.FromError(err); ok {
+			if e.Code() == wantCode {
+				return true, err
+			}
+		}
+
+		return false, err
+	}
+	return false, nil
+}
+
+func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VMServiceClient) (*vm.GetVMResponse, error) {
 	refreshFunc := func() (interface{}, string, error) {
-		params := virtual_machines.NewGetVMParamsWithContext(ctx)
-		params.ID = vmID
-		params.ProjectID = projectID
-		res, err := c.GetVM(params)
-		if err != nil {
-			if apiErr, ok := err.(*virtual_machines.GetVMDefault); ok && apiErr.IsCode(404) {
-				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s is done: ", vmID, projectID))
+		params := &vm.GetVMRequest{
+			Id:        vmID,
+			ProjectId: projectId,
+		}
+		res, err := c.GetVM(ctx, params)
+		if ok, err := isErrCode(err, codes.NotFound); err != nil {
+			if ok {
+				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s is done: ", vmID, projectId))
 				return res, "done", nil
 			}
-			tflog.Error(ctx, fmt.Sprintf("error getting VM %s in project %s: %v", vmID, projectID, err))
+			tflog.Error(ctx, fmt.Sprintf("error getting VM %s in project %s: %v", vmID, projectId, err))
 			return nil, "", err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectID, res.Payload.VM.ShortState))
-		return res, res.Payload.VM.ShortState, nil
+		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectId, res.VM.ShortState))
+		return res, res.VM.ShortState, nil
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectID))
+	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectId))
 
 	stateConf := &helper.StateChangeConf{
 		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
@@ -377,13 +393,13 @@ func waitForVmDelete(ctx context.Context, projectID string, vmID string, c virtu
 	}
 
 	if res, err := stateConf.WaitForState(ctx); err != nil {
-		return nil, fmt.Errorf("error waiting for VM %s in project %s to become done: %w", vmID, projectID, err)
-	} else if vm, ok := res.(*virtual_machines.GetVMOK); ok {
+		return nil, fmt.Errorf("error waiting for VM %s in project %s to become done: %w", vmID, projectId, err)
+	} else if vm, ok := res.(*vm.GetVMResponse); ok {
 		var shortState string
-		if vm != nil && vm.Payload != nil && vm.Payload.VM != nil {
-			shortState = vm.Payload.VM.ShortState
+		if vm != nil && vm != nil && vm.VM != nil {
+			shortState = vm.VM.ShortState
 		}
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectID, shortState))
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectId, shortState))
 		return vm, nil
 	} else {
 		return nil, fmt.Errorf("error waiting for VM: %v", res)
@@ -415,12 +431,12 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		}
 	}
 
-	retryClient := retryablehttp.NewClient()
-	retryClient.RetryMax = 10
-	params := virtual_machines.NewCreateVMParamsWithContext(ctx).WithHTTPClient(retryClient.StandardClient())
-	params.ProjectID = r.client.DefaultProjectID
+	// retryClient := retryablehttp.NewClient()
+	// retryClient.RetryMax = 10
+	params := &vm.CreateVMRequest{}
+	params.ProjectId = r.client.DefaultProjectID
 	if !state.ProjectID.IsNull() {
-		params.ProjectID = state.ProjectID.ValueString()
+		params.ProjectId = state.ProjectID.ValueString()
 	}
 
 	var bootDisk models.Disk
@@ -455,38 +471,37 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	if !state.MaxPriceHr.IsNull() {
 		maxPriceHr = &models.Decimal{Value: state.MaxPriceHr.ValueString()}
 	}
-	params.Body = virtual_machines.CreateVMBody{
-		BootDisk:         &bootDisk,
-		DataCenterID:     state.DataCenterID.ValueString(),
-		Gpus:             int32(state.GPUs.ValueInt64()),
-		MachineType:      state.MachineType.ValueString(),
-		MaxPriceHr:       maxPriceHr,
-		MemoryGib:        int32(state.MemoryGib.ValueInt64()),
-		Nics:             nics,
-		BootDiskImageID:  state.BootDisk.ImageID.ValueStringPointer(),
-		Password:         state.Password.ValueString(),
-		Vcpus:            int32(state.VCPUs.ValueInt64()),
-		VMID:             state.ID.ValueStringPointer(),
-		SecurityGroupIds: securityGroupIDs,
-		SSHKeySource:     models.SSHKeySource(sshKeySource).Pointer(),
-		CustomSSHKeys:    customKeys,
-		StartScript:      state.StartScript.ValueString(),
-	}
 
-	_, err := r.client.Client.VirtualMachines.CreateVM(params)
+	params.BootDisk = &bootDisk
+	params.DataCenterId = state.DataCenterID.ValueString()
+	params.Gpus = int32(state.GPUs.ValueInt64())
+	params.MachineType = state.MachineType.ValueString()
+	params.MaxPriceHr = maxPriceHr
+	params.MemoryGib = int32(state.MemoryGib.ValueInt64())
+	params.Nics = nics
+	params.BootDiskImageId = state.BootDisk.ImageID.ValueString()
+	params.Password = state.Password.ValueString()
+	params.Vcpus = int32(state.VCPUs.ValueInt64())
+	params.VmId = state.ID.ValueString()
+	params.SecurityGroupIds = securityGroupIDs
+	params.SshKeySource = models.SSHKeySource(sshKeySource).Pointer()
+	params.CustomSshKeys = customKeys
+	params.StartScript = state.StartScript.ValueString()
+
+	_, err := r.client.VMClient.CreateVM(ctx, params)
 	if err != nil {
-		if apiErr, ok := err.(*virtual_machines.CreateVMDefault); ok {
-			if apiErr.Code() != 409 {
-				resp.Diagnostics.AddError(
-					"Error creating VM resource",
-					"Could not create VM, unexpected error: "+err.Error(),
-				)
-				return
-			}
-		}
+		// if apiErr, ok := err.(*vm.CreateVMDefault); ok {
+		// 	if apiErr.Code() != 409 {
+		// 		resp.Diagnostics.AddError(
+		// 			"Error creating VM resource",
+		// 			"Could not create VM, unexpected error: "+err.Error(),
+		// 		)
+		// 		return
+		// 	}
+		// }
 	}
 
-	vm, err := waitForVmAvailable(ctx, params.ProjectID, state.ID.ValueString(), r.client.Client.VirtualMachines)
+	vm, err := waitForVmAvailable(ctx, params.ProjectId, state.ID.ValueString(), r.client.VMClient)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating VM resource",
@@ -495,27 +510,27 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	state.DataCenterID = types.StringValue(vm.Payload.VM.DatacenterID)
-	state.CPUModel = types.StringValue(vm.Payload.VM.CPUModel)
-	state.GPUs = types.Int64Value(vm.Payload.VM.GpuQuantity)
-	state.BootDisk.SizeGib = types.Int64Value(vm.Payload.VM.BootDiskSizeGib)
-	if vm.Payload.VM.PublicImageID != "" {
-		state.BootDisk.ImageID = types.StringValue(vm.Payload.VM.PublicImageID)
+	state.DataCenterID = types.StringValue(vm.VM.DatacenterId)
+	state.CPUModel = types.StringValue(vm.VM.CpuModel)
+	state.GPUs = types.Int64Value(int64(vm.VM.GpuQuantity))
+	state.BootDisk.SizeGib = types.Int64Value(int64(vm.VM.BootDiskSizeGib))
+	if vm.VM.PublicImageId != "" {
+		state.BootDisk.ImageID = types.StringValue(vm.VM.PublicImageId)
 	}
-	if vm.Payload.VM.PrivateImageID != "" {
-		state.BootDisk.ImageID = types.StringValue(vm.Payload.VM.PrivateImageID)
+	if vm.VM.PrivateImageId != "" {
+		state.BootDisk.ImageID = types.StringValue(vm.VM.PrivateImageId)
 	}
-	state.MachineType = types.StringValue(vm.Payload.VM.MachineType)
+	state.MachineType = types.StringValue(vm.VM.MachineType)
 	for i, nic := range state.Networks {
-		nic.ExternalIPAddress = types.StringValue(vm.Payload.VM.Nics[i].ExternalIPAddress)
-		nic.InternalIPAddress = types.StringValue(vm.Payload.VM.Nics[i].InternalIPAddress)
+		nic.ExternalIPAddress = types.StringValue(vm.VM.Nics[i].ExternalIpAddress)
+		nic.InternalIPAddress = types.StringValue(vm.VM.Nics[i].InternalIpAddress)
 	}
-	state.GPUModel = types.StringValue(vm.Payload.VM.GpuModel)
-	state.ID = types.StringValue(vm.Payload.VM.ID)
-	state.InternalIPAddress = types.StringValue(vm.Payload.VM.InternalIPAddress)
-	state.ExternalIPAddress = types.StringValue(vm.Payload.VM.ExternalIPAddress)
-	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", vm.Payload.VM.PriceHr))
-	state.RenewableEnergy = types.BoolValue(vm.Payload.VM.RenewableEnergy)
+	state.GPUModel = types.StringValue(vm.VM.GpuModel)
+	state.ID = types.StringValue(vm.VM.Id)
+	state.InternalIPAddress = types.StringValue(vm.VM.InternalIpAddress)
+	state.ExternalIPAddress = types.StringValue(vm.VM.ExternalIpAddress)
+	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", vm.VM.PriceHr))
+	state.RenewableEnergy = types.BoolValue(vm.VM.RenewableEnergy)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -530,13 +545,14 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		return
 	}
 
-	params := virtual_machines.NewGetVMParamsWithContext(ctx)
-	params.ProjectID = r.client.DefaultProjectID
-	params.ID = state.ID.ValueString()
+	params := &vm.GetVMRequest{
+		ProjectId: r.client.DefaultProjectID,
+		Id:        state.ID.ValueString(),
+	}
 
-	res, err := r.client.Client.VirtualMachines.GetVM(params)
-	if err != nil {
-		if apiErr, ok := err.(*virtual_machines.GetVMDefault); ok && apiErr.IsCode(404) {
+	res, err := r.client.VMClient.GetVM(ctx, params)
+	if ok, err := isErrCode(err, codes.NotFound); err != nil {
+		if ok {
 			resp.State.RemoveResource(ctx)
 			return
 		}
@@ -547,27 +563,27 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		return
 	}
 
-	state.DataCenterID = types.StringValue(res.Payload.VM.DatacenterID)
-	state.CPUModel = types.StringValue(res.Payload.VM.CPUModel)
-	state.GPUs = types.Int64Value(res.Payload.VM.GpuQuantity)
-	state.BootDisk.SizeGib = types.Int64Value(res.Payload.VM.BootDiskSizeGib)
-	if res.Payload.VM.PublicImageID != "" {
-		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PublicImageID)
+	state.DataCenterID = types.StringValue(res.VM.DatacenterId)
+	state.CPUModel = types.StringValue(res.VM.CpuModel)
+	state.GPUs = types.Int64Value(int64(res.VM.GpuQuantity))
+	state.BootDisk.SizeGib = types.Int64Value(int64(res.VM.BootDiskSizeGib))
+	if res.VM.PublicImageId != "" {
+		state.BootDisk.ImageID = types.StringValue(res.VM.PublicImageId)
 	}
-	if res.Payload.VM.PrivateImageID != "" {
-		state.BootDisk.ImageID = types.StringValue(res.Payload.VM.PrivateImageID)
+	if res.VM.PrivateImageId != "" {
+		state.BootDisk.ImageID = types.StringValue(res.VM.PrivateImageId)
 	}
-	state.MachineType = types.StringValue(res.Payload.VM.MachineType)
+	state.MachineType = types.StringValue(res.VM.MachineType)
 	for i, nic := range state.Networks {
-		nic.ExternalIPAddress = types.StringValue(res.Payload.VM.Nics[i].ExternalIPAddress)
-		nic.InternalIPAddress = types.StringValue(res.Payload.VM.Nics[i].InternalIPAddress)
+		nic.ExternalIPAddress = types.StringValue(res.VM.Nics[i].ExternalIpAddress)
+		nic.InternalIPAddress = types.StringValue(res.VM.Nics[i].InternalIpAddress)
 	}
-	state.GPUModel = types.StringValue(res.Payload.VM.GpuModel)
-	state.ID = types.StringValue(res.Payload.VM.ID)
-	state.InternalIPAddress = types.StringValue(res.Payload.VM.InternalIPAddress)
-	state.ExternalIPAddress = types.StringValue(res.Payload.VM.ExternalIPAddress)
-	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", res.Payload.VM.PriceHr))
-	state.RenewableEnergy = types.BoolValue(res.Payload.VM.RenewableEnergy)
+	state.GPUModel = types.StringValue(res.VM.GpuModel)
+	state.ID = types.StringValue(res.VM.Id)
+	state.InternalIPAddress = types.StringValue(res.VM.InternalIpAddress)
+	state.ExternalIPAddress = types.StringValue(res.VM.ExternalIpAddress)
+	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", res.VM.PriceHr))
+	state.RenewableEnergy = types.BoolValue(res.VM.RenewableEnergy)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -598,11 +614,11 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 	var state *VMResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	params := virtual_machines.NewTerminateVMParamsWithContext(ctx)
-	params.ProjectID = r.client.DefaultProjectID
-	params.ID = state.ID.ValueString()
+	params := &vm.TerminateVMRequest{}
+	params.ProjectId = r.client.DefaultProjectID
+	params.Id = state.ID.ValueString()
 
-	if _, err := waitForVmAvailable(ctx, params.ProjectID, params.ID, r.client.Client.VirtualMachines); err != nil {
+	if _, err := waitForVmAvailable(ctx, params.ProjectId, params.Id, r.client.VMClient); err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for VM resource to be available",
 			err.Error(),
@@ -610,7 +626,7 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 		return
 	}
 
-	_, err := r.client.Client.VirtualMachines.TerminateVM(params)
+	_, err := r.client.VMClient.TerminateVM(ctx, params)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to delete VM resource",
@@ -619,7 +635,7 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 		return
 	}
 
-	_, err = waitForVmDelete(ctx, params.ProjectID, params.ID, r.client.Client.VirtualMachines)
+	_, err = waitForVmDelete(ctx, params.ProjectId, params.Id, r.client.VMClient)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for VM resource to be deleted",
