@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/compute/network"
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/compute/vm"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 
 	// "github.com/go-openapi/strfmt"

@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/compute/network"
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/compute/vm"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"google.golang.org/grpc"

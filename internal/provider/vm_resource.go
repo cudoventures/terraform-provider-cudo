@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/compute/vm"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 
+	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -113,8 +114,6 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		}
 	}
 
-	// retryClient := retryablehttp.NewClient()
-	// retryClient.RetryMax = 10
 	projectId := r.client.DefaultProjectID
 	if !state.ProjectID.IsNull() {
 		projectId = state.ProjectID.ValueString()
@@ -172,23 +171,17 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		StartScript:      state.StartScript.ValueString(),
 	}
 
-	_, err := r.client.VMClient.CreateVM(ctx, params)
+	rp := grpc_retry.WithMax(10)
+	// 1 * 2 ^ 10 = max backoff on attempt 10 of 32 seconds
+	bf := grpc_retry.WithBackoff(grpc_retry.BackoffExponential(time.Second * 1))
+	codes := grpc_retry.WithCodes(grpc_retry.DefaultRetriableCodes...)
+	_, err := r.client.VMClient.CreateVM(ctx, params, rp, bf, codes)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating VM resource",
 			"Could not create VM, unexpected error: "+err.Error(),
 		)
 		return
-		// TODO: sort this out
-		// if apiErr, ok := err.(*vm.CreateVMDefault); ok {
-		// 	if apiErr.Code() != 409 {
-		// 		resp.Diagnostics.AddError(
-		// 			"Error creating VM resource",
-		// 			"Could not create VM, unexpected error: "+err.Error(),
-		// 		)
-		// 		return
-		// 	}
-		// }
 	}
 
 	vm, err := waitForVmAvailable(ctx, params.ProjectId, state.ID.ValueString(), r.client.VMClient)
@@ -200,7 +193,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	fillState(state, vm.VM)
+	fillVmState(state, vm.VM)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -224,7 +217,6 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		if ok := isErrCode(err, codes.NotFound); ok {
 			resp.State.RemoveResource(ctx)
 			return
-
 		}
 		resp.Diagnostics.AddError(
 			"Unable to read VM resource",
@@ -233,7 +225,7 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		return
 	}
 
-	fillState(state, vm.VM)
+	fillVmState(state, vm.VM)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -343,16 +335,14 @@ func waitForVmAvailable(ctx context.Context, projectId string, vmID string, c vm
 
 func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VMServiceClient) (*vm.GetVMResponse, error) {
 	refreshFunc := func() (interface{}, string, error) {
-		params := &vm.GetVMRequest{
+		res, err := c.GetVM(ctx, &vm.GetVMRequest{
 			Id:        vmID,
 			ProjectId: projectId,
-		}
-		res, err := c.GetVM(ctx, params)
+		})
 		if err != nil {
 			if ok := isErrCode(err, codes.NotFound); ok {
 				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s is done: ", vmID, projectId))
 				return res, "done", nil
-
 			}
 			tflog.Error(ctx, fmt.Sprintf("error getting VM %s in project %s: %v", vmID, projectId, err))
 			return nil, "", err
@@ -396,7 +386,7 @@ func isErrCode(err error, wantCode codes.Code) bool {
 	return false
 }
 
-func fillState(state *VMResourceModel, vm *vm.VM) {
+func fillVmState(state *VMResourceModel, vm *vm.VM) {
 	state.DataCenterID = types.StringValue(vm.DatacenterId)
 	state.CPUModel = types.StringValue(vm.CpuModel)
 	state.GPUs = types.Int64Value(int64(vm.GpuQuantity))
