@@ -9,6 +9,7 @@ import (
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/compute/network"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/client/compute/vm"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
@@ -110,7 +111,6 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 	if remoteAddr == "" {
 		remoteAddr = p.defaultRemoteAddr
 	}
-
 	// Project
 	projectID := config.ProjectID.ValueString()
 	if projectID == "" {
@@ -129,13 +129,16 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		billingAccountID = os.Getenv("CUDO_BILLING_ACCOUNT_ID")
 	}
 
-	conn, err := config.dial(ctx, p.version)
+	conn, err := config.dial(ctx, remoteAddr, apiKey, p.version)
 	if err != nil {
-		resp.Diagnostics.AddAttributeError(
-			path.Root("project_id"),
-			"Missing Cudo project ID",
-			"The provider cannot create the client without a project_id please pass it or set the CUDO_PROJECT_ID environment variable or set it in your cudo config file.",
-		)
+		tflog.Trace(ctx, fmt.Sprintf("EERRRR %v", err))
+		fmt.Println("ASKJDhSAKJDHSAKKJH", err)
+		// TODO: sort this out
+		// resp.Diagnostics.AddAttributeError(
+		// 	path.Root("project_id"),
+		// 	"Missing Cudo project ID",
+		// 	"The provider cannot create the client without a project_id please pass it or set the CUDO_PROJECT_ID environment variable or set it in your cudo config file.",
+		// )
 	}
 
 	vmClient := vm.NewVMServiceClient(conn)
@@ -154,20 +157,20 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 
 func (p *CudoProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewSecurityGroupResource,
-		NewNetworkResource,
-		NewVMImageResource,
+		// NewSecurityGroupResource,
+		// NewNetworkResource,
+		// NewVMImageResource,
 		NewVMResource,
 	}
 }
 
 func (p *CudoProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewVMImagesDataSource,
-		NewVMDataCentersDataSource,
-		NewVMDataSource,
-		NewSecurityGroupDataSource,
-		NewNetworkDataSource,
+		// NewVMImagesDataSource,
+		// NewVMDataCentersDataSource,
+		// NewVMDataSource,
+		// NewSecurityGroupDataSource,
+		// NewNetworkDataSource,
 	}
 }
 
@@ -180,24 +183,24 @@ func New(version string, defaultRemoteAddr string) func() provider.Provider {
 	}
 }
 
-var retryPolicy = `{
-	"methodConfig": [{
-		// config per method or all methods under service
-		"name": [{"service": "grpc.examples.echo.Echo"}],
-		"waitForReady": true,
+// var retryPolicy = `{
+// 	"methodConfig": [{
+// 		// config per method or all methods under service
+// 		"name": [{"service": "grpc.examples.echo.Echo"}],
+// 		"waitForReady": true,
 
-		"retryPolicy": {
-			"MaxAttempts": 4,
-			"InitialBackoff": ".01s",
-			"MaxBackoff": ".01s",
-			"BackoffMultiplier": 1.0,
-			// this value is grpc code
-			"RetryableStatusCodes": [ "UNAVAILABLE" ]
-		}
-	}]
-}`
+// 		"retryPolicy": {
+// 			"MaxAttempts": 4,
+// 			"InitialBackoff": ".01s",
+// 			"MaxBackoff": ".01s",
+// 			"BackoffMultiplier": 1.0,
+// 			// this value is grpc code
+// 			"RetryableStatusCodes": [ "UNAVAILABLE" ]
+// 		}
+// 	}]
+// }`
 
-func (c *CudoProviderModel) dial(ctx context.Context, version string) (*grpc.ClientConn, error) {
+func (c *CudoProviderModel) dial(ctx context.Context, remoteAddr, apikey, version string) (*grpc.ClientConn, error) {
 	dialOptions := []grpc.DialOption{}
 	pool, err := x509.SystemCertPool()
 	if err != nil {
@@ -207,8 +210,8 @@ func (c *CudoProviderModel) dial(ctx context.Context, version string) (*grpc.Cli
 	dialOptions = append(dialOptions, grpc.WithTransportCredentials(creds))
 	dialOptions = append(dialOptions,
 		grpc.WithPerRPCCredentials(&apiKeyCallOption{
-			disableTransportSecurity: c.DisableTLS.ValueBool(),
-			key:                      c.APIKey.String(),
+			disableTransportSecurity: false,
+			key:                      apikey,
 			version:                  version,
 		}),
 	)
@@ -216,7 +219,7 @@ func (c *CudoProviderModel) dial(ctx context.Context, version string) (*grpc.Cli
 	dialTimeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	return grpc.DialContext(dialTimeoutCtx, c.RemoteAddr.String(), dialOptions...)
+	return grpc.DialContext(dialTimeoutCtx, remoteAddr, dialOptions...)
 }
 
 type apiKeyCallOption struct {
