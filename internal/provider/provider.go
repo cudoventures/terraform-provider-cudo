@@ -3,13 +3,11 @@ package provider
 import (
 	"context"
 	"crypto/x509"
-	"fmt"
 	"time"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
@@ -129,16 +127,36 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		billingAccountID = os.Getenv("CUDO_BILLING_ACCOUNT_ID")
 	}
 
-	conn, err := config.dial(ctx, remoteAddr, apiKey, p.version)
+	// dial without block handle errors in the rpcs
+	dialOptions := []grpc.DialOption{}
+	pool, err := x509.SystemCertPool()
 	if err != nil {
-		tflog.Trace(ctx, fmt.Sprintf("EERRRR %v", err))
-		fmt.Println("ASKJDhSAKJDHSAKKJH", err)
-		// TODO: sort this out
-		// resp.Diagnostics.AddAttributeError(
-		// 	path.Root("project_id"),
-		// 	"Missing Cudo project ID",
-		// 	"The provider cannot create the client without a project_id please pass it or set the CUDO_PROJECT_ID environment variable or set it in your cudo config file.",
-		// )
+		resp.Diagnostics.AddError(
+			"Error getting system cerificate",
+			"No certificate found for system: "+err.Error(),
+		)
+		return
+	}
+	creds := credentials.NewClientTLSFromCert(pool, "")
+	dialOptions = append(dialOptions, grpc.WithTransportCredentials(creds))
+	dialOptions = append(dialOptions,
+		grpc.WithPerRPCCredentials(&apiKeyCallOption{
+			disableTransportSecurity: config.DisableTLS.ValueBool(),
+			key:                      apiKey,
+			version:                  p.version,
+		}),
+	)
+
+	dialTimeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	conn, err := grpc.DialContext(dialTimeoutCtx, remoteAddr, dialOptions...)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error dialing cudo service",
+			"Dialing compute service failed: "+err.Error(),
+		)
+		return
 	}
 
 	vmClient := vm.NewVMServiceClient(conn)
@@ -181,45 +199,6 @@ func New(version string, defaultRemoteAddr string) func() provider.Provider {
 			defaultRemoteAddr: defaultRemoteAddr,
 		}
 	}
-}
-
-// var retryPolicy = `{
-// 	"methodConfig": [{
-// 		// config per method or all methods under service
-// 		"name": [{"service": "grpc.examples.echo.Echo"}],
-// 		"waitForReady": true,
-
-// 		"retryPolicy": {
-// 			"MaxAttempts": 4,
-// 			"InitialBackoff": ".01s",
-// 			"MaxBackoff": ".01s",
-// 			"BackoffMultiplier": 1.0,
-// 			// this value is grpc code
-// 			"RetryableStatusCodes": [ "UNAVAILABLE" ]
-// 		}
-// 	}]
-// }`
-
-func (c *CudoProviderModel) dial(ctx context.Context, remoteAddr, apikey, version string) (*grpc.ClientConn, error) {
-	dialOptions := []grpc.DialOption{}
-	pool, err := x509.SystemCertPool()
-	if err != nil {
-		return nil, fmt.Errorf("could not get system cert pool for tls connection: %w", err)
-	}
-	creds := credentials.NewClientTLSFromCert(pool, "")
-	dialOptions = append(dialOptions, grpc.WithTransportCredentials(creds))
-	dialOptions = append(dialOptions,
-		grpc.WithPerRPCCredentials(&apiKeyCallOption{
-			disableTransportSecurity: false,
-			key:                      apikey,
-			version:                  version,
-		}),
-	)
-
-	dialTimeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-
-	return grpc.DialContext(dialTimeoutCtx, remoteAddr, dialOptions...)
 }
 
 type apiKeyCallOption struct {

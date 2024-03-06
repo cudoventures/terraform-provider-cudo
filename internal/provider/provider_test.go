@@ -2,13 +2,17 @@ package provider
 
 import (
 	"context"
+	"crypto/x509"
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	// "github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
@@ -50,15 +54,28 @@ func getClients(t *testing.T) (vm.VMServiceClient, network.NetworkServiceClient)
 		t.Error("no api key for tests")
 	}
 
-	conn, err := config.dial(context.Background(), remoteAddr, apiKey, "test")
+	// dial without block handle errors in the rpcs
+	dialOptions := []grpc.DialOption{}
+	pool, err := x509.SystemCertPool()
 	if err != nil {
-		t.Error("Dial err", err)
-		// TODO: sort this out
-		// resp.Diagnostics.AddAttributeError(
-		// 	path.Root("project_id"),
-		// 	"Missing Cudo project ID",
-		// 	"The provider cannot create the client without a project_id please pass it or set the CUDO_PROJECT_ID environment variable or set it in your cudo config file.",
-		// )
+		t.Error("Error getting system cerificate: ", err.Error())
+	}
+	creds := credentials.NewClientTLSFromCert(pool, "")
+	dialOptions = append(dialOptions, grpc.WithTransportCredentials(creds))
+	dialOptions = append(dialOptions,
+		grpc.WithPerRPCCredentials(&apiKeyCallOption{
+			disableTransportSecurity: config.DisableTLS.ValueBool(),
+			key:                      apiKey,
+			version:                  "test",
+		}),
+	)
+
+	dialTimeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	conn, err := grpc.DialContext(dialTimeoutCtx, remoteAddr, dialOptions...)
+	if err != nil {
+		t.Error("Dialing compute service failed: " + err.Error())
 	}
 
 	// TODO: it would be nice to plug the debug logging into t.Log
