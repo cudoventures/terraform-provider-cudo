@@ -175,20 +175,20 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 
 func (p *CudoProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		// NewSecurityGroupResource,
-		// NewNetworkResource,
-		// NewVMImageResource,
+		NewSecurityGroupResource,
+		NewNetworkResource,
+		NewVMImageResource,
 		NewVMResource,
 	}
 }
 
 func (p *CudoProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		// NewVMImagesDataSource,
-		// NewVMDataCentersDataSource,
-		// NewVMDataSource,
-		// NewSecurityGroupDataSource,
-		// NewNetworkDataSource,
+		NewVMImagesDataSource,
+		NewVMDataCentersDataSource,
+		NewVMDataSource,
+		NewSecurityGroupDataSource,
+		NewNetworkDataSource,
 	}
 }
 

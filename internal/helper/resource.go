@@ -4,6 +4,9 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"regexp"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var resourceIDRegexp = regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$")
@@ -44,4 +47,14 @@ func NewNanoID(size int) (string, error) {
 		id[i] = alphabet[n%uint32(len(alphabet))]
 	}
 	return string(id), nil
+}
+
+// isErrCode checks to see if the provided err is a grpc status with the correct code
+func IsErrCode(err error, wantCode codes.Code) bool {
+	if e, ok := status.FromError(err); ok {
+		if e.Code() == wantCode {
+			return true
+		}
+	}
+	return false
 }

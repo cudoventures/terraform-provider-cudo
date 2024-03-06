@@ -15,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"google.golang.org/genproto/googleapis/type/decimal"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -24,6 +23,10 @@ var _ resource.ResourceWithImportState = &VMResource{}
 
 func NewVMResource() resource.Resource {
 	return &VMResource{}
+}
+
+func (r *VMResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = "cudo_vm"
 }
 
 // VMResource defines the resource implementation.
@@ -214,7 +217,7 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 
 	vm, err := r.client.VMClient.GetVM(ctx, params)
 	if err != nil {
-		if ok := isErrCode(err, codes.NotFound); ok {
+		if ok := helper.IsErrCode(err, codes.NotFound); ok {
 			resp.State.RemoveResource(ctx)
 			return
 		}
@@ -297,7 +300,7 @@ func waitForVmAvailable(ctx context.Context, projectId string, vmID string, c vm
 		}
 		res, err := c.GetVM(ctx, params)
 		if err != nil {
-			if ok := isErrCode(err, codes.NotFound); ok {
+			if ok := helper.IsErrCode(err, codes.NotFound); ok {
 				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s not found: ", vmID, projectId))
 				return res, "done", nil
 			}
@@ -340,7 +343,7 @@ func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VM
 			ProjectId: projectId,
 		})
 		if err != nil {
-			if ok := isErrCode(err, codes.NotFound); ok {
+			if ok := helper.IsErrCode(err, codes.NotFound); ok {
 				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s is done: ", vmID, projectId))
 				return res, "done", nil
 			}
@@ -374,16 +377,6 @@ func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VM
 	} else {
 		return nil, fmt.Errorf("error waiting for VM: %v", res)
 	}
-}
-
-// isErrCode checks to see if the provided err is a grpc status with the correct code
-func isErrCode(err error, wantCode codes.Code) bool {
-	if e, ok := status.FromError(err); ok {
-		if e.Code() == wantCode {
-			return true
-		}
-	}
-	return false
 }
 
 func fillVmState(state *VMResourceModel, vm *vm.VM) {

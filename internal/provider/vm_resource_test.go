@@ -40,20 +40,20 @@ resource "cudo_vm" "vm" {
 
 	resource.ParallelTest(t, resource.TestCase{
 		CheckDestroy: func(state *terraform.State) error {
-			vmClient, _ := getClients(t)
+			cl, _ := getClients(t)
 
 			getParams := &vm.GetVMRequest{
 				Id:        name,
 				ProjectId: projectID,
 			}
 
-			getRes, err := vmClient.GetVM(ctx, getParams)
+			getRes, err := cl.GetVM(ctx, getParams)
 			if err == nil && getRes.VM.ShortState != "epil" {
 				terminateParams := &vm.TerminateVMRequest{
 					Id:        name,
 					ProjectId: projectID,
 				}
-				res, err := vmClient.TerminateVM(ctx, terminateParams)
+				res, err := cl.TerminateVM(ctx, terminateParams)
 				t.Logf("(%s) %#v: %v", getRes.VM.ShortState, res, err)
 
 				return fmt.Errorf("vm resource not destroyed %s , %s", getRes.VM.Id, getRes.VM.ShortState)
@@ -114,21 +114,21 @@ resource "cudo_vm" "vm-minimal" {
 
 	resource.ParallelTest(t, resource.TestCase{
 		CheckDestroy: func(state *terraform.State) error {
-			vmClient, _ := getClients(t)
+			cl, _ := getClients(t)
 
 			getParams := &vm.GetVMRequest{
 				Id:        name,
 				ProjectId: projectID,
 			}
 
-			ins, err := vmClient.GetVM(ctx, getParams)
+			ins, err := cl.GetVM(ctx, getParams)
 
 			if err == nil && ins.VM.ShortState != "epil" {
 				terminateParams := &vm.TerminateVMRequest{
 					Id:        name,
 					ProjectId: projectID,
 				}
-				res, err := vmClient.TerminateVM(ctx, terminateParams)
+				res, err := cl.TerminateVM(ctx, terminateParams)
 				t.Logf("(%s) %#v: %v", ins.VM.ShortState, res, err)
 
 				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.ShortState)
@@ -189,21 +189,21 @@ resource "cudo_vm" "vm-oob-delete" {
 
 	resource.ParallelTest(t, resource.TestCase{
 		CheckDestroy: func(state *terraform.State) error {
-			vmClient, _ := getClients(t)
+			cl, _ := getClients(t)
 
 			getParams := &vm.GetVMRequest{
 				Id:        name,
 				ProjectId: projectID,
 			}
 
-			ins, err := vmClient.GetVM(ctx, getParams)
+			ins, err := cl.GetVM(ctx, getParams)
 
 			if err == nil && ins.VM.ShortState != "epil" {
 				terminateParams := &vm.TerminateVMRequest{
 					Id:        name,
 					ProjectId: projectID,
 				}
-				res, err := vmClient.TerminateVM(ctx, terminateParams)
+				res, err := cl.TerminateVM(ctx, terminateParams)
 				t.Logf("(%s) %#v: %v", ins.VM.ShortState, res, err)
 
 				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.ShortState)
