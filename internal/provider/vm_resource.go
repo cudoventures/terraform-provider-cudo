@@ -409,8 +409,8 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		)
 		return
 	}
-
-	resp.Diagnostics.Append(resp.State.Set(ctx, fillVmState(vm.VM))...)
+	fillVmState(vm.VM, state)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -441,7 +441,8 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, fillVmState(vm.VM))...)
+	fillVmState(vm.VM, state)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -593,8 +594,7 @@ func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VM
 	}
 }
 
-func fillVmState(vm *vm.VM) VMResourceModel {
-	var state VMResourceModel
+func fillVmState(vm *vm.VM, state *VMResourceModel) {
 	state.DataCenterID = types.StringValue(vm.DatacenterId)
 	state.CPUModel = types.StringValue(vm.CpuModel)
 	state.GPUs = types.Int64Value(int64(vm.GpuQuantity))
@@ -616,5 +616,4 @@ func fillVmState(vm *vm.VM) VMResourceModel {
 	state.ExternalIPAddress = types.StringValue(vm.ExternalIpAddress)
 	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", vm.PriceHr))
 	state.RenewableEnergy = types.BoolValue(vm.RenewableEnergy)
-	return state
 }

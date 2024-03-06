@@ -33,10 +33,10 @@ type VMImageResource struct {
 
 // VMImageResourceModel describes the resource data model.
 type VMImageResourceModel struct {
-	ID           types.String                `tfsdk:"id"`
-	DataCenterId types.String                `tfsdk:"data_center_id"`
-	SizeGib      types.Int64                 `tfsdk:"size_gib"`
-	Source       *VMImageSourceResourceModel `tfsdk:"source"`
+	ID           types.String               `tfsdk:"id"`
+	DataCenterId types.String               `tfsdk:"data_center_id"`
+	SizeGib      types.Int64                `tfsdk:"size_gib"`
+	Source       VMImageSourceResourceModel `tfsdk:"source"`
 }
 
 type VMImageSourceResourceModel struct {
@@ -116,13 +116,13 @@ func (r *VMImageResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	// createParams := vms.NewCreatePrivateVMImageParamsWithContext(ctx)
-	if state.Source == nil {
-		resp.Diagnostics.AddError(
-			"Unable to create image resource",
-			"Source required to create image resource",
-		)
-		return
-	}
+	// if state.Source == nil {
+	// 	resp.Diagnostics.AddError(
+	// 		"Unable to create image resource",
+	// 		"Source required to create image resource",
+	// 	)
+	// 	return
+	// }
 	// createParams.SnapshotID = state.Source.SnapshotID.ValueStringPointer()
 	res, err := r.client.VMClient.CreatePrivateVMImage(ctx, &vm.CreatePrivateVMImageRequest{
 		ProjectId: r.client.DefaultProjectID,

@@ -130,13 +130,16 @@ func (d *VMDataSource) Read(ctx context.Context, req datasource.ReadRequest, res
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	if !state.ProjectID.IsNull() {
+	projectId := state.ProjectID.ValueString()
+	vmId := state.Id.ValueString()
+	if state.ProjectID.IsNull() {
 		state.ProjectID = types.StringValue(d.client.DefaultProjectID)
+		projectId = d.client.DefaultProjectID
 	}
 
 	res, err := d.client.VMClient.GetVM(ctx, &vm.GetVMRequest{
-		ProjectId: state.ProjectID.ValueString(),
-		Id:        state.Id.ValueString(),
+		ProjectId: projectId,
+		Id:        vmId,
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -156,9 +159,9 @@ func (d *VMDataSource) Read(ctx context.Context, req datasource.ReadRequest, res
 	tflog.Trace(ctx, "read a data source")
 
 	// Save data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, VMDataSourceModel{
-		ProjectID:         state.ProjectID,
-		Id:                state.Id,
+	resp.Diagnostics.Append(resp.State.Set(ctx, &VMDataSourceModel{
+		ProjectID:         types.StringValue(projectId),
+		Id:                types.StringValue(vmId),
 		BootDiskSizeGib:   types.Int64Value(int64(res.VM.BootDiskSizeGib)),
 		CPUModel:          types.StringValue(res.VM.CpuModel),
 		DatacenterID:      types.StringValue(res.VM.DatacenterId),
