@@ -278,7 +278,7 @@ func (r *SecurityGroupResource) Create(ctx context.Context, req resource.CreateR
 }
 
 func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state *SecurityGroupResourceModel
+	var state SecurityGroupResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -304,14 +304,13 @@ func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	state.Id = types.StringValue(res.SecurityGroup.Id)
-	state.Description = types.StringValue(res.SecurityGroup.Description)
-	state.DataCenterID = types.StringValue(res.SecurityGroup.DataCenterId)
-	state.Id = types.StringValue(res.SecurityGroup.Id)
-	state.Rules = getRuleModels(res.SecurityGroup.Rules)
-
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, SecurityGroupResourceModel{
+		Id:           types.StringValue(res.SecurityGroup.Id),
+		Description:  types.StringValue(res.SecurityGroup.Description),
+		DataCenterID: types.StringValue(res.SecurityGroup.DataCenterId),
+		Rules:        getRuleModels(res.SecurityGroup.Rules),
+	})...)
 }
 
 func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -342,7 +341,6 @@ func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	state.Rules = getRuleModels(res.SecurityGroup.Rules)
-
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

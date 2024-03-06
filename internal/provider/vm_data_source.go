@@ -151,22 +151,24 @@ func (d *VMDataSource) Read(ctx context.Context, req datasource.ReadRequest, res
 		imageID = res.VM.PublicImageId
 	}
 
-	state.BootDiskSizeGib = types.Int64Value(int64(res.VM.BootDiskSizeGib))
-	state.CPUModel = types.StringValue(res.VM.CpuModel)
-	state.DatacenterID = types.StringValue(res.VM.DatacenterId)
-	state.GpuModel = types.StringValue(res.VM.GpuModel)
-	state.Gpus = types.Int64Value(int64(res.VM.GpuQuantity))
-	state.ImageID = types.StringValue(imageID)
-	state.InternalIPAddress = types.StringValue(res.VM.InternalIpAddress)
-	state.ExternalIPAddress = types.StringValue(res.VM.ExternalIpAddress)
-	state.Memory = types.Int64Value(int64(res.VM.Memory))
-	state.PriceHr = types.Float64Value(float64(res.VM.PriceHr))
-	state.Vcpus = types.Int64Value(int64(res.VM.Vcpus))
-
 	// Write logs using the tflog package
 	// Documentation: https://terraform.io/plugin/log
 	tflog.Trace(ctx, "read a data source")
 
 	// Save data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, VMDataSourceModel{
+		ProjectID:         state.ProjectID,
+		Id:                state.Id,
+		BootDiskSizeGib:   types.Int64Value(int64(res.VM.BootDiskSizeGib)),
+		CPUModel:          types.StringValue(res.VM.CpuModel),
+		DatacenterID:      types.StringValue(res.VM.DatacenterId),
+		GpuModel:          types.StringValue(res.VM.GpuModel),
+		Gpus:              types.Int64Value(int64(res.VM.GpuQuantity)),
+		ImageID:           types.StringValue(imageID),
+		InternalIPAddress: types.StringValue(res.VM.InternalIpAddress),
+		ExternalIPAddress: types.StringValue(res.VM.ExternalIpAddress),
+		Memory:            types.Int64Value(int64(res.VM.Memory)),
+		PriceHr:           types.Float64Value(float64(res.VM.PriceHr)),
+		Vcpus:             types.Int64Value(int64(res.VM.Vcpus)),
+	})...)
 }

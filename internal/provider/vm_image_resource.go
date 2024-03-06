@@ -107,7 +107,7 @@ func (r *VMImageResource) Configure(ctx context.Context, req resource.ConfigureR
 }
 
 func (r *VMImageResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var state *VMImageResourceModel
+	var state VMImageResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
@@ -137,10 +137,10 @@ func (r *VMImageResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	state.DataCenterId = types.StringValue(res.Image.DataCenterId)
-	state.SizeGib = types.Int64Value(int64(res.Image.SizeGib))
-
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, VMImageResourceModel{
+		DataCenterId: types.StringValue(res.Image.DataCenterId),
+		SizeGib:      types.Int64Value(int64(res.Image.SizeGib)),
+	})...)
 }
 
 func (r *VMImageResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {

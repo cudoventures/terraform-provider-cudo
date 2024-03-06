@@ -112,6 +112,159 @@ func (r *NetworkResource) Configure(ctx context.Context, req resource.ConfigureR
 	r.client = client
 }
 
+func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var state NetworkResourceModel
+
+	// Read Terraform plan data into the model
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	_, err := r.client.NetworkClient.CreateNetwork(ctx, &network.CreateNetworkRequest{
+		ProjectId:    r.client.DefaultProjectID,
+		CidrPrefix:   state.IPRange.ValueString(),
+		DataCenterId: state.DataCenterId.ValueString(),
+		Id:           state.ID.ValueString(),
+		VrouterSize:  network.VRouterSize_VROUTER_INSTANCE_SMALL,
+	})
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to create network resource",
+			err.Error(),
+		)
+		return
+	}
+
+	network, err := waitForNetworkAvailable(ctx, r.client.DefaultProjectID, state.ID.ValueString(), r.client.NetworkClient)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to create network resource",
+			err.Error(),
+		)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, NetworkResourceModel{
+		ID:                types.StringValue(network.Id),
+		DataCenterId:      types.StringValue(network.DataCenterId),
+		IPRange:           types.StringValue(network.IpRange),
+		Gateway:           types.StringValue(network.Gateway),
+		ExternalIPAddress: types.StringValue(network.ExternalIpAddress),
+		InternalIPAddress: types.StringValue(network.InternalIpAddress),
+	})...)
+}
+
+func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	var state NetworkResourceModel
+
+	// Read Terraform prior state data into the model
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	res, err := r.client.NetworkClient.GetNetwork(ctx, &network.GetNetworkRequest{
+		Id:        state.ID.ValueString(),
+		ProjectId: r.client.DefaultProjectID,
+	})
+	if err != nil {
+		if ok := helper.IsErrCode(err, codes.NotFound); ok {
+			resp.State.RemoveResource(ctx)
+			return
+		}
+		resp.Diagnostics.AddError(
+			"Unable to read network resource",
+			err.Error(),
+		)
+		return
+	}
+
+	// Save updated data into Terraform state
+	resp.Diagnostics.Append(resp.State.Set(ctx, NetworkResourceModel{
+		ID:                types.StringValue(res.Network.Id),
+		DataCenterId:      types.StringValue(res.Network.DataCenterId),
+		ExternalIPAddress: types.StringValue(res.Network.ExternalIpAddress),
+		InternalIPAddress: types.StringValue(res.Network.InternalIpAddress),
+		IPRange:           types.StringValue(res.Network.IpRange),
+		Gateway:           types.StringValue(res.Network.Gateway),
+	})...)
+}
+
+func (r *NetworkResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan NetworkResourceModel
+
+	// Read Terraform plan data into the model
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		resp.Diagnostics.AddError(
+			"Error getting network plan",
+			"Error getting network plan",
+		)
+		return
+	}
+
+	// Read Terraform state data into the model
+	var state NetworkResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+}
+
+func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state *NetworkResourceModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+
+	projectId := r.client.DefaultProjectID
+	networkId := state.ID.ValueString()
+	_, err := r.client.NetworkClient.StopNetwork(ctx, &network.StopNetworkRequest{
+		ProjectId: projectId,
+		Id:        networkId,
+	})
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to stop network resource",
+			err.Error(),
+		)
+		return
+	}
+
+	_, err = waitForNetworkStop(ctx, projectId, networkId, r.client.NetworkClient)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to wait for network resource to be stopped",
+			err.Error(),
+		)
+		return
+	}
+
+	_, err = r.client.NetworkClient.DeleteNetwork(ctx, &network.DeleteNetworkRequest{
+		ProjectId: projectId,
+		Id:        networkId,
+	})
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to delete network resource",
+			err.Error(),
+		)
+		return
+	}
+
+	_, err = waitForNetworkDelete(ctx, projectId, networkId, r.client.NetworkClient)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to wait for network resource to be deleted",
+			err.Error(),
+		)
+		return
+	}
+}
+
+func (r *NetworkResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+}
+
 func waitForNetworkAvailable(ctx context.Context, projectID string, networkID string, c network.NetworkServiceClient) (*network.Network, error) {
 	refreshFunc := func() (interface{}, string, error) {
 		res, err := c.GetNetwork(ctx, &network.GetNetworkRequest{
@@ -230,154 +383,4 @@ func waitForNetworkDelete(ctx context.Context, projectID string, networkID strin
 	}
 
 	return nil, nil
-}
-
-func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var state *NetworkResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	_, err := r.client.NetworkClient.CreateNetwork(ctx, &network.CreateNetworkRequest{
-		ProjectId:    r.client.DefaultProjectID,
-		CidrPrefix:   state.IPRange.ValueString(),
-		DataCenterId: state.DataCenterId.ValueString(),
-		Id:           state.ID.ValueString(),
-		VrouterSize:  network.VRouterSize_VROUTER_INSTANCE_SMALL,
-	})
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to create network resource",
-			err.Error(),
-		)
-		return
-	}
-
-	network, err := waitForNetworkAvailable(ctx, r.client.DefaultProjectID, state.ID.ValueString(), r.client.NetworkClient)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to create network resource",
-			err.Error(),
-		)
-		return
-	}
-
-	state.Gateway = types.StringValue(network.Gateway)
-	state.ExternalIPAddress = types.StringValue(network.ExternalIpAddress)
-	state.InternalIPAddress = types.StringValue(network.InternalIpAddress)
-
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-}
-
-func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state *NetworkResourceModel
-
-	// Read Terraform prior state data into the model
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	res, err := r.client.NetworkClient.GetNetwork(ctx, &network.GetNetworkRequest{
-		Id:        state.ID.ValueString(),
-		ProjectId: r.client.DefaultProjectID,
-	})
-	if err != nil {
-		if ok := helper.IsErrCode(err, codes.NotFound); ok {
-			resp.State.RemoveResource(ctx)
-			return
-		}
-		resp.Diagnostics.AddError(
-			"Unable to read network resource",
-			err.Error(),
-		)
-		return
-	}
-
-	state.ID = types.StringValue(res.Network.Id)
-	state.DataCenterId = types.StringValue(res.Network.DataCenterId)
-	state.ExternalIPAddress = types.StringValue(res.Network.ExternalIpAddress)
-	state.InternalIPAddress = types.StringValue(res.Network.InternalIpAddress)
-	state.IPRange = types.StringValue(res.Network.IpRange)
-	state.Gateway = types.StringValue(res.Network.Gateway)
-
-	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
-}
-
-func (r *NetworkResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan NetworkResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
-	if resp.Diagnostics.HasError() {
-		resp.Diagnostics.AddError(
-			"Error getting network plan",
-			"Error getting network plan",
-		)
-		return
-	}
-
-	// Read Terraform state data into the model
-	var state NetworkResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-}
-
-func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state *NetworkResourceModel
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
-
-	projectId := r.client.DefaultProjectID
-	networkId := state.ID.ValueString()
-	_, err := r.client.NetworkClient.StopNetwork(ctx, &network.StopNetworkRequest{
-		ProjectId: projectId,
-		Id:        networkId,
-	})
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to stop network resource",
-			err.Error(),
-		)
-		return
-	}
-
-	_, err = waitForNetworkStop(ctx, projectId, networkId, r.client.NetworkClient)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to wait for network resource to be stopped",
-			err.Error(),
-		)
-		return
-	}
-
-	_, err = r.client.NetworkClient.DeleteNetwork(ctx, &network.DeleteNetworkRequest{
-		ProjectId: projectId,
-		Id:        networkId,
-	})
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to delete network resource",
-			err.Error(),
-		)
-		return
-	}
-
-	_, err = waitForNetworkDelete(ctx, projectId, networkId, r.client.NetworkClient)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to wait for network resource to be deleted",
-			err.Error(),
-		)
-		return
-	}
-}
-
-func (r *NetworkResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
