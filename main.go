@@ -24,7 +24,7 @@ var (
 	version           = "dev"
 	commit            = "unknown"
 	date              = "unknown"
-	defaultRemoteAddr = "grpc.staging.compute.cudo.org:443"
+	defaultRemoteAddr = "grpc.compute.cudo.org:443"
 )
 
 func main() {
