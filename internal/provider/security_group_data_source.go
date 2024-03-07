@@ -137,11 +137,10 @@ func (d *SecurityGroupDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	// Save data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, SecurityGroupDataSourceModel{
-		ID:           types.StringValue(res.SecurityGroup.Id),
-		DataCenterID: types.StringValue(res.SecurityGroup.DataCenterId),
-		Description:  types.StringValue(res.SecurityGroup.Description),
-		Rules:        getRuleModels(res.SecurityGroup.Rules),
-	})...)
+	sg := res.SecurityGroup
+	state.ID = types.StringValue(sg.Id)
+	state.DataCenterID = types.StringValue(sg.DataCenterId)
+	state.Description = types.StringValue(sg.Description)
+	state.Rules = getRuleModels(sg.Rules)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

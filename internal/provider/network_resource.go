@@ -145,14 +145,11 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, NetworkResourceModel{
-		ID:                types.StringValue(network.Id),
-		DataCenterId:      types.StringValue(network.DataCenterId),
-		IPRange:           types.StringValue(network.IpRange),
-		Gateway:           types.StringValue(network.Gateway),
-		ExternalIPAddress: types.StringValue(network.ExternalIpAddress),
-		InternalIPAddress: types.StringValue(network.InternalIpAddress),
-	})...)
+	state.Gateway = types.StringValue(network.Gateway)
+	state.ExternalIPAddress = types.StringValue(network.ExternalIpAddress)
+	state.InternalIPAddress = types.StringValue(network.InternalIpAddress)
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -180,15 +177,15 @@ func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
+	state.ID = types.StringValue(res.Network.Id)
+	state.DataCenterId = types.StringValue(res.Network.DataCenterId)
+	state.ExternalIPAddress = types.StringValue(res.Network.ExternalIpAddress)
+	state.InternalIPAddress = types.StringValue(res.Network.InternalIpAddress)
+	state.IPRange = types.StringValue(res.Network.IpRange)
+	state.Gateway = types.StringValue(res.Network.Gateway)
+
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, NetworkResourceModel{
-		ID:                types.StringValue(res.Network.Id),
-		DataCenterId:      types.StringValue(res.Network.DataCenterId),
-		ExternalIPAddress: types.StringValue(res.Network.ExternalIpAddress),
-		InternalIPAddress: types.StringValue(res.Network.InternalIpAddress),
-		IPRange:           types.StringValue(res.Network.IpRange),
-		Gateway:           types.StringValue(res.Network.Gateway),
-	})...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *NetworkResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {

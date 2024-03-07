@@ -137,14 +137,13 @@ func (r *VMImageResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, VMImageResourceModel{
-		DataCenterId: types.StringValue(res.Image.DataCenterId),
-		SizeGib:      types.Int64Value(int64(res.Image.SizeGib)),
-	})...)
+	state.DataCenterId = types.StringValue(res.Image.DataCenterId)
+	state.SizeGib = types.Int64Value(int64(res.Image.SizeGib))
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *VMImageResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state *VMImageResourceModel
+	var state VMImageResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -198,7 +197,7 @@ func (r *VMImageResource) Update(ctx context.Context, req resource.UpdateRequest
 }
 
 func (r *VMImageResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state *VMImageResourceModel
+	var state VMImageResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
 	_, err := r.client.VMClient.DeletePrivateVMImage(ctx, &vm.DeletePrivateVMImageRequest{

@@ -106,12 +106,13 @@ func (d *NetworkDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	}
 
 	// Save data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, NetworkDataSourceModel{
-		Id:                types.StringValue(res.Network.Id),
-		DataCenterId:      types.StringValue(res.Network.DataCenterId),
-		IPRange:           types.StringValue(res.Network.IpRange),
-		Gateway:           types.StringValue(res.Network.Gateway),
-		ExternalIPAddress: types.StringValue(res.Network.ExternalIpAddress),
-		InternalIPAddress: types.StringValue(res.Network.InternalIpAddress),
-	})...)
+
+	state.Id = types.StringValue(res.Network.Id)
+	state.DataCenterId = types.StringValue(res.Network.DataCenterId)
+	state.IPRange = types.StringValue(res.Network.IpRange)
+	state.Gateway = types.StringValue(res.Network.Gateway)
+	state.ExternalIPAddress = types.StringValue(res.Network.ExternalIpAddress)
+	state.InternalIPAddress = types.StringValue(res.Network.InternalIpAddress)
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

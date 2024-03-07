@@ -307,7 +307,7 @@ func (r *VMResource) Configure(ctx context.Context, req resource.ConfigureReques
 }
 
 func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var state *VMResourceModel
+	var state VMResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
@@ -409,12 +409,12 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		)
 		return
 	}
-	fillVmState(vm.VM, state)
+	appendVmState(vm.VM, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state *VMResourceModel
+	var state VMResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -441,7 +441,7 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 		return
 	}
 
-	fillVmState(vm.VM, state)
+	appendVmState(vm.VM, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -467,7 +467,7 @@ func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, res
 }
 
 func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state *VMResourceModel
+	var state VMResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
 	projectId := r.client.DefaultProjectID
@@ -594,7 +594,7 @@ func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VM
 	}
 }
 
-func fillVmState(vm *vm.VM, state *VMResourceModel) {
+func appendVmState(vm *vm.VM, state *VMResourceModel) {
 	state.DataCenterID = types.StringValue(vm.DatacenterId)
 	state.CPUModel = types.StringValue(vm.CpuModel)
 	state.GPUs = types.Int64Value(int64(vm.GpuQuantity))
