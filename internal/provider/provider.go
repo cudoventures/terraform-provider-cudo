@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"crypto/x509"
+	"fmt"
 	"time"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
@@ -143,9 +144,9 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		grpc.WithPerRPCCredentials(&apiKeyCallOption{
 			disableTransportSecurity: config.DisableTLS.ValueBool(),
 			key:                      apiKey,
-			version:                  p.version,
 		}),
 	)
+	dialOptions = append(dialOptions, grpc.WithUserAgent(fmt.Sprintf("cudo-terraform-client/%s", p.version)))
 
 	dialTimeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
@@ -204,7 +205,6 @@ func New(version string, defaultRemoteAddr string) func() provider.Provider {
 type apiKeyCallOption struct {
 	key                      string
 	disableTransportSecurity bool
-	version                  string
 }
 
 func (a *apiKeyCallOption) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
@@ -212,8 +212,7 @@ func (a *apiKeyCallOption) GetRequestMetadata(ctx context.Context, uri ...string
 		return nil, nil
 	}
 	return map[string]string{
-		"x-terraform-version": a.version,
-		"authorization":       "Bearer " + a.key,
+		"authorization": "Bearer " + a.key,
 	}, nil
 }
 
