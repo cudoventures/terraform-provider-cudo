@@ -1,4 +1,4 @@
-default: codegen
+default: docs
 
 # Run acceptance tests
 .PHONY: testacc
@@ -22,7 +22,5 @@ internal/client internal/models: swagger/public.swagger.json
 docs: $(wildcard examples/*)
 	@go generate ./...
 
-codegen: internal/client internal/models docs
-
 clean:
-	@rm -rf docs internal/client internal/models
+	@rm -rf docs internal/compute
