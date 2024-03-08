@@ -66,7 +66,6 @@ func getClients(t *testing.T) (vm.VMServiceClient, network.NetworkServiceClient)
 		grpc.WithPerRPCCredentials(&apiKeyCallOption{
 			disableTransportSecurity: config.DisableTLS.ValueBool(),
 			key:                      apiKey,
-			version:                  "test",
 		}),
 	)
 
