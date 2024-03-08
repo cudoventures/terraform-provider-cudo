@@ -81,6 +81,28 @@ func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, r
 	}
 }
 
+// this retry policy will only retry if the connection is being
+// setup, or the connection is valid
+var retryPolicy = fmt.Sprintf(`{
+	"methodConfig": [{
+		"name": [
+			{
+				"service": "%s",
+				"method": "%s"
+			}
+		],
+
+		"retryPolicy": {
+			"MaxAttempts": 10,
+			"InitialBackoff": "1s",
+			"MaxBackoff": "30s",
+			"BackoffMultiplier": 1.5,
+			"RetryableStatusCodes": [ "UNAVAILABLE", "UNKNOWN", "RESOURCE_EXHAUSTED" ]
+		}
+	}]
+}`, vm.VMService_ServiceDesc.ServiceName,
+	"CreateVM")
+
 func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 	var config CudoProviderModel
 
@@ -139,7 +161,7 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		return
 	}
 	creds := credentials.NewClientTLSFromCert(pool, "")
-	dialOptions = append(dialOptions, grpc.WithTransportCredentials(creds))
+	dialOptions = append(dialOptions, grpc.WithTransportCredentials(creds), grpc.WithDefaultServiceConfig(retryPolicy))
 	dialOptions = append(dialOptions,
 		grpc.WithPerRPCCredentials(&apiKeyCallOption{
 			disableTransportSecurity: config.DisableTLS.ValueBool(),

@@ -9,7 +9,6 @@ import (
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 
-	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -388,11 +387,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		StartScript:      state.StartScript.ValueString(),
 	}
 
-	rp := grpc_retry.WithMax(10)
-	// 1 * 2 ^ 10 = max backoff on attempt 10 of 32 seconds
-	bf := grpc_retry.WithBackoff(grpc_retry.BackoffExponential(time.Second * 1))
-	codes := grpc_retry.WithCodes(grpc_retry.DefaultRetriableCodes...)
-	_, err := r.client.VMClient.CreateVM(ctx, params, rp, bf, codes)
+	_, err := r.client.VMClient.CreateVM(ctx, params)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating VM resource",
