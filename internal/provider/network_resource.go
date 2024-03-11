@@ -283,8 +283,8 @@ func waitForNetworkAvailable(ctx context.Context, projectID string, networkID st
 	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
 
 	stateConf := &helper.StateChangeConf{
-		Pending:    []string{"clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"boot", "done", "fail", "poff", "runn", "stop", "susp", "unde"},
+		Pending:    []string{"boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
+		Target:     []string{"done", "fail", "poff", "runn", "stop", "susp", "unde"},
 		Refresh:    refreshFunc,
 		Timeout:    2 * time.Hour,
 		Delay:      1 * time.Second,

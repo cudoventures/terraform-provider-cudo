@@ -52,7 +52,8 @@ func (d *NetworkDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			},
 			"ip_range": schema.StringAttribute{
 				MarkdownDescription: "IP Range in CIDR format e.g 192.168.0.0/24",
-				Computed:            true},
+				Computed:            true,
+			},
 			"gateway": schema.StringAttribute{
 				MarkdownDescription: "IP of the gateway for the network",
 				Computed:            true,
