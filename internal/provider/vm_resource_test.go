@@ -266,3 +266,103 @@ resource "cudo_vm" "vm-oob-delete" {
 		},
 	})
 }
+
+func TestAcc_VMStorageDiskResource(t *testing.T) {
+	var cancel context.CancelFunc
+	ctx := context.Background()
+	deadline, ok := t.Deadline()
+	if ok {
+		ctx, cancel = context.WithDeadline(ctx, deadline)
+		defer cancel()
+	}
+	name := "vm-resource-" + testRunID
+	diskName1 := "vm-resource-disk1" + testRunID
+	diskName2 := "vm-resource-disk2" + testRunID
+
+	vmConfig := fmt.Sprintf(`
+resource "cudo_storage_disk" "my-storage-disk" {
+	data_center_id = "black-mesa"
+	id = "%s"
+	size_gib = 10
+}
+
+resource "cudo_storage_disk" "my-storage-disk2" {
+	data_center_id = "black-mesa"
+	id = "%s"
+	size_gib = 20
+}
+
+resource "cudo_vm" "vm" {
+   depends_on =  [cudo_storage_disk.my-storage-disk, cudo_storage_disk.my-storage-disk2]
+   machine_type       = "standard"
+   data_center_id     = "black-mesa"
+   vcpus              = 1
+   boot_disk = {
+     image_id = "alpine-linux-317"
+     size_gib = 1
+   }
+   memory_gib         = 2
+   id                = "%s"
+   networks = [
+    {
+      network_id         = "tf-test"
+    }
+  ]
+  storage_disks = [ 
+        {
+            disk_id = "%s"
+        },
+        {
+            disk_id = "%s"
+        }
+    ]
+ }`, diskName1, diskName2, name, diskName1, diskName2)
+
+	resource.ParallelTest(t, resource.TestCase{
+		CheckDestroy: func(state *terraform.State) error {
+			cl, _ := getClients(t)
+
+			getParams := &vm.GetVMRequest{
+				Id:        name,
+				ProjectId: projectID,
+			}
+
+			getRes, err := cl.GetVM(ctx, getParams)
+			if err == nil && getRes.VM.ShortState != "epil" {
+				terminateParams := &vm.TerminateVMRequest{
+					Id:        name,
+					ProjectId: projectID,
+				}
+				res, err := cl.TerminateVM(ctx, terminateParams)
+				t.Logf("(%s) %#v: %v", getRes.VM.ShortState, res, err)
+
+				return fmt.Errorf("vm resource not destroyed %s , %s", getRes.VM.Id, getRes.VM.ShortState)
+			}
+			return nil
+		},
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				Config: getProviderConfig() + vmConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("cudo_vm.vm", "boot_disk.image_id", "alpine-linux-317"),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "boot_disk.size_gib", "1"),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "machine_type", "standard"),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "cpu_model", "Haswell-noTSX-IBRS"),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "data_center_id", "black-mesa"),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "gpu_model", ""),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "memory_gib", "2"),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "storage_disks.0.disk_id", diskName1),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "storage_disks.1.disk_id", diskName2),
+					resource.TestCheckResourceAttrSet("cudo_vm.vm", "price_hr"),
+					resource.TestCheckResourceAttrSet("cudo_vm.vm", "internal_ip_address"),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "renewable_energy", "true"),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "vcpus", "1"),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "id", name),
+				),
+			},
+		},
+	})
+}

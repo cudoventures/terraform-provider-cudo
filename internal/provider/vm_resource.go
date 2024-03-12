@@ -227,6 +227,23 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "A script to run when VM boots",
 				Optional:            true,
 			},
+			"storage_disks": schema.ListNestedAttribute{
+				MarkdownDescription: "Specification for storage disks",
+				Optional:            true,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"disk_id": schema.StringAttribute{
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.RequiresReplace(),
+							},
+							MarkdownDescription: "ID of storage disk to attach to vm",
+							Required:            true,
+							Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
+						},
+					},
+				},
+			},
 			"vcpus": schema.Int64Attribute{
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.RequiresReplace(),
@@ -246,26 +263,27 @@ type VMResource struct {
 
 // VMResourceModel describes the resource data model.
 type VMResourceModel struct {
-	BootDisk          *VMBootDiskResourceModel `tfsdk:"boot_disk"`
-	DataCenterID      types.String             `tfsdk:"data_center_id"`
-	CPUModel          types.String             `tfsdk:"cpu_model"`
-	GPUs              types.Int64              `tfsdk:"gpus"`
-	GPUModel          types.String             `tfsdk:"gpu_model"`
-	ID                types.String             `tfsdk:"id"`
-	MachineType       types.String             `tfsdk:"machine_type"`
-	MemoryGib         types.Int64              `tfsdk:"memory_gib"`
-	Password          types.String             `tfsdk:"password"`
-	PriceHr           types.String             `tfsdk:"price_hr"`
-	ProjectID         types.String             `tfsdk:"project_id"`
-	SSHKeys           []types.String           `tfsdk:"ssh_keys"`
-	SSHKeySource      types.String             `tfsdk:"ssh_key_source"`
-	StartScript       types.String             `tfsdk:"start_script"`
-	VCPUs             types.Int64              `tfsdk:"vcpus"`
-	Networks          []*VMNICResourceModel    `tfsdk:"networks"`
-	InternalIPAddress types.String             `tfsdk:"internal_ip_address"`
-	ExternalIPAddress types.String             `tfsdk:"external_ip_address"`
-	RenewableEnergy   types.Bool               `tfsdk:"renewable_energy"`
-	SecurityGroupIDs  types.Set                `tfsdk:"security_group_ids"`
+	BootDisk          *VMBootDiskResourceModel      `tfsdk:"boot_disk"`
+	DataCenterID      types.String                  `tfsdk:"data_center_id"`
+	CPUModel          types.String                  `tfsdk:"cpu_model"`
+	GPUs              types.Int64                   `tfsdk:"gpus"`
+	GPUModel          types.String                  `tfsdk:"gpu_model"`
+	ID                types.String                  `tfsdk:"id"`
+	MachineType       types.String                  `tfsdk:"machine_type"`
+	MemoryGib         types.Int64                   `tfsdk:"memory_gib"`
+	Password          types.String                  `tfsdk:"password"`
+	PriceHr           types.String                  `tfsdk:"price_hr"`
+	ProjectID         types.String                  `tfsdk:"project_id"`
+	SSHKeys           []types.String                `tfsdk:"ssh_keys"`
+	SSHKeySource      types.String                  `tfsdk:"ssh_key_source"`
+	StartScript       types.String                  `tfsdk:"start_script"`
+	StorageDisks      []*VMStorageDiskResourceModel `tfsdk:"storage_disks"`
+	VCPUs             types.Int64                   `tfsdk:"vcpus"`
+	Networks          []*VMNICResourceModel         `tfsdk:"networks"`
+	InternalIPAddress types.String                  `tfsdk:"internal_ip_address"`
+	ExternalIPAddress types.String                  `tfsdk:"external_ip_address"`
+	RenewableEnergy   types.Bool                    `tfsdk:"renewable_energy"`
+	SecurityGroupIDs  types.Set                     `tfsdk:"security_group_ids"`
 	Metadata          types.Map                `tfsdk:"metadata"`
 }
 
@@ -280,6 +298,10 @@ type VMNICResourceModel struct {
 	InternalIPAddress types.String `tfsdk:"internal_ip_address"`
 	ExternalIPAddress types.String `tfsdk:"external_ip_address"`
 	SecurityGroupIDs  types.Set    `tfsdk:"security_group_ids"`
+}
+
+type VMStorageDiskResourceModel struct {
+	DiskID types.String `tfsdk:"disk_id"`
 }
 
 func (r *VMResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
@@ -359,6 +381,9 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
+	storageDiskIds := make([]string, len(state.StorageDisks))
+	for i, diskResource := range state.StorageDisks {
+		storageDiskIds[i] = diskResource.DiskID.ValueString()
 	metadataMap := make(map[string]string)
 	diag := state.Metadata.ElementsAs(ctx, &metadataMap, false)
 	if diag.HasError() {
@@ -382,6 +407,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		SshKeySource:     sshKeySource,
 		CustomSshKeys:    customKeys,
 		StartScript:      state.StartScript.ValueString(),
+		StorageDiskIds:   storageDiskIds,
 		Metadata:         metadataMap,
 	}
 
