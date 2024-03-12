@@ -155,8 +155,8 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 	pool, err := x509.SystemCertPool()
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error getting system cerificate",
-			"No certificate found for system: "+err.Error(),
+			"Error getting system cerificate pool",
+			"No certificate pool found for system: "+err.Error(),
 		)
 		return
 	}
