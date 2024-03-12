@@ -30,6 +30,10 @@ resource "cudo_vm" "vm" {
      size_gib = 1
    }
    memory_gib         = 2
+   metadata = {
+	testkey1 = "testval1"
+	testkey2 = "testval2"
+   }
    id                = "%s"
    networks = [
     {

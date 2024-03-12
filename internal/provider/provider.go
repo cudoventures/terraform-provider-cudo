@@ -107,7 +107,6 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 	var config CudoProviderModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}

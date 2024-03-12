@@ -34,6 +34,7 @@ type VMDataSourceModel struct {
 	InternalIPAddress types.String  `tfsdk:"internal_ip_address"`
 	ExternalIPAddress types.String  `tfsdk:"external_ip_address"`
 	Memory            types.Int64   `tfsdk:"memory_gib"`
+	Metadata          types.Map     `tfsdk:"metadata"`
 	PriceHr           types.Float64 `tfsdk:"price_hr"`
 	ProjectID         types.String  `tfsdk:"project_id"`
 	Vcpus             types.Int64   `tfsdk:"vcpus"`
@@ -88,6 +89,11 @@ func (d *VMDataSource) Schema(ctx context.Context, req datasource.SchemaRequest,
 			"memory_gib": schema.Int64Attribute{
 				MarkdownDescription: "The amount of memory allocated to the VM instance.",
 				Computed:            true,
+			},
+			"metadata": schema.MapAttribute{
+				ElementType:         types.StringType,
+				MarkdownDescription: "The amount of memory allocated to the VM instance.",
+				Optional:            true,
 			},
 			"price_hr": schema.Float64Attribute{
 				MarkdownDescription: "The price per hour for the VM instance.",
@@ -154,6 +160,12 @@ func (d *VMDataSource) Read(ctx context.Context, req datasource.ReadRequest, res
 		imageID = res.VM.PublicImageId
 	}
 
+	metadataMap, diag := types.MapValueFrom(ctx, types.StringType, res.VM.Metadata)
+	if diag.HasError() {
+		resp.Diagnostics.Append(diag...)
+		return
+	}
+
 	state.BootDiskSizeGib = types.Int64Value(int64(res.VM.BootDiskSizeGib))
 	state.CPUModel = types.StringValue(res.VM.CpuModel)
 	state.DatacenterID = types.StringValue(res.VM.DatacenterId)
@@ -162,6 +174,7 @@ func (d *VMDataSource) Read(ctx context.Context, req datasource.ReadRequest, res
 	state.ImageID = types.StringValue(imageID)
 	state.InternalIPAddress = types.StringValue(res.VM.InternalIpAddress)
 	state.ExternalIPAddress = types.StringValue(res.VM.ExternalIpAddress)
+	state.Metadata = metadataMap
 	state.Memory = types.Int64Value(int64(res.VM.Memory))
 	state.PriceHr = types.Float64Value(float64(res.VM.PriceHr))
 	state.Vcpus = types.Int64Value(int64(res.VM.Vcpus))

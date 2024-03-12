@@ -67,6 +67,7 @@ resource "cudo_vm" "my-vm" {
 - `machine_type` (String) VM machine type, from machine type data source
 - `max_price_hr` (String) The maximum price per hour for the VM instance.
 - `memory_gib` (Number) Amount of VM memory in GiB
+- `metadata` (Map of String) Metadata values to help you identify your virtual machine
 - `networks` (Attributes List) Network adapters for private networks (see [below for nested schema](#nestedatt--networks))
 - `password` (String, Sensitive) Root password for linux, or Admin password for windows
 - `project_id` (String) The project the VM instance is in.

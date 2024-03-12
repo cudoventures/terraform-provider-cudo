@@ -140,6 +140,11 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "Amount of VM memory in GiB",
 				Optional:            true,
 			},
+			"metadata": schema.MapAttribute{
+				ElementType:         types.StringType,
+				Optional:            true,
+				MarkdownDescription: "Metadata values to help you identify your virtual machine",
+			},
 			"networks": schema.ListNestedAttribute{
 				Optional:            true,
 				MarkdownDescription: "Network adapters for private networks",
@@ -270,6 +275,7 @@ type VMResourceModel struct {
 	ExternalIPAddress types.String             `tfsdk:"external_ip_address"`
 	RenewableEnergy   types.Bool               `tfsdk:"renewable_energy"`
 	SecurityGroupIDs  types.Set                `tfsdk:"security_group_ids"`
+	Metadata          types.Map                `tfsdk:"metadata"`
 }
 
 type VMBootDiskResourceModel struct {
@@ -310,7 +316,6 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -368,6 +373,13 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		maxPriceHr = &decimal.Decimal{Value: state.MaxPriceHr.ValueString()}
 	}
 
+	metadataMap := make(map[string]string)
+	diag := state.Metadata.ElementsAs(ctx, &metadataMap, false)
+	if diag.HasError() {
+		resp.Diagnostics.Append(diag...)
+		return
+	}
+
 	params := &vm.CreateVMRequest{
 		ProjectId:        projectId,
 		BootDisk:         &bootDisk,
@@ -385,6 +397,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		SshKeySource:     sshKeySource,
 		CustomSshKeys:    customKeys,
 		StartScript:      state.StartScript.ValueString(),
+		Metadata:         metadataMap,
 	}
 
 	_, err := r.client.VMClient.CreateVM(ctx, params)
