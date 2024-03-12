@@ -629,6 +629,19 @@ func appendVmState(vm *vm.VM, state *VMResourceModel) {
 		nic.ExternalIPAddress = types.StringValue(vm.Nics[i].ExternalIpAddress)
 		nic.InternalIPAddress = types.StringValue(vm.Nics[i].InternalIpAddress)
 	}
+	for _, vmDisk := range vm.StorageDisks {
+		isPresent := false
+		for _, stateDisk := range state.StorageDisks {
+			if vmDisk.Id == stateDisk.DiskID.ValueString() {
+				isPresent = true
+			}
+		}
+		if !isPresent {
+			state.StorageDisks = append(state.StorageDisks, &VMStorageDiskResourceModel{
+				DiskID: types.StringValue(vmDisk.Id),
+			})
+		}
+	}
 	state.GPUModel = types.StringValue(vm.GpuModel)
 	state.ID = types.StringValue(vm.Id)
 	state.InternalIPAddress = types.StringValue(vm.InternalIpAddress)
