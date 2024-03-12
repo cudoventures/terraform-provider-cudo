@@ -6,9 +6,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
-	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -18,6 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"google.golang.org/grpc/codes"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -100,7 +100,6 @@ func (r *NetworkResource) Configure(ctx context.Context, req resource.ConfigureR
 	}
 
 	client, ok := req.ProviderData.(*CudoClientData)
-
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
@@ -113,127 +112,8 @@ func (r *NetworkResource) Configure(ctx context.Context, req resource.ConfigureR
 	r.client = client
 }
 
-func waitForNetworkAvailable(ctx context.Context, projectID string, networkID string, c networks.ClientService) (*networks.GetNetworkOK, error) {
-	refreshFunc := func() (interface{}, string, error) {
-		params := networks.NewGetNetworkParamsWithContext(ctx)
-		params.ID = networkID
-		params.ProjectID = projectID
-		res, err := c.GetNetwork(params)
-		if err != nil {
-			if apiErr, ok := err.(*networks.GetNetworkDefault); ok && apiErr.IsCode(404) {
-				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s not found: ", networkID, projectID))
-				return res, "done", nil
-			}
-			return nil, "", err
-		}
-
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Payload.Network.ShortState))
-		return res, res.Payload.Network.ShortState, nil
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
-
-	stateConf := &helper.StateChangeConf{
-		Pending:    []string{"clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"boot", "done", "fail", "poff", "runn", "stop", "susp", "unde"},
-		Refresh:    refreshFunc,
-		Timeout:    2 * time.Hour,
-		Delay:      1 * time.Second,
-		MinTimeout: 3 * time.Second,
-	}
-
-	if res, err := stateConf.WaitForState(ctx); err != nil {
-		return nil, fmt.Errorf("error waiting for network %s in project %s to become available: %w", networkID, projectID, err)
-	} else if vm, ok := res.(*networks.GetNetworkOK); ok {
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for network %s in project %s (%s)", networkID, projectID, vm.Payload.Network.ShortState))
-		return vm, nil
-	}
-
-	return nil, nil
-}
-
-func waitForNetworkStop(ctx context.Context, projectID string, networkID string, c networks.ClientService) (*networks.GetNetworkOK, error) {
-	refreshFunc := func() (interface{}, string, error) {
-		params := networks.NewGetNetworkParamsWithContext(ctx)
-		params.ID = networkID
-		params.ProjectID = projectID
-		res, err := c.GetNetwork(params)
-		if err != nil {
-			if apiErr, ok := err.(*networks.GetNetworkDefault); ok && apiErr.IsCode(404) {
-				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is done: ", networkID, projectID))
-				return res, "done", nil
-			}
-			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
-			return nil, "", err
-		}
-		if res.Payload.Network.ShortState == "" {
-			tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is stopped: ", networkID, projectID))
-			return res, "done", nil
-		}
-
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Payload.Network.ShortState))
-		return res, res.Payload.Network.ShortState, nil
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
-
-	stateConf := &helper.StateChangeConf{
-		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"done"},
-		Refresh:    refreshFunc,
-		Timeout:    20 * time.Minute,
-		MinTimeout: 3 * time.Second,
-	}
-
-	if _, err := stateConf.WaitForState(ctx); err != nil {
-		return nil, fmt.Errorf("error waiting for network %s in project %s to be stopped: %w", networkID, projectID, err)
-	}
-
-	return nil, nil
-}
-
-func waitForNetworkDelete(ctx context.Context, projectID string, networkID string, c networks.ClientService) (*networks.GetNetworkOK, error) {
-	refreshFunc := func() (interface{}, string, error) {
-		params := networks.NewGetNetworkParamsWithContext(ctx)
-		params.ID = networkID
-		params.ProjectID = projectID
-		res, err := c.GetNetwork(params)
-		if err != nil {
-			if apiErr, ok := err.(*networks.GetNetworkDefault); ok && apiErr.IsCode(404) {
-				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is done: ", networkID, projectID))
-				return res, "done", nil
-			}
-			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
-			return nil, "", err
-		}
-		if res.Payload.Network.ShortState == "" {
-			tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is stopped: ", networkID, projectID))
-			return res, "stop", nil
-		}
-
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Payload.Network.ShortState))
-		return res, res.Payload.Network.ShortState, nil
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
-
-	stateConf := &helper.StateChangeConf{
-		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"done"},
-		Refresh:    refreshFunc,
-		Timeout:    2 * time.Hour,
-		MinTimeout: 3 * time.Second,
-	}
-
-	if _, err := stateConf.WaitForState(ctx); err != nil {
-		return nil, fmt.Errorf("error waiting for network %s in project %s to be deleted: %w", networkID, projectID, err)
-	}
-
-	return nil, nil
-}
-
 func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var state *NetworkResourceModel
+	var state NetworkResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
@@ -241,16 +121,13 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	params := networks.NewCreateNetworkParamsWithContext(ctx)
-	params.ProjectID = r.client.DefaultProjectID
-	params.Body = networks.CreateNetworkBody{
-		CidrPrefix:   state.IPRange.ValueStringPointer(),
-		DataCenterID: state.DataCenterId.ValueStringPointer(),
-		ID:           state.ID.ValueStringPointer(),
-		VrouterSize:  models.VRouterSizeVROUTERINSTANCESMALL.Pointer(),
-	}
-	_, err := r.client.Client.Networks.CreateNetwork(params)
-
+	_, err := r.client.NetworkClient.CreateNetwork(ctx, &network.CreateNetworkRequest{
+		ProjectId:    r.client.DefaultProjectID,
+		CidrPrefix:   state.IPRange.ValueString(),
+		DataCenterId: state.DataCenterId.ValueString(),
+		Id:           state.ID.ValueString(),
+		VrouterSize:  network.VRouterSize_VROUTER_INSTANCE_SMALL,
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create network resource",
@@ -259,7 +136,7 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	res, err := waitForNetworkAvailable(ctx, params.ProjectID, state.ID.ValueString(), r.client.Client.Networks)
+	network, err := waitForNetworkAvailable(ctx, r.client.DefaultProjectID, state.ID.ValueString(), r.client.NetworkClient)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create network resource",
@@ -268,15 +145,15 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	state.Gateway = types.StringValue(res.Payload.Network.Gateway)
-	state.ExternalIPAddress = types.StringValue(res.Payload.Network.ExternalIPAddress)
-	state.InternalIPAddress = types.StringValue(res.Payload.Network.InternalIPAddress)
+	state.Gateway = types.StringValue(network.Gateway)
+	state.ExternalIPAddress = types.StringValue(network.ExternalIpAddress)
+	state.InternalIPAddress = types.StringValue(network.InternalIpAddress)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state *NetworkResourceModel
+	var state NetworkResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -284,13 +161,12 @@ func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	getParams := networks.NewGetNetworkParamsWithContext(ctx)
-	getParams.ID = state.ID.ValueString()
-	getParams.ProjectID = r.client.DefaultProjectID
-
-	resget, err := r.client.Client.Networks.GetNetwork(getParams)
+	res, err := r.client.NetworkClient.GetNetwork(ctx, &network.GetNetworkRequest{
+		Id:        state.ID.ValueString(),
+		ProjectId: r.client.DefaultProjectID,
+	})
 	if err != nil {
-		if apiErr, ok := err.(*networks.GetNetworkDefault); ok && apiErr.IsCode(404) {
+		if ok := helper.IsErrCode(err, codes.NotFound); ok {
 			resp.State.RemoveResource(ctx)
 			return
 		}
@@ -301,12 +177,12 @@ func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	state.ID = types.StringValue(resget.Payload.Network.ID)
-	state.DataCenterId = types.StringValue(resget.Payload.Network.DataCenterID)
-	state.ExternalIPAddress = types.StringValue(resget.Payload.Network.ExternalIPAddress)
-	state.InternalIPAddress = types.StringValue(resget.Payload.Network.InternalIPAddress)
-	state.IPRange = types.StringValue(resget.Payload.Network.IPRange)
-	state.Gateway = types.StringValue(resget.Payload.Network.Gateway)
+	state.ID = types.StringValue(res.Network.Id)
+	state.DataCenterId = types.StringValue(res.Network.DataCenterId)
+	state.ExternalIPAddress = types.StringValue(res.Network.ExternalIpAddress)
+	state.InternalIPAddress = types.StringValue(res.Network.InternalIpAddress)
+	state.IPRange = types.StringValue(res.Network.IpRange)
+	state.Gateway = types.StringValue(res.Network.Gateway)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -337,11 +213,12 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 	var state *NetworkResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	stopParams := networks.NewStopNetworkParamsWithContext(ctx)
-	stopParams.ProjectID = r.client.DefaultProjectID
-	stopParams.ID = state.ID.ValueString()
-
-	_, err := r.client.Client.Networks.StopNetwork(stopParams)
+	projectId := r.client.DefaultProjectID
+	networkId := state.ID.ValueString()
+	_, err := r.client.NetworkClient.StopNetwork(ctx, &network.StopNetworkRequest{
+		ProjectId: projectId,
+		Id:        networkId,
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to stop network resource",
@@ -350,7 +227,7 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	_, err = waitForNetworkStop(ctx, stopParams.ProjectID, stopParams.ID, r.client.Client.Networks)
+	_, err = waitForNetworkStop(ctx, projectId, networkId, r.client.NetworkClient)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for network resource to be stopped",
@@ -359,11 +236,10 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	deleteParams := networks.NewDeleteNetworkParamsWithContext(ctx)
-	deleteParams.ProjectID = r.client.DefaultProjectID
-	deleteParams.ID = state.ID.ValueString()
-
-	_, err = r.client.Client.Networks.DeleteNetwork(deleteParams)
+	_, err = r.client.NetworkClient.DeleteNetwork(ctx, &network.DeleteNetworkRequest{
+		ProjectId: projectId,
+		Id:        networkId,
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to delete network resource",
@@ -372,7 +248,7 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	_, err = waitForNetworkDelete(ctx, deleteParams.ProjectID, deleteParams.ID, r.client.Client.Networks)
+	_, err = waitForNetworkDelete(ctx, projectId, networkId, r.client.NetworkClient)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for network resource to be deleted",
@@ -384,4 +260,124 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 func (r *NetworkResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+}
+
+func waitForNetworkAvailable(ctx context.Context, projectID string, networkID string, c network.NetworkServiceClient) (*network.Network, error) {
+	refreshFunc := func() (interface{}, string, error) {
+		res, err := c.GetNetwork(ctx, &network.GetNetworkRequest{
+			Id:        networkID,
+			ProjectId: projectID,
+		})
+		if err != nil {
+			if ok := helper.IsErrCode(err, codes.NotFound); ok {
+				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s not found: ", networkID, projectID))
+				return res, "done", nil
+			}
+			return nil, "", err
+		}
+
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.ShortState))
+		return res, res.Network.ShortState, nil
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
+
+	stateConf := &helper.StateChangeConf{
+		Pending:    []string{"boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
+		Target:     []string{"done", "fail", "poff", "runn", "stop", "susp", "unde"},
+		Refresh:    refreshFunc,
+		Timeout:    2 * time.Hour,
+		Delay:      1 * time.Second,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if res, err := stateConf.WaitForState(ctx); err != nil {
+		return nil, fmt.Errorf("error waiting for network %s in project %s to become available: %w", networkID, projectID, err)
+	} else if res, ok := res.(*network.GetNetworkResponse); ok {
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for network %s in project %s (%s)", networkID, projectID, res.Network.ShortState))
+		return res.Network, nil
+	}
+
+	return nil, nil
+}
+
+func waitForNetworkStop(ctx context.Context, projectID string, networkID string, c network.NetworkServiceClient) (*network.Network, error) {
+	refreshFunc := func() (interface{}, string, error) {
+		res, err := c.GetNetwork(ctx, &network.GetNetworkRequest{
+			Id:        networkID,
+			ProjectId: projectID,
+		})
+		if err != nil {
+			if ok := helper.IsErrCode(err, codes.NotFound); ok {
+				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is done: ", networkID, projectID))
+				return res, "done", nil
+			}
+			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
+			return nil, "", err
+		}
+		if res.Network.ShortState == "" {
+			tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is stopped: ", networkID, projectID))
+			return res, "done", nil
+		}
+
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.ShortState))
+		return res, res.Network.ShortState, nil
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
+
+	stateConf := &helper.StateChangeConf{
+		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
+		Target:     []string{"done"},
+		Refresh:    refreshFunc,
+		Timeout:    20 * time.Minute,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if _, err := stateConf.WaitForState(ctx); err != nil {
+		return nil, fmt.Errorf("error waiting for network %s in project %s to be stopped: %w", networkID, projectID, err)
+	}
+
+	return nil, nil
+}
+
+func waitForNetworkDelete(ctx context.Context, projectID string, networkID string, c network.NetworkServiceClient) (*network.Network, error) {
+	refreshFunc := func() (interface{}, string, error) {
+		res, err := c.GetNetwork(ctx, &network.GetNetworkRequest{
+			Id:        networkID,
+			ProjectId: projectID,
+		})
+		if err != nil {
+			if ok := helper.IsErrCode(err, codes.NotFound); ok {
+				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is done: ", networkID, projectID))
+				return res, "done", nil
+			}
+
+			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
+			return nil, "", err
+		}
+		if res.Network.ShortState == "" {
+			tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is stopped: ", networkID, projectID))
+			return res, "stop", nil
+		}
+
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.ShortState))
+		return res, res.Network.ShortState, nil
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
+
+	stateConf := &helper.StateChangeConf{
+		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
+		Target:     []string{"done"},
+		Refresh:    refreshFunc,
+		Timeout:    2 * time.Hour,
+		MinTimeout: 3 * time.Second,
+	}
+
+	if _, err := stateConf.WaitForState(ctx); err != nil {
+		return nil, fmt.Errorf("error waiting for network %s in project %s to be deleted: %w", networkID, projectID, err)
+	}
+
+	return nil, nil
 }

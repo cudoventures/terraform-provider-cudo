@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -14,6 +15,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"google.golang.org/grpc/codes"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -31,10 +33,10 @@ type VMImageResource struct {
 
 // VMImageResourceModel describes the resource data model.
 type VMImageResourceModel struct {
-	ID           types.String                `tfsdk:"id"`
-	DataCenterId types.String                `tfsdk:"data_center_id"`
-	SizeGib      types.Int64                 `tfsdk:"size_gib"`
-	Source       *VMImageSourceResourceModel `tfsdk:"source"`
+	ID           types.String               `tfsdk:"id"`
+	DataCenterId types.String               `tfsdk:"data_center_id"`
+	SizeGib      types.Int64                `tfsdk:"size_gib"`
+	Source       VMImageSourceResourceModel `tfsdk:"source"`
 }
 
 type VMImageSourceResourceModel struct {
@@ -105,7 +107,7 @@ func (r *VMImageResource) Configure(ctx context.Context, req resource.ConfigureR
 }
 
 func (r *VMImageResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var state *VMImageResourceModel
+	var state VMImageResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
@@ -113,19 +115,20 @@ func (r *VMImageResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	createParams := virtual_machines.NewCreatePrivateVMImageParamsWithContext(ctx)
-	createParams.ProjectID = r.client.DefaultProjectID
-	createParams.ID = state.ID.ValueString()
-	if state.Source == nil {
-		resp.Diagnostics.AddError(
-			"Unable to create image resource",
-			"Source required to create image resource",
-		)
-		return
-	}
-	createParams.VMID = state.Source.VmID.ValueString()
+	// createParams := vms.NewCreatePrivateVMImageParamsWithContext(ctx)
+	// if state.Source == nil {
+	// 	resp.Diagnostics.AddError(
+	// 		"Unable to create image resource",
+	// 		"Source required to create image resource",
+	// 	)
+	// 	return
+	// }
 	// createParams.SnapshotID = state.Source.SnapshotID.ValueStringPointer()
-	res, err := r.client.Client.VirtualMachines.CreatePrivateVMImage(createParams)
+	res, err := r.client.VMClient.CreatePrivateVMImage(ctx, &vm.CreatePrivateVMImageRequest{
+		ProjectId: r.client.DefaultProjectID,
+		Id:        state.ID.ValueString(),
+		VmId:      state.Source.VmID.ValueString(),
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create image resource",
@@ -134,14 +137,13 @@ func (r *VMImageResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	state.DataCenterId = types.StringValue(res.Payload.Image.DataCenterID)
-	state.SizeGib = types.Int64Value(int64(res.Payload.Image.SizeGib))
-
+	state.DataCenterId = types.StringValue(res.Image.DataCenterId)
+	state.SizeGib = types.Int64Value(int64(res.Image.SizeGib))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *VMImageResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state *VMImageResourceModel
+	var state VMImageResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -149,13 +151,12 @@ func (r *VMImageResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	getParams := virtual_machines.NewGetPrivateVMImageParamsWithContext(ctx)
-	getParams.ID = state.ID.ValueString()
-	getParams.ProjectID = r.client.DefaultProjectID
-
-	res, err := r.client.Client.VirtualMachines.GetPrivateVMImage(getParams)
+	res, err := r.client.VMClient.GetPrivateVMImage(ctx, &vm.GetPrivateVMImageRequest{
+		Id:        state.ID.ValueString(),
+		ProjectId: r.client.DefaultProjectID,
+	})
 	if err != nil {
-		if apiErr, ok := err.(*virtual_machines.GetPrivateVMImageDefault); ok && apiErr.IsCode(404) {
+		if ok := helper.IsErrCode(err, codes.NotFound); ok {
 			resp.State.RemoveResource(ctx)
 			return
 		}
@@ -166,9 +167,9 @@ func (r *VMImageResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	state.ID = types.StringValue(res.Payload.Image.ID)
-	state.DataCenterId = types.StringValue(res.Payload.Image.DataCenterID)
-	state.SizeGib = types.Int64Value(int64(res.Payload.Image.SizeGib))
+	state.ID = types.StringValue(res.Image.Id)
+	state.DataCenterId = types.StringValue(res.Image.DataCenterId)
+	state.SizeGib = types.Int64Value(int64(res.Image.SizeGib))
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -188,7 +189,7 @@ func (r *VMImageResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 
 	// Read Terraform state data into the model
-	var state NetworkResourceModel
+	var state VMImageResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -196,14 +197,13 @@ func (r *VMImageResource) Update(ctx context.Context, req resource.UpdateRequest
 }
 
 func (r *VMImageResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state *VMImageResourceModel
+	var state VMImageResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	params := virtual_machines.NewDeletePrivateVMImageParamsWithContext(ctx)
-	params.ProjectID = r.client.DefaultProjectID
-	params.ID = state.ID.ValueString()
-
-	_, err := r.client.Client.VirtualMachines.DeletePrivateVMImage(params)
+	_, err := r.client.VMClient.DeletePrivateVMImage(ctx, &vm.DeletePrivateVMImageRequest{
+		ProjectId: r.client.DefaultProjectID,
+		Id:        state.ID.ValueString(),
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to delete image resource",

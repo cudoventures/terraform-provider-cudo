@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
-
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
@@ -31,7 +30,7 @@ resource "cudo_vm" "vm" {
      size_gib = 1
    }
    memory_gib         = 2
-   id                 = "%s"
+   id                = "%s"
    networks = [
     {
       network_id         = "tf-test"
@@ -41,22 +40,23 @@ resource "cudo_vm" "vm" {
 
 	resource.ParallelTest(t, resource.TestCase{
 		CheckDestroy: func(state *terraform.State) error {
-			cl := getClient()
+			cl, _ := getClients(t)
 
-			getParams := virtual_machines.NewGetVMParamsWithContext(ctx)
-			getParams.ID = name
-			getParams.ProjectID = projectID
+			getParams := &vm.GetVMRequest{
+				Id:        name,
+				ProjectId: projectID,
+			}
 
-			ins, err := cl.VirtualMachines.GetVM(getParams)
+			getRes, err := cl.GetVM(ctx, getParams)
+			if err == nil && getRes.VM.ShortState != "epil" {
+				terminateParams := &vm.TerminateVMRequest{
+					Id:        name,
+					ProjectId: projectID,
+				}
+				res, err := cl.TerminateVM(ctx, terminateParams)
+				t.Logf("(%s) %#v: %v", getRes.VM.ShortState, res, err)
 
-			if err == nil && ins.Payload.VM.ShortState != "epil" {
-				terminateParams := virtual_machines.NewTerminateVMParamsWithContext(ctx)
-				terminateParams.ID = name
-				terminateParams.ProjectID = projectID
-				res, err := cl.VirtualMachines.TerminateVM(terminateParams)
-				t.Logf("(%s) %#v: %v", ins.Payload.VM.ShortState, res, err)
-
-				return fmt.Errorf("vm resource not destroyed %s , %s", ins.Payload.VM.ID, ins.Payload.VM.ShortState)
+				return fmt.Errorf("vm resource not destroyed %s , %s", getRes.VM.Id, getRes.VM.ShortState)
 			}
 			return nil
 		},
@@ -100,7 +100,7 @@ resource "cudo_vm" "vm-minimal" {
    boot_disk = {
      image_id = "alpine-linux-317"
    }
-   id                 = "%s"
+   id                = "%s"
    machine_type       = "standard"
    data_center_id     = "black-mesa"
    vcpus              = 1
@@ -114,22 +114,24 @@ resource "cudo_vm" "vm-minimal" {
 
 	resource.ParallelTest(t, resource.TestCase{
 		CheckDestroy: func(state *terraform.State) error {
-			cl := getClient()
+			cl, _ := getClients(t)
 
-			getParams := virtual_machines.NewGetVMParamsWithContext(ctx)
-			getParams.ID = name
-			getParams.ProjectID = projectID
+			getParams := &vm.GetVMRequest{
+				Id:        name,
+				ProjectId: projectID,
+			}
 
-			ins, err := cl.VirtualMachines.GetVM(getParams)
+			ins, err := cl.GetVM(ctx, getParams)
 
-			if err == nil && ins.Payload.VM.ShortState != "epil" {
-				terminateParams := virtual_machines.NewTerminateVMParamsWithContext(ctx)
-				terminateParams.ID = name
-				terminateParams.ProjectID = projectID
-				res, err := cl.VirtualMachines.TerminateVM(terminateParams)
-				t.Logf("(%s) %#v: %v", ins.Payload.VM.ShortState, res, err)
+			if err == nil && ins.VM.ShortState != "epil" {
+				terminateParams := &vm.TerminateVMRequest{
+					Id:        name,
+					ProjectId: projectID,
+				}
+				res, err := cl.TerminateVM(ctx, terminateParams)
+				t.Logf("(%s) %#v: %v", ins.VM.ShortState, res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s, %s", ins.Payload.VM.ID, ins.Payload.VM.ShortState)
+				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.ShortState)
 			}
 			return nil
 		},
@@ -173,7 +175,7 @@ resource "cudo_vm" "vm-oob-delete" {
    boot_disk = {
      image_id = "alpine-linux-317"
    }
-   id                 = "%s"
+   id                = "%s"
    machine_type       = "standard"
    data_center_id     = "black-mesa"
    vcpus              = 1
@@ -187,22 +189,24 @@ resource "cudo_vm" "vm-oob-delete" {
 
 	resource.ParallelTest(t, resource.TestCase{
 		CheckDestroy: func(state *terraform.State) error {
-			cl := getClient()
+			cl, _ := getClients(t)
 
-			getParams := virtual_machines.NewGetVMParamsWithContext(ctx)
-			getParams.ID = name
-			getParams.ProjectID = projectID
+			getParams := &vm.GetVMRequest{
+				Id:        name,
+				ProjectId: projectID,
+			}
 
-			ins, err := cl.VirtualMachines.GetVM(getParams)
+			ins, err := cl.GetVM(ctx, getParams)
 
-			if err == nil && ins.Payload.VM.ShortState != "epil" {
-				terminateParams := virtual_machines.NewTerminateVMParamsWithContext(ctx)
-				terminateParams.ID = name
-				terminateParams.ProjectID = projectID
-				res, err := cl.VirtualMachines.TerminateVM(terminateParams)
-				t.Logf("(%s) %#v: %v", ins.Payload.VM.ShortState, res, err)
+			if err == nil && ins.VM.ShortState != "epil" {
+				terminateParams := &vm.TerminateVMRequest{
+					Id:        name,
+					ProjectId: projectID,
+				}
+				res, err := cl.TerminateVM(ctx, terminateParams)
+				t.Logf("(%s) %#v: %v", ins.VM.ShortState, res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s, %s", ins.Payload.VM.ID, ins.Payload.VM.ShortState)
+				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.ShortState)
 			}
 			return nil
 		},
@@ -230,13 +234,13 @@ resource "cudo_vm" "vm-oob-delete" {
 			},
 			// {
 			// 	PreConfig: func() {
-			// 		terminateParams := virtual_machines.NewTerminateVMParamsWithContext(ctx)
-			// 		terminateParams.ID = name
-			// 		terminateParams.ProjectID = projectID
-			// 		res, err := getClient().VirtualMachines.TerminateVM(terminateParams)
+			// 		terminateParams := vm.TerminateVMRequest(ctx)
+			// 		terminateParams.Id = name
+			// 		terminateParams.ProjectId = projectId
+			// 		res, err := getClients(t).TerminateVM(terminateParams)
 			// 		t.Log(res, err)
 			// 	},
-			// 	Config: getProviderConfig() + vmConfig,
+			// 	Config: getProvIderConfig() + vmConfig,
 			// },
 			{
 				RefreshState: true,

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -125,10 +125,10 @@ func (d *SecurityGroupDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	params := networks.NewGetSecurityGroupParamsWithContext(ctx)
-	params.ProjectID = d.client.DefaultProjectID
-	params.ID = state.ID.ValueString()
-	res, err := d.client.Client.Networks.GetSecurityGroup(params)
+	res, err := d.client.NetworkClient.GetSecurityGroup(ctx, &network.GetSecurityGroupRequest{
+		ProjectId: d.client.DefaultProjectID,
+		Id:        state.ID.ValueString(),
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read security groups",
@@ -137,12 +137,10 @@ func (d *SecurityGroupDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	sg := res.Payload.SecurityGroup
-	state.ID = types.StringValue(*sg.ID)
-	state.DataCenterID = types.StringValue(*sg.DataCenterID)
+	sg := res.SecurityGroup
+	state.ID = types.StringValue(sg.Id)
+	state.DataCenterID = types.StringValue(sg.DataCenterId)
 	state.Description = types.StringValue(sg.Description)
 	state.Rules = getRuleModels(sg.Rules)
-
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

@@ -2,14 +2,17 @@ package provider
 
 import (
 	"context"
+	"crypto/x509"
+	"fmt"
+	"time"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	"os"
-
-	httptransport "github.com/go-openapi/runtime/client"
-	"github.com/go-openapi/strfmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -40,7 +43,8 @@ type CudoProviderModel struct {
 }
 
 type CudoClientData struct {
-	Client                  *client.CudoComputeService
+	VMClient                vm.VMServiceClient
+	NetworkClient           network.NetworkServiceClient
 	DefaultBillingAccountID string
 	DefaultProjectID        string
 }
@@ -77,6 +81,28 @@ func (p *CudoProvider) Schema(ctx context.Context, req provider.SchemaRequest, r
 	}
 }
 
+// this retry policy will only retry if the connection is being
+// setup, or the connection is valid
+var retryPolicy = fmt.Sprintf(`{
+	"methodConfig": [{
+		"name": [
+			{
+				"service": "%s",
+				"method": "%s"
+			}
+		],
+
+		"retryPolicy": {
+			"MaxAttempts": 10,
+			"InitialBackoff": "1s",
+			"MaxBackoff": "30s",
+			"BackoffMultiplier": 1.5,
+			"RetryableStatusCodes": [ "UNAVAILABLE", "UNKNOWN", "RESOURCE_EXHAUSTED" ]
+		}
+	}]
+}`, vm.VMService_ServiceDesc.ServiceName,
+	"CreateVM")
+
 func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 	var config CudoProviderModel
 
@@ -106,7 +132,6 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 	if remoteAddr == "" {
 		remoteAddr = p.defaultRemoteAddr
 	}
-
 	// Project
 	projectID := config.ProjectID.ValueString()
 	if projectID == "" {
@@ -125,22 +150,48 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		billingAccountID = os.Getenv("CUDO_BILLING_ACCOUNT_ID")
 	}
 
-	var scheme []string
-	if config.DisableTLS.ValueBool() {
-		scheme = []string{"https"}
-	} else {
-		scheme = client.DefaultSchemes
+	// dial without block handle errors in the rpcs
+	dialOptions := []grpc.DialOption{}
+	pool, err := x509.SystemCertPool()
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error getting system cerificate pool",
+			"No certificate pool found for system: "+err.Error(),
+		)
+		return
+	}
+	creds := credentials.NewClientTLSFromCert(pool, "")
+	dialOptions = append(dialOptions, grpc.WithTransportCredentials(creds), grpc.WithDefaultServiceConfig(retryPolicy))
+	dialOptions = append(dialOptions,
+		grpc.WithPerRPCCredentials(&apiKeyCallOption{
+			disableTransportSecurity: config.DisableTLS.ValueBool(),
+			key:                      apiKey,
+		}),
+	)
+	dialOptions = append(dialOptions, grpc.WithUserAgent(fmt.Sprintf("cudo-terraform-client/%s", p.version)))
+
+	dialTimeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	conn, err := grpc.DialContext(dialTimeoutCtx, remoteAddr, dialOptions...)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Error dialing cudo service",
+			"Dialing compute service failed: "+err.Error(),
+		)
+		return
 	}
 
-	tx := httptransport.New(remoteAddr, client.DefaultBasePath, scheme)
-	tx.DefaultAuthentication = httptransport.BearerToken(apiKey)
-	clientx := client.New(tx, strfmt.Default)
+	vmClient := vm.NewVMServiceClient(conn)
+	networkClient := network.NewNetworkServiceClient(conn)
 
 	ccd := &CudoClientData{
-		Client:                  clientx,
+		VMClient:                vmClient,
+		NetworkClient:           networkClient,
 		DefaultProjectID:        projectID,
 		DefaultBillingAccountID: billingAccountID,
 	}
+
 	resp.DataSourceData = ccd
 	resp.ResourceData = ccd
 }
@@ -171,4 +222,22 @@ func New(version string, defaultRemoteAddr string) func() provider.Provider {
 			defaultRemoteAddr: defaultRemoteAddr,
 		}
 	}
+}
+
+type apiKeyCallOption struct {
+	key                      string
+	disableTransportSecurity bool
+}
+
+func (a *apiKeyCallOption) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	if a.key == "" {
+		return nil, nil
+	}
+	return map[string]string{
+		"authorization": "Bearer " + a.key,
+	}, nil
+}
+
+func (a *apiKeyCallOption) RequireTransportSecurity() bool {
+	return !a.disableTransportSecurity
 }

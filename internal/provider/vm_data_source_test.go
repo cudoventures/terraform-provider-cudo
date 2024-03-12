@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
@@ -46,20 +46,20 @@ data "cudo_vm" "test" {
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { testAccPreCheck(t) },
 		CheckDestroy: func(state *terraform.State) error {
-			cl := getClient()
+			cl, _ := getClients(t)
 
-			getParams := virtual_machines.NewGetVMParamsWithContext(ctx)
-			getParams.ID = name
-			getParams.ProjectID = projectID
-			ins, err := cl.VirtualMachines.GetVM(getParams)
-			if err == nil && ins.Payload.VM.ShortState != "epil" {
-				terminateParams := virtual_machines.NewTerminateVMParamsWithContext(ctx)
-				terminateParams.ID = name
-				terminateParams.ProjectID = projectID
-				res, err := cl.VirtualMachines.TerminateVM(terminateParams)
+			ins, err := cl.GetVM(ctx, &vm.GetVMRequest{
+				Id:        name,
+				ProjectId: projectID,
+			})
+			if err == nil && ins.VM.ShortState != "epil" {
+				res, err := cl.TerminateVM(ctx, &vm.TerminateVMRequest{
+					Id:        name,
+					ProjectId: projectID,
+				})
 				t.Log(res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s, %s", ins.Payload.VM.ID, ins.Payload.VM.ShortState)
+				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.ShortState)
 			}
 			return nil
 		},

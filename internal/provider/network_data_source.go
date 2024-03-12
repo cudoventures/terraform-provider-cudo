@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -52,7 +52,8 @@ func (d *NetworkDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			},
 			"ip_range": schema.StringAttribute{
 				MarkdownDescription: "IP Range in CIDR format e.g 192.168.0.0/24",
-				Computed:            true},
+				Computed:            true,
+			},
 			"gateway": schema.StringAttribute{
 				MarkdownDescription: "IP of the gateway for the network",
 				Computed:            true,
@@ -93,11 +94,10 @@ func (d *NetworkDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	params := networks.NewGetNetworkParamsWithContext(ctx)
-	params.ProjectID = d.client.DefaultProjectID
-	params.ID = state.Id.ValueString()
-
-	res, err := d.client.Client.Networks.GetNetwork(params)
+	res, err := d.client.NetworkClient.GetNetwork(ctx, &network.GetNetworkRequest{
+		ProjectId: d.client.DefaultProjectID,
+		Id:        state.Id.ValueString(),
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read networks",
@@ -106,13 +106,14 @@ func (d *NetworkDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 
-	state.Id = types.StringValue(res.Payload.Network.ID)
-	state.DataCenterId = types.StringValue(res.Payload.Network.DataCenterID)
-	state.IPRange = types.StringValue(res.Payload.Network.IPRange)
-	state.Gateway = types.StringValue(res.Payload.Network.Gateway)
-	state.ExternalIPAddress = types.StringValue(res.Payload.Network.ExternalIPAddress)
-	state.InternalIPAddress = types.StringValue(res.Payload.Network.InternalIPAddress)
-
 	// Save data into Terraform state
+
+	state.Id = types.StringValue(res.Network.Id)
+	state.DataCenterId = types.StringValue(res.Network.DataCenterId)
+	state.IPRange = types.StringValue(res.Network.IpRange)
+	state.Gateway = types.StringValue(res.Network.Gateway)
+	state.ExternalIPAddress = types.StringValue(res.Network.ExternalIpAddress)
+	state.InternalIPAddress = types.StringValue(res.Network.InternalIpAddress)
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

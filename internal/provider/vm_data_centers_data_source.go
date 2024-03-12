@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -90,7 +90,7 @@ func (d *VMDataCentersDataSource) Configure(ctx context.Context, req datasource.
 func (d *VMDataCentersDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state VMDataCentersDataSourceModel
 
-	res, err := d.client.Client.VirtualMachines.ListVMDataCenters(virtual_machines.NewListVMDataCentersParamsWithContext(ctx))
+	res, err := d.client.VMClient.ListVMDataCenters(ctx, &vm.ListVMDataCentersRequest{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read VM data centers",
@@ -99,10 +99,10 @@ func (d *VMDataCentersDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	for _, dc := range res.Payload.DataCenters {
+	for _, dc := range res.DataCenters {
 		dataCenter := VMDataCenterDataSourceModel{
-			ID:       types.StringValue(*dc.ID),
-			RegionID: types.StringValue(*dc.RegionID),
+			ID:       types.StringValue(dc.Id),
+			RegionID: types.StringValue(dc.RegionId),
 		}
 
 		state.DataCenters = append(state.DataCenters, dataCenter)

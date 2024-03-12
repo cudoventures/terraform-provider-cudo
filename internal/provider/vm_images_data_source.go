@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -99,7 +99,7 @@ func (d *VMImagesDataSource) Configure(ctx context.Context, req datasource.Confi
 func (d *VMImagesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state VMImagesDataSourceModel
 
-	res, err := d.client.Client.VirtualMachines.ListPublicVMImages(virtual_machines.NewListPublicVMImagesParamsWithContext(ctx))
+	res, err := d.client.VMClient.ListPublicVMImages(ctx, &vm.ListPublicVMImagesRequest{})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read images",
@@ -108,12 +108,12 @@ func (d *VMImagesDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	for _, image := range res.Payload.Images {
+	for _, image := range res.Images {
 		imageState := vmImagesModel{
-			Id:          types.StringValue(*image.ID),
-			Name:        types.StringValue(*image.Name),
-			Description: types.StringValue(*image.Description),
-			SizeGiB:     types.StringValue(fmt.Sprintf("%d", *image.SizeGib)),
+			Id:          types.StringValue(image.Id),
+			Name:        types.StringValue(image.Name),
+			Description: types.StringValue(image.Description),
+			SizeGiB:     types.StringValue(fmt.Sprintf("%d", image.SizeGib)),
 		}
 
 		state.VmImages = append(state.VmImages, imageState)

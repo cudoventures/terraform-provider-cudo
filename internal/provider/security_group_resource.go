@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/networks"
-	"github.com/CudoVentures/terraform-provider-cudo/internal/models"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -20,6 +20,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"google.golang.org/grpc/codes"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -160,38 +161,37 @@ func getNullableString(value string) basetypes.StringValue {
 	return result
 }
 
-func getRuleModels(rules []*models.Rule) []RuleModel {
+func getRuleModels(rules []*network.SecurityGroup_Rule) []RuleModel {
 	var ruleModels []RuleModel
 	for _, rule := range rules {
 		protocol := ""
-		switch *rule.Protocol {
-		case models.ProtocolPROTOCOLALL:
+		switch rule.Protocol {
+		case network.SecurityGroup_Rule_PROTOCOL_ALL:
 			protocol = "all"
-		case models.ProtocolPROTOCOLICMP:
+		case network.SecurityGroup_Rule_PROTOCOL_ICMP:
 			protocol = "icmp"
-		case models.ProtocolPROTOCOLICMPv6:
+		case network.SecurityGroup_Rule_PROTOCOL_ICMPv6:
 			protocol = "icmpv6"
-		case models.ProtocolPROTOCOLIPSEC:
+		case network.SecurityGroup_Rule_PROTOCOL_IPSEC:
 			protocol = "ipsec"
-		case models.ProtocolPROTOCOLTCP:
+		case network.SecurityGroup_Rule_PROTOCOL_TCP:
 			protocol = "tcp"
-		case models.ProtocolPROTOCOLUDP:
+		case network.SecurityGroup_Rule_PROTOCOL_UDP:
 			protocol = "udp"
 		}
 
 		ruleType := ""
-
-		switch *rule.RuleType {
-		case models.RuleTypeRULETYPEINBOUND:
+		switch rule.RuleType {
+		case network.SecurityGroup_Rule_RULE_TYPE_INBOUND:
 			ruleType = "inbound"
-		case models.RuleTypeRULETYPEOUTBOUND:
+		case network.SecurityGroup_Rule_RULE_TYPE_OUTBOUND:
 			ruleType = "outbound"
 		}
 
 		ruleModel := RuleModel{
-			Id:          types.StringValue(rule.ID),
+			Id:          types.StringValue(rule.Id),
 			IcmpType:    getNullableString(rule.IcmpType),
-			IpRangeCidr: getNullableString(rule.IPRangeCidr),
+			IpRangeCidr: getNullableString(rule.IpRangeCidr),
 			Ports:       getNullableString(rule.Ports),
 			Protocol:    getNullableString(protocol),
 			RuleType:    getNullableString(ruleType),
@@ -203,39 +203,38 @@ func getRuleModels(rules []*models.Rule) []RuleModel {
 	return ruleModels
 }
 
-func getRuleParams(stateRules []RuleModel) []*models.Rule {
-	var rules []*models.Rule
+func getRuleParams(stateRules []RuleModel) []*network.SecurityGroup_Rule {
+	var rules []*network.SecurityGroup_Rule
 
 	for _, r := range stateRules {
-
-		var protocol *models.Protocol
+		var protocol network.SecurityGroup_Rule_Protocol
 		switch r.Protocol.ValueString() {
 		case "tcp":
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLTCP)
+			protocol = network.SecurityGroup_Rule_PROTOCOL_TCP
 		case "udp":
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLUDP)
+			protocol = network.SecurityGroup_Rule_PROTOCOL_UDP
 		case "icmp":
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLICMP)
+			protocol = network.SecurityGroup_Rule_PROTOCOL_ICMP
 		case "icmpv6":
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLICMPv6)
+			protocol = network.SecurityGroup_Rule_PROTOCOL_ICMPv6
 		case "ipsec":
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLIPSEC)
+			protocol = network.SecurityGroup_Rule_PROTOCOL_IPSEC
 		default:
-			protocol = models.NewProtocol(models.ProtocolPROTOCOLALL)
+			protocol = network.SecurityGroup_Rule_PROTOCOL_ALL
 		}
 
-		var ruleType *models.RuleType
+		var ruleType network.SecurityGroup_Rule_RuleType
 		switch r.RuleType.ValueString() {
 		case "inbound":
-			ruleType = models.NewRuleType(models.RuleTypeRULETYPEINBOUND)
+			ruleType = network.SecurityGroup_Rule_RULE_TYPE_INBOUND
 		case "outbound":
-			ruleType = models.NewRuleType(models.RuleTypeRULETYPEOUTBOUND)
+			ruleType = network.SecurityGroup_Rule_RULE_TYPE_OUTBOUND
 		}
 
-		rule := models.Rule{
+		rule := network.SecurityGroup_Rule{
 			IcmpType:    r.IcmpType.ValueString(),
-			ID:          r.Id.ValueString(),
-			IPRangeCidr: r.IpRangeCidr.ValueString(),
+			Id:          r.Id.ValueString(),
+			IpRangeCidr: r.IpRangeCidr.ValueString(),
 			Ports:       r.Ports.ValueString(),
 			Protocol:    protocol,
 			RuleType:    ruleType,
@@ -256,17 +255,15 @@ func (r *SecurityGroupResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	params := networks.NewCreateSecurityGroupParamsWithContext(ctx)
-	params.SecurityGroup = networks.CreateSecurityGroupBody{
-		DataCenterID: state.DataCenterID.ValueStringPointer(),
-		Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
-		ID:           state.Id.ValueStringPointer(),   // security group id
-		Rules:        getRuleParams(state.Rules),
-	}
-	params.SecurityGroupProjectID = r.client.DefaultProjectID
-
-	res, err := r.client.Client.Networks.CreateSecurityGroup(params)
-
+	res, err := r.client.NetworkClient.CreateSecurityGroup(ctx, &network.CreateSecurityGroupRequest{
+		SecurityGroup: &network.SecurityGroup{
+			ProjectId:    r.client.DefaultProjectID,
+			DataCenterId: state.DataCenterID.ValueString(),
+			Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
+			Id:           state.Id.ValueString(),          // security group id
+			Rules:        getRuleParams(state.Rules),
+		},
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create security group resource",
@@ -275,13 +272,13 @@ func (r *SecurityGroupResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	state.Rules = getRuleModels(res.Payload.SecurityGroup.Rules)
+	state.Rules = getRuleModels(res.SecurityGroup.Rules)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var state *SecurityGroupResourceModel
+	var state SecurityGroupResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -290,14 +287,13 @@ func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	params := networks.NewGetSecurityGroupParamsWithContext(ctx)
-	params.ID = state.Id.ValueString()
-	params.ProjectID = r.client.DefaultProjectID
-
-	res, err := r.client.Client.Networks.GetSecurityGroup(params)
+	res, err := r.client.NetworkClient.GetSecurityGroup(ctx, &network.GetSecurityGroupRequest{
+		Id:        state.Id.ValueString(),
+		ProjectId: r.client.DefaultProjectID,
+	})
 
 	if err != nil {
-		if apiErr, ok := err.(*networks.GetSecurityGroupDefault); ok && apiErr.IsCode(404) {
+		if ok := helper.IsErrCode(err, codes.NotFound); ok {
 			resp.State.RemoveResource(ctx)
 			return
 		}
@@ -308,11 +304,11 @@ func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	state.Id = types.StringValue(*res.Payload.SecurityGroup.ID)
-	state.Description = types.StringValue(res.Payload.SecurityGroup.Description)
-	state.DataCenterID = types.StringValue(*res.Payload.SecurityGroup.DataCenterID)
-	state.Id = types.StringValue(*res.Payload.SecurityGroup.ID)
-	state.Rules = getRuleModels(res.Payload.SecurityGroup.Rules)
+	state.Id = types.StringValue(res.SecurityGroup.Id)
+	state.Description = types.StringValue(res.SecurityGroup.Description)
+	state.DataCenterID = types.StringValue(res.SecurityGroup.DataCenterId)
+	state.Id = types.StringValue(res.SecurityGroup.Id)
+	state.Rules = getRuleModels(res.SecurityGroup.Rules)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -328,17 +324,15 @@ func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	params := networks.NewUpdateSecurityGroupParamsWithContext(ctx)
-	params.SecurityGroup = networks.UpdateSecurityGroupBody{
-		DataCenterID: state.DataCenterID.ValueStringPointer(),
-		Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
-		Rules:        getRuleParams(state.Rules),
-	}
-	params.SecurityGroupID = state.Id.ValueString()
-	params.SecurityGroupProjectID = r.client.DefaultProjectID
-
-	res, err := r.client.Client.Networks.UpdateSecurityGroup(params)
-
+	res, err := r.client.NetworkClient.UpdateSecurityGroup(ctx, &network.UpdateSecurityGroupRequest{
+		SecurityGroup: &network.SecurityGroup{
+			Id:           state.Id.ValueString(),
+			ProjectId:    r.client.DefaultProjectID,
+			DataCenterId: state.DataCenterID.ValueString(),
+			Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
+			Rules:        getRuleParams(state.Rules),
+		},
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to update security group resource",
@@ -347,8 +341,7 @@ func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	state.Rules = getRuleModels(res.Payload.SecurityGroup.Rules)
-
+	state.Rules = getRuleModels(res.SecurityGroup.Rules)
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -357,12 +350,10 @@ func (r *SecurityGroupResource) Delete(ctx context.Context, req resource.DeleteR
 	var state *SecurityGroupResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	params := networks.NewDeleteSecurityGroupParamsWithContext(ctx)
-	params.ProjectID = r.client.DefaultProjectID
-	params.ID = state.Id.ValueString()
-
-	_, err := r.client.Client.Networks.DeleteSecurityGroup(params)
-
+	_, err := r.client.NetworkClient.DeleteSecurityGroup(ctx, &network.DeleteSecurityGroupRequest{
+		ProjectId: r.client.DefaultProjectID,
+		Id:        state.Id.ValueString(),
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to delete security group resource",

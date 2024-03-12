@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/CudoVentures/terraform-provider-cudo/internal/client/virtual_machines"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -130,17 +130,17 @@ func (d *VMDataSource) Read(ctx context.Context, req datasource.ReadRequest, res
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
 
-	params := virtual_machines.NewGetVMParams()
-	params.ProjectID = d.client.DefaultProjectID
-	if !state.ProjectID.IsNull() {
-		params.ProjectID = state.ProjectID.ValueString()
-	} else {
+	projectId := state.ProjectID.ValueString()
+	vmId := state.Id.ValueString()
+	if state.ProjectID.IsNull() {
 		state.ProjectID = types.StringValue(d.client.DefaultProjectID)
+		projectId = d.client.DefaultProjectID
 	}
-	params.ID = state.Id.ValueString()
 
-	res, err := d.client.Client.VirtualMachines.GetVM(params)
-
+	res, err := d.client.VMClient.GetVM(ctx, &vm.GetVMRequest{
+		ProjectId: projectId,
+		Id:        vmId,
+	})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read VM instance",
@@ -149,24 +149,22 @@ func (d *VMDataSource) Read(ctx context.Context, req datasource.ReadRequest, res
 		return
 	}
 
-	vm := res.Payload.VM
-
-	imageID := vm.PrivateImageID
+	imageID := res.VM.PrivateImageId
 	if imageID == "" {
-		imageID = vm.PublicImageID
+		imageID = res.VM.PublicImageId
 	}
 
-	state.BootDiskSizeGib = types.Int64Value(vm.BootDiskSizeGib)
-	state.CPUModel = types.StringValue(vm.CPUModel)
-	state.DatacenterID = types.StringValue(vm.DatacenterID)
-	state.GpuModel = types.StringValue(vm.GpuModel)
-	state.Gpus = types.Int64Value(vm.GpuQuantity)
+	state.BootDiskSizeGib = types.Int64Value(int64(res.VM.BootDiskSizeGib))
+	state.CPUModel = types.StringValue(res.VM.CpuModel)
+	state.DatacenterID = types.StringValue(res.VM.DatacenterId)
+	state.GpuModel = types.StringValue(res.VM.GpuModel)
+	state.Gpus = types.Int64Value(int64(res.VM.GpuQuantity))
 	state.ImageID = types.StringValue(imageID)
-	state.InternalIPAddress = types.StringValue(vm.InternalIPAddress)
-	state.ExternalIPAddress = types.StringValue(vm.ExternalIPAddress)
-	state.Memory = types.Int64Value(vm.Memory)
-	state.PriceHr = types.Float64Value(float64(vm.PriceHr))
-	state.Vcpus = types.Int64Value(vm.Vcpus)
+	state.InternalIPAddress = types.StringValue(res.VM.InternalIpAddress)
+	state.ExternalIPAddress = types.StringValue(res.VM.ExternalIpAddress)
+	state.Memory = types.Int64Value(int64(res.VM.Memory))
+	state.PriceHr = types.Float64Value(float64(res.VM.PriceHr))
+	state.Vcpus = types.Int64Value(int64(res.VM.Vcpus))
 
 	// Write logs using the tflog package
 	// Documentation: https://terraform.io/plugin/log
