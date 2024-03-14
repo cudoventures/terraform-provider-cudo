@@ -276,8 +276,9 @@ func TestAcc_VMStorageDiskResource(t *testing.T) {
 		defer cancel()
 	}
 	name := "vm-resource-" + testRunID
-	diskName1 := "vm-resource-disk1" + testRunID
-	diskName2 := "vm-resource-disk2" + testRunID
+	// important that the disks are in ascending order as that is how the api returns them
+	diskName1 := "vm-resource-disk1"
+	diskName2 := "vm-resource-disk2"
 
 	vmConfig := fmt.Sprintf(`
 resource "cudo_storage_disk" "my-storage-disk" {

@@ -230,7 +230,6 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 			"storage_disks": schema.SetNestedAttribute{
 				MarkdownDescription: "Specification for storage disks",
 				Optional:            true,
-				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"disk_id": schema.StringAttribute{
@@ -630,11 +629,11 @@ func appendVmState(vm *vm.VM, state *VMResourceModel) {
 		nic.ExternalIPAddress = types.StringValue(vm.Nics[i].ExternalIpAddress)
 		nic.InternalIPAddress = types.StringValue(vm.Nics[i].InternalIpAddress)
 	}
-	storageDisks := make([]*VMStorageDiskResourceModel, len(vm.StorageDisks))
-	for i, vmDisk := range vm.StorageDisks {
-		storageDisks[i] = &VMStorageDiskResourceModel{
+	var storageDisks []*VMStorageDiskResourceModel
+	for _, vmDisk := range vm.StorageDisks {
+		storageDisks = append(storageDisks, &VMStorageDiskResourceModel{
 			DiskID: types.StringValue(vmDisk.Id),
-		}
+		})
 	}
 	state.StorageDisks = storageDisks
 	state.GPUModel = types.StringValue(vm.GpuModel)
