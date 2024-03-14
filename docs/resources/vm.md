@@ -74,6 +74,7 @@ resource "cudo_vm" "my-vm" {
 - `ssh_key_source` (String) Which SSH keys to add to the VM: project (default), user or custom
 - `ssh_keys` (List of String) List of SSH keys to add to the VM, ssh_key_source must be set to custom
 - `start_script` (String) A script to run when VM boots
+- `storage_disks` (Attributes Set) Specification for storage disks (see [below for nested schema](#nestedatt--storage_disks))
 - `vcpus` (Number) Number of VCPUs
 
 ### Read-Only
@@ -111,3 +112,11 @@ Read-Only:
 
 - `external_ip_address` (String) The external IP address of the NIC.
 - `internal_ip_address` (String) The internal IP address of the NIC.
+
+
+<a id="nestedatt--storage_disks"></a>
+### Nested Schema for `storage_disks`
+
+Required:
+
+- `disk_id` (String) ID of storage disk to attach to vm
