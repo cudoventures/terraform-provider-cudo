@@ -227,7 +227,7 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				MarkdownDescription: "A script to run when VM boots",
 				Optional:            true,
 			},
-			"storage_disks": schema.ListNestedAttribute{
+			"storage_disks": schema.SetNestedAttribute{
 				MarkdownDescription: "Specification for storage disks",
 				Optional:            true,
 				Computed:            true,
@@ -428,6 +428,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		)
 		return
 	}
+
 	appendVmState(vm.VM, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -629,19 +630,13 @@ func appendVmState(vm *vm.VM, state *VMResourceModel) {
 		nic.ExternalIPAddress = types.StringValue(vm.Nics[i].ExternalIpAddress)
 		nic.InternalIPAddress = types.StringValue(vm.Nics[i].InternalIpAddress)
 	}
-	for _, vmDisk := range vm.StorageDisks {
-		isPresent := false
-		for _, stateDisk := range state.StorageDisks {
-			if vmDisk.Id == stateDisk.DiskID.ValueString() {
-				isPresent = true
-			}
-		}
-		if !isPresent {
-			state.StorageDisks = append(state.StorageDisks, &VMStorageDiskResourceModel{
-				DiskID: types.StringValue(vmDisk.Id),
-			})
+	storageDisks := make([]*VMStorageDiskResourceModel, len(vm.StorageDisks))
+	for i, vmDisk := range vm.StorageDisks {
+		storageDisks[i] = &VMStorageDiskResourceModel{
+			DiskID: types.StringValue(vmDisk.Id),
 		}
 	}
+	state.StorageDisks = storageDisks
 	state.GPUModel = types.StringValue(vm.GpuModel)
 	state.ID = types.StringValue(vm.Id)
 	state.InternalIPAddress = types.StringValue(vm.InternalIpAddress)
