@@ -21,7 +21,7 @@ func TestAcc_StorageDiskResource(t *testing.T) {
 	name := "disk-resource-" + testRunID
 
 	diskConf := fmt.Sprintf(`
-resource "cudo_storage_disk" "disk" {
+resource "cudo_storage_disk" "storage_disk_resource" {
 	data_center_id = "black-mesa"
 	id = "%s"
 	size_gib = 15
@@ -53,9 +53,9 @@ resource "cudo_storage_disk" "disk" {
 			{
 				Config: getProviderConfig() + diskConf,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("cudo_storage_disk.disk", "data_center_id", "black-mesa"),
-					resource.TestCheckResourceAttr("cudo_storage_disk.disk", "size_gib", "15"),
-					resource.TestCheckResourceAttr("cudo_storage_disk.disk", "id", name),
+					resource.TestCheckResourceAttr("cudo_storage_disk.storage_disk_resource", "data_center_id", "black-mesa"),
+					resource.TestCheckResourceAttr("cudo_storage_disk.storage_disk_resource", "size_gib", "15"),
+					resource.TestCheckResourceAttr("cudo_storage_disk.storage_disk_resource", "id", name),
 				),
 			},
 		},

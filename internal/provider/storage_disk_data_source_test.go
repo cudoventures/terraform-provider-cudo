@@ -18,17 +18,17 @@ func TestAcc_StorageDiskDataSource(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "tf-ds-test-" + testRunID
+	name := "storage-disk-data-source" + testRunID
 
 	resourcesConfig := fmt.Sprintf(`
-resource "cudo_storage_disk" "disk" {
+resource "cudo_storage_disk" "disk_ds" {
 	data_center_id = "black-mesa"
 	id = "%s"
 	size_gib = 15
 }`, name)
 
 	testAccStorageDiskDataSourceConfig := fmt.Sprintf(`
-data "cudo_storage_disk" "test" {
+data "cudo_storage_disk" "storage_disk_datasource" {
 	id = "%s"
 }`, name)
 
@@ -62,8 +62,8 @@ data "cudo_storage_disk" "test" {
 			{
 				Config: getProviderConfig() + resourcesConfig + testAccStorageDiskDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.cudo_storage_disk.test", "id", name),
-					resource.TestCheckResourceAttr("data.cudo_storage_disk.test", "size_gib", "15"),
+					resource.TestCheckResourceAttr("data.cudo_storage_disk.storage_disk_datasource", "id", name),
+					resource.TestCheckResourceAttr("data.cudo_storage_disk.storage_disk_datasource", "size_gib", "15"),
 				),
 			},
 		},
