@@ -27,6 +27,7 @@ data "cudo_vm" "my-vm" {
 
 ### Optional
 
+- `metadata` (Map of String) The amount of memory allocated to the VM instance.
 - `project_id` (String) The unique identifier of the project the VM is in.
 
 ### Read-Only
