@@ -92,7 +92,7 @@ func (d *VMDataSource) Schema(ctx context.Context, req datasource.SchemaRequest,
 			},
 			"metadata": schema.MapAttribute{
 				ElementType:         types.StringType,
-				MarkdownDescription: "The amount of memory allocated to the VM instance.",
+				MarkdownDescription: "The key value pairs to associate with the VM.",
 				Optional:            true,
 			},
 			"price_hr": schema.Float64Attribute{

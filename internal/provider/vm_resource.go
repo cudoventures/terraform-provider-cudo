@@ -130,7 +130,7 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: "The maximum price per hour for the VM instance.",
+				MarkdownDescription: "The maximum price per hour for the VM instance",
 				Optional:            true,
 			},
 			"memory_gib": schema.Int64Attribute{
@@ -143,7 +143,7 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 			"metadata": schema.MapAttribute{
 				ElementType:         types.StringType,
 				Optional:            true,
-				MarkdownDescription: "Metadata values to help you identify your virtual machine",
+				MarkdownDescription: "Metadata values to associate with the VM instance",
 			},
 			"networks": schema.ListNestedAttribute{
 				Optional:            true,
