@@ -7,20 +7,10 @@ testacc:
 
 .PHONY: test
 test:
-	go test ./...
-
-GOPATH := $(shell go env GOPATH)
-
-$(GOPATH)/bin/swagger: 
-	go install github.com/go-swagger/go-swagger/cmd/swagger@v0.30.5
-
-swagger/public.swagger.json: $(GOPATH)/bin/swagger
-
-internal/client internal/models: swagger/public.swagger.json
-	@swagger generate client -f swagger/public.swagger.json -t internal
+	@go test ./...
 
 docs: $(wildcard examples/*)
 	@go generate ./...
 
 clean:
-	@rm -rf docs internal/compute
+	@rm -rf docs
