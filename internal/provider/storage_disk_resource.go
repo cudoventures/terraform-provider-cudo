@@ -242,10 +242,6 @@ func (r *StorageDiskResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	// state.DataCenterID = types.StringValue()
-	// state.Id = types.StringPointerValue(params.Body.Disk.ID)
-	// state.SizeGib = types.Int64Value(int64(*params.Body.Disk.SizeGib))
-
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 

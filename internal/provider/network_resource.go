@@ -145,9 +145,11 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	state.Gateway = types.StringValue(network.Gateway)
-	state.ExternalIPAddress = types.StringValue(network.ExternalIpAddress)
-	state.InternalIPAddress = types.StringValue(network.InternalIpAddress)
+	if network != nil {
+		state.Gateway = types.StringValue(network.Gateway)
+		state.ExternalIPAddress = types.StringValue(network.ExternalIpAddress)
+		state.InternalIPAddress = types.StringValue(network.InternalIpAddress)
+	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

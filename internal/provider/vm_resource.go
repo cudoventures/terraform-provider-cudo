@@ -430,7 +430,10 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	appendVmState(vm.VM, &state)
+	// if the vm is created and returned update the state.
+	if vm != nil && vm.VM != nil {
+		appendVmState(vm.VM, &state)
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
