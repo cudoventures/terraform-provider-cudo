@@ -283,7 +283,7 @@ type VMResourceModel struct {
 	ExternalIPAddress types.String                  `tfsdk:"external_ip_address"`
 	RenewableEnergy   types.Bool                    `tfsdk:"renewable_energy"`
 	SecurityGroupIDs  types.Set                     `tfsdk:"security_group_ids"`
-	Metadata          types.Map                `tfsdk:"metadata"`
+	Metadata          types.Map                     `tfsdk:"metadata"`
 }
 
 type VMBootDiskResourceModel struct {
@@ -383,6 +383,8 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	storageDiskIds := make([]string, len(state.StorageDisks))
 	for i, diskResource := range state.StorageDisks {
 		storageDiskIds[i] = diskResource.DiskID.ValueString()
+	}
+
 	metadataMap := make(map[string]string)
 	diag := state.Metadata.ElementsAs(ctx, &metadataMap, false)
 	if diag.HasError() {
