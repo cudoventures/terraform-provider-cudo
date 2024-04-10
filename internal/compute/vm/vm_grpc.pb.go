@@ -35,6 +35,7 @@ const (
 	VMService_ListVMMachineTypes_FullMethodName   = "/org.cudo.compute.v1.VMService/ListVMMachineTypes"
 	VMService_ListVMMachineTypes2_FullMethodName  = "/org.cudo.compute.v1.VMService/ListVMMachineTypes2"
 	VMService_ListVMDataCenters_FullMethodName    = "/org.cudo.compute.v1.VMService/ListVMDataCenters"
+	VMService_ListVMGpuModels_FullMethodName      = "/org.cudo.compute.v1.VMService/ListVMGpuModels"
 	VMService_CreatePrivateVMImage_FullMethodName = "/org.cudo.compute.v1.VMService/CreatePrivateVMImage"
 	VMService_DeletePrivateVMImage_FullMethodName = "/org.cudo.compute.v1.VMService/DeletePrivateVMImage"
 	VMService_GetPrivateVMImage_FullMethodName    = "/org.cudo.compute.v1.VMService/GetPrivateVMImage"
@@ -76,6 +77,7 @@ type VMServiceClient interface {
 	ListVMMachineTypes(ctx context.Context, in *ListVMMachineTypesRequest, opts ...grpc.CallOption) (*ListVMMachineTypesResponse, error)
 	ListVMMachineTypes2(ctx context.Context, in *ListVMMachineTypes2Request, opts ...grpc.CallOption) (*ListVMMachineTypes2Response, error)
 	ListVMDataCenters(ctx context.Context, in *ListVMDataCentersRequest, opts ...grpc.CallOption) (*ListVMDataCentersResponse, error)
+	ListVMGpuModels(ctx context.Context, in *ListVMGpuModelsRequest, opts ...grpc.CallOption) (*ListVMGpuModelsResponse, error)
 	CreatePrivateVMImage(ctx context.Context, in *CreatePrivateVMImageRequest, opts ...grpc.CallOption) (*CreatePrivateVMImageResponse, error)
 	DeletePrivateVMImage(ctx context.Context, in *DeletePrivateVMImageRequest, opts ...grpc.CallOption) (*DeletePrivateVMImageResponse, error)
 	GetPrivateVMImage(ctx context.Context, in *GetPrivateVMImageRequest, opts ...grpc.CallOption) (*GetPrivateVMImageResponse, error)
@@ -243,6 +245,15 @@ func (c *vMServiceClient) ListVMMachineTypes2(ctx context.Context, in *ListVMMac
 func (c *vMServiceClient) ListVMDataCenters(ctx context.Context, in *ListVMDataCentersRequest, opts ...grpc.CallOption) (*ListVMDataCentersResponse, error) {
 	out := new(ListVMDataCentersResponse)
 	err := c.cc.Invoke(ctx, VMService_ListVMDataCenters_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vMServiceClient) ListVMGpuModels(ctx context.Context, in *ListVMGpuModelsRequest, opts ...grpc.CallOption) (*ListVMGpuModelsResponse, error) {
+	out := new(ListVMGpuModelsResponse)
+	err := c.cc.Invoke(ctx, VMService_ListVMGpuModels_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -440,6 +451,7 @@ type VMServiceServer interface {
 	ListVMMachineTypes(context.Context, *ListVMMachineTypesRequest) (*ListVMMachineTypesResponse, error)
 	ListVMMachineTypes2(context.Context, *ListVMMachineTypes2Request) (*ListVMMachineTypes2Response, error)
 	ListVMDataCenters(context.Context, *ListVMDataCentersRequest) (*ListVMDataCentersResponse, error)
+	ListVMGpuModels(context.Context, *ListVMGpuModelsRequest) (*ListVMGpuModelsResponse, error)
 	CreatePrivateVMImage(context.Context, *CreatePrivateVMImageRequest) (*CreatePrivateVMImageResponse, error)
 	DeletePrivateVMImage(context.Context, *DeletePrivateVMImageRequest) (*DeletePrivateVMImageResponse, error)
 	GetPrivateVMImage(context.Context, *GetPrivateVMImageRequest) (*GetPrivateVMImageResponse, error)
@@ -513,6 +525,9 @@ func (UnimplementedVMServiceServer) ListVMMachineTypes2(context.Context, *ListVM
 }
 func (UnimplementedVMServiceServer) ListVMDataCenters(context.Context, *ListVMDataCentersRequest) (*ListVMDataCentersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListVMDataCenters not implemented")
+}
+func (UnimplementedVMServiceServer) ListVMGpuModels(context.Context, *ListVMGpuModelsRequest) (*ListVMGpuModelsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListVMGpuModels not implemented")
 }
 func (UnimplementedVMServiceServer) CreatePrivateVMImage(context.Context, *CreatePrivateVMImageRequest) (*CreatePrivateVMImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePrivateVMImage not implemented")
@@ -868,6 +883,24 @@ func _VMService_ListVMDataCenters_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(VMServiceServer).ListVMDataCenters(ctx, req.(*ListVMDataCentersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VMService_ListVMGpuModels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListVMGpuModelsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VMServiceServer).ListVMGpuModels(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VMService_ListVMGpuModels_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VMServiceServer).ListVMGpuModels(ctx, req.(*ListVMGpuModelsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1284,6 +1317,10 @@ var VMService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListVMDataCenters",
 			Handler:    _VMService_ListVMDataCenters_Handler,
+		},
+		{
+			MethodName: "ListVMGpuModels",
+			Handler:    _VMService_ListVMGpuModels_Handler,
 		},
 		{
 			MethodName: "CreatePrivateVMImage",
