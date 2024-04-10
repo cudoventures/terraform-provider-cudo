@@ -21,7 +21,6 @@ resource "cudo_vm" "my-vm-max-price" {
   boot_disk = {
     image_id = "debian-11"
   }
-  max_price_hr = 0.003
   networks = [
     {
       network_id         = "my-network"

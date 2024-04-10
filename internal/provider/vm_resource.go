@@ -24,7 +24,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"google.golang.org/genproto/googleapis/type/decimal"
 	"google.golang.org/grpc/codes"
 )
 
@@ -125,13 +124,6 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Optional:            true,
 				Computed:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
-			},
-			"max_price_hr": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: "The maximum price per hour for the VM instance",
-				Optional:            true,
 			},
 			"memory_gib": schema.Int64Attribute{
 				PlanModifiers: []planmodifier.Int64{
@@ -261,7 +253,6 @@ type VMResourceModel struct {
 	GPUModel          types.String             `tfsdk:"gpu_model"`
 	ID                types.String             `tfsdk:"id"`
 	MachineType       types.String             `tfsdk:"machine_type"`
-	MaxPriceHr        types.String             `tfsdk:"max_price_hr"`
 	MemoryGib         types.Int64              `tfsdk:"memory_gib"`
 	Password          types.String             `tfsdk:"password"`
 	PriceHr           types.String             `tfsdk:"price_hr"`
@@ -368,11 +359,6 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	var maxPriceHr *decimal.Decimal
-	if !state.MaxPriceHr.IsNull() {
-		maxPriceHr = &decimal.Decimal{Value: state.MaxPriceHr.ValueString()}
-	}
-
 	metadataMap := make(map[string]string)
 	diag := state.Metadata.ElementsAs(ctx, &metadataMap, false)
 	if diag.HasError() {
@@ -386,7 +372,6 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		DataCenterId:     state.DataCenterID.ValueString(),
 		Gpus:             int32(state.GPUs.ValueInt64()),
 		MachineType:      state.MachineType.ValueString(),
-		MaxPriceHr:       maxPriceHr,
 		MemoryGib:        int32(state.MemoryGib.ValueInt64()),
 		Nics:             nics,
 		BootDiskImageId:  state.BootDisk.ImageID.ValueString(),
