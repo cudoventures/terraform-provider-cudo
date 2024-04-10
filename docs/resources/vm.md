@@ -64,7 +64,6 @@ resource "cudo_vm" "my-vm" {
 - `gpu_model` (String) The model of the GPU.
 - `gpus` (Number) Number of GPUs
 - `machine_type` (String) VM machine type, from machine type data source
-- `max_price_hr` (String) The maximum price per hour for the VM instance
 - `memory_gib` (Number) Amount of VM memory in GiB
 - `metadata` (Map of String) Metadata values to associate with the VM instance
 - `networks` (Attributes List) Network adapters for private networks (see [below for nested schema](#nestedatt--networks))
