@@ -29,7 +29,6 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 }
 
 func getProviderConfig() string {
-
 	return fmt.Sprintf(`
 provider "cudo" {
   api_key            = "%s"

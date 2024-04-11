@@ -30,8 +30,15 @@ resource "cudo_vm" "my-vm-max-price" {
   ]
 }
 
+resource "cudo_storage_disk" "my-storage-disk" {
+  data_center_id = "gb-bournemouth-1"
+  id             = "my-disk"
+  size_gib       = 100
+}
+
 # pick a specific data center and machine type
 resource "cudo_vm" "my-vm" {
+  depends_on     = [cudo_storage_disk.my-storage-disk]
   id             = "terra-vm-1"
   machine_type   = "standard"
   data_center_id = "gb-bournemouth-1"
@@ -41,6 +48,11 @@ resource "cudo_vm" "my-vm" {
     image_id = "debian-11"
     size_gib = 50
   }
+  storage_disks = [
+    {
+      disk_id = "my-disk"
+    }
+  ]
   ssh_key_source = "project"
   start_script   = <<EOF
                      touch /multiline-script.txt
@@ -64,7 +76,6 @@ resource "cudo_vm" "my-vm" {
 - `gpu_model` (String) The model of the GPU.
 - `gpus` (Number) Number of GPUs
 - `machine_type` (String) VM machine type, from machine type data source
-- `max_price_hr` (String) The maximum price per hour for the VM instance
 - `memory_gib` (Number) Amount of VM memory in GiB
 - `metadata` (Map of String) Metadata values to associate with the VM instance
 - `networks` (Attributes List) Network adapters for private networks (see [below for nested schema](#nestedatt--networks))
@@ -74,6 +85,7 @@ resource "cudo_vm" "my-vm" {
 - `ssh_key_source` (String) Which SSH keys to add to the VM: project (default), user or custom
 - `ssh_keys` (List of String) List of SSH keys to add to the VM, ssh_key_source must be set to custom
 - `start_script` (String) A script to run when VM boots
+- `storage_disks` (Attributes Set) Specification for storage disks (see [below for nested schema](#nestedatt--storage_disks))
 - `vcpus` (Number) Number of VCPUs
 
 ### Read-Only
@@ -111,3 +123,11 @@ Read-Only:
 
 - `external_ip_address` (String) The external IP address of the NIC.
 - `internal_ip_address` (String) The internal IP address of the NIC.
+
+
+<a id="nestedatt--storage_disks"></a>
+### Nested Schema for `storage_disks`
+
+Required:
+
+- `disk_id` (String) ID of storage disk to attach to vm

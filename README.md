@@ -25,7 +25,7 @@ See docs directory
 
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above).
 
-The Cudo API client is generated in the cudo-compute-market repo using the "make tf" command, copy the generated "compute" folder from cudo-compute-market/clients/go-grpc/ to terraform-provider-cudo/internal/.
+The Cudo API client is generated in the cudo-compute-market repo using the `make tf` command, copy the generated "compute" folder from cudo-compute-market/clients/go-grpc/ to terraform-provider-cudo/internal/.
 
 To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 
