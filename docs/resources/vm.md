@@ -30,8 +30,15 @@ resource "cudo_vm" "my-vm-max-price" {
   ]
 }
 
+resource "cudo_storage_disk" "my-storage-disk" {
+  data_center_id = "gb-bournemouth-1"
+  id             = "my-disk"
+  size_gib       = 100
+}
+
 # pick a specific data center and machine type
 resource "cudo_vm" "my-vm" {
+  depends_on     = [cudo_storage_disk.my-storage-disk]
   id             = "terra-vm-1"
   machine_type   = "standard"
   data_center_id = "gb-bournemouth-1"
@@ -41,6 +48,11 @@ resource "cudo_vm" "my-vm" {
     image_id = "debian-11"
     size_gib = 50
   }
+  storage_disks = [
+    {
+      disk_id = "my-disk"
+    }
+  ]
   ssh_key_source = "project"
   start_script   = <<EOF
                      touch /multiline-script.txt
