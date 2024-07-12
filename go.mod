@@ -7,7 +7,7 @@ toolchain go1.22.0
 require (
 	github.com/google/gnostic v0.7.0
 	github.com/hashicorp/terraform-plugin-docs v0.19.4
-	github.com/hashicorp/terraform-plugin-framework v1.9.0
+	github.com/hashicorp/terraform-plugin-framework v1.10.0
 	github.com/hashicorp/terraform-plugin-framework-validators v0.12.0
 	github.com/hashicorp/terraform-plugin-log v0.9.0
 	google.golang.org/genproto v0.0.0-20240228224816-df926f6c8641
