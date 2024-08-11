@@ -181,10 +181,6 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Sensitive:           true,
 				Validators:          []validator.String{stringvalidator.LengthBetween(6, 64)},
 			},
-			"price_hr": schema.StringAttribute{
-				MarkdownDescription: "The current price per hour for the VM instance.",
-				Computed:            true,
-			},
 			"project_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
@@ -271,7 +267,6 @@ type VMResourceModel struct {
 	MachineType       types.String                  `tfsdk:"machine_type"`
 	MemoryGib         types.Int64                   `tfsdk:"memory_gib"`
 	Password          types.String                  `tfsdk:"password"`
-	PriceHr           types.String                  `tfsdk:"price_hr"`
 	ProjectID         types.String                  `tfsdk:"project_id"`
 	SSHKeys           []types.String                `tfsdk:"ssh_keys"`
 	SSHKeySource      types.String                  `tfsdk:"ssh_key_source"`
@@ -541,20 +536,42 @@ func waitForVmAvailable(ctx context.Context, projectId string, vmID string, c vm
 		if err != nil {
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
 				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s not found: ", vmID, projectId))
-				return res, "done", nil
+				return res, vm.VM_DELETED.String(), nil
 			}
 			return nil, "", err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectId, res.VM.ShortState))
-		return res, res.VM.ShortState, nil
+		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectId, res.VM.State))
+		return res, res.VM.State.String(), nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectId))
 
 	stateConf := &helper.StateChangeConf{
-		Pending:    []string{"boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"done", "fail", "poff", "runn", "stop", "susp", "unde"},
+		Pending: []string{
+			vm.VM_CLONING.String(),
+			vm.VM_CREATING_SNAPSHOT.String(),
+			vm.VM_DELETING_SNAPSHOT.String(),
+			vm.VM_DELETING.String(),
+			vm.VM_HOTPLUGGING.String(),
+			vm.VM_MIGRATING.String(),
+			vm.VM_PENDING.String(),
+			vm.VM_RECREATING.String(),
+			vm.VM_RESIZING_DISK.String(),
+			vm.VM_RESIZING.String(),
+			vm.VM_REVERTING_SNAPSHOT.String(),
+			vm.VM_STARTING.String(),
+			vm.VM_STOPPING.String(),
+			vm.VM_SUSPENDING.String(),
+			vm.VM_UNKNOWN.String(),
+		},
+		Target: []string{
+			vm.VM_ACTIVE.String(),
+			vm.VM_DELETED.String(),
+			vm.VM_FAILED.String(),
+			vm.VM_STOPPED.String(),
+			vm.VM_SUSPENDED.String(),
+		},
 		Refresh:    refreshFunc,
 		Timeout:    2 * time.Hour,
 		Delay:      1 * time.Second,
@@ -564,11 +581,11 @@ func waitForVmAvailable(ctx context.Context, projectId string, vmID string, c vm
 	if res, err := stateConf.WaitForState(ctx); err != nil {
 		return nil, fmt.Errorf("error waiting for VM %s in project %s to become available: %w", vmID, projectId, err)
 	} else if vm, ok := res.(*vm.GetVMResponse); ok {
-		var shortState string
+		var state string
 		if vm != nil && vm.VM != nil {
-			shortState = vm.VM.ShortState
+			state = vm.VM.State.String()
 		}
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectId, shortState))
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectId, state))
 		return vm, nil
 	} else {
 		return nil, fmt.Errorf("error waiting for VM: %v", res)
@@ -583,22 +600,22 @@ func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VM
 		})
 		if err != nil {
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
-				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s is done: ", vmID, projectId))
-				return res, "done", nil
+				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s has been deleted: ", vmID, projectId))
+				return res, "deleted", nil
 			}
 			tflog.Error(ctx, fmt.Sprintf("error getting VM %s in project %s: %v", vmID, projectId, err))
 			return nil, "", err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectId, res.VM.ShortState))
-		return res, res.VM.ShortState, nil
+		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectId, res.VM.State))
+		return res, "pending", nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectId))
 
 	stateConf := &helper.StateChangeConf{
-		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"done"},
+		Pending:    []string{"pending"},
+		Target:     []string{"deleted"},
 		Refresh:    refreshFunc,
 		Timeout:    2 * time.Hour,
 		MinTimeout: 3 * time.Second,
@@ -607,11 +624,11 @@ func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VM
 	if res, err := stateConf.WaitForState(ctx); err != nil {
 		return nil, fmt.Errorf("error waiting for VM %s in project %s to become done: %w", vmID, projectId, err)
 	} else if vm, ok := res.(*vm.GetVMResponse); ok {
-		var shortState string
+		var state string
 		if vm != nil && vm.VM != nil {
-			shortState = vm.VM.ShortState
+			state = vm.VM.State.String()
 		}
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectId, shortState))
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectId, state))
 		return vm, nil
 	} else {
 		return nil, fmt.Errorf("error waiting for VM: %v", res)
@@ -645,6 +662,5 @@ func appendVmState(vm *vm.VM, state *VMResourceModel) {
 	state.ID = types.StringValue(vm.Id)
 	state.InternalIPAddress = types.StringValue(vm.InternalIpAddress)
 	state.ExternalIPAddress = types.StringValue(vm.ExternalIpAddress)
-	state.PriceHr = types.StringValue(fmt.Sprintf("%0.2f", vm.PriceHr))
 	state.RenewableEnergy = types.BoolValue(vm.RenewableEnergy)
 }

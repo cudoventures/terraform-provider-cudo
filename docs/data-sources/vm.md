@@ -41,5 +41,4 @@ data "cudo_vm" "my-vm" {
 - `image_id` (String) The unique identifier of the image used to create the VM instance.
 - `internal_ip_address` (String) The internal IP address of the VM instance.
 - `memory_gib` (Number) The amount of memory allocated to the VM instance.
-- `price_hr` (Number) The price per hour for the VM instance.
 - `vcpus` (Number)

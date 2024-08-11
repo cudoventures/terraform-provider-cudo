@@ -24,20 +24,19 @@ type VMDataSource struct {
 }
 
 type VMDataSourceModel struct {
-	Id                types.String  `tfsdk:"id"`
-	BootDiskSizeGib   types.Int64   `tfsdk:"boot_disk_size_gib"`
-	CPUModel          types.String  `tfsdk:"cpu_model"`
-	DatacenterID      types.String  `tfsdk:"data_center_id"`
-	GpuModel          types.String  `tfsdk:"gpu_model"`
-	Gpus              types.Int64   `tfsdk:"gpus"`
-	ImageID           types.String  `tfsdk:"image_id"`
-	InternalIPAddress types.String  `tfsdk:"internal_ip_address"`
-	ExternalIPAddress types.String  `tfsdk:"external_ip_address"`
-	Memory            types.Int64   `tfsdk:"memory_gib"`
-	Metadata          types.Map     `tfsdk:"metadata"`
-	PriceHr           types.Float64 `tfsdk:"price_hr"`
-	ProjectID         types.String  `tfsdk:"project_id"`
-	Vcpus             types.Int64   `tfsdk:"vcpus"`
+	Id                types.String `tfsdk:"id"`
+	BootDiskSizeGib   types.Int64  `tfsdk:"boot_disk_size_gib"`
+	CPUModel          types.String `tfsdk:"cpu_model"`
+	DatacenterID      types.String `tfsdk:"data_center_id"`
+	GpuModel          types.String `tfsdk:"gpu_model"`
+	Gpus              types.Int64  `tfsdk:"gpus"`
+	ImageID           types.String `tfsdk:"image_id"`
+	InternalIPAddress types.String `tfsdk:"internal_ip_address"`
+	ExternalIPAddress types.String `tfsdk:"external_ip_address"`
+	Memory            types.Int64  `tfsdk:"memory_gib"`
+	Metadata          types.Map    `tfsdk:"metadata"`
+	ProjectID         types.String `tfsdk:"project_id"`
+	Vcpus             types.Int64  `tfsdk:"vcpus"`
 }
 
 func (d *VMDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -94,10 +93,6 @@ func (d *VMDataSource) Schema(ctx context.Context, req datasource.SchemaRequest,
 				ElementType:         types.StringType,
 				MarkdownDescription: "The key value pairs to associate with the VM.",
 				Optional:            true,
-			},
-			"price_hr": schema.Float64Attribute{
-				MarkdownDescription: "The price per hour for the VM instance.",
-				Computed:            true,
 			},
 			"project_id": schema.StringAttribute{
 				MarkdownDescription: "The unique identifier of the project the VM is in.",
@@ -176,7 +171,6 @@ func (d *VMDataSource) Read(ctx context.Context, req datasource.ReadRequest, res
 	state.ExternalIPAddress = types.StringValue(res.VM.ExternalIpAddress)
 	state.Metadata = metadataMap
 	state.Memory = types.Int64Value(int64(res.VM.Memory))
-	state.PriceHr = types.Float64Value(float64(res.VM.PriceHr))
 	state.Vcpus = types.Int64Value(int64(res.VM.Vcpus))
 
 	// Write logs using the tflog package

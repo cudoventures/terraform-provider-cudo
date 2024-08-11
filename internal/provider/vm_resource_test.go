@@ -52,15 +52,15 @@ resource "cudo_vm" "vm" {
 			}
 
 			getRes, err := cl.GetVM(ctx, getParams)
-			if err == nil && getRes.VM.ShortState != "epil" {
+			if err == nil && getRes.VM.State != vm.VM_DELETING {
 				terminateParams := &vm.TerminateVMRequest{
 					Id:        name,
 					ProjectId: projectID,
 				}
 				res, err := cl.TerminateVM(ctx, terminateParams)
-				t.Logf("(%s) %#v: %v", getRes.VM.ShortState, res, err)
+				t.Logf("(%s) %#v: %v", getRes.VM.State.String(), res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s , %s", getRes.VM.Id, getRes.VM.ShortState)
+				return fmt.Errorf("vm resource not destroyed %s , %s", getRes.VM.Id, getRes.VM.State.String())
 			}
 			return nil
 		},
@@ -78,7 +78,6 @@ resource "cudo_vm" "vm" {
 					resource.TestCheckResourceAttr("cudo_vm.vm", "data_center_id", "black-mesa"),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "gpu_model", ""),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "memory_gib", "2"),
-					resource.TestCheckResourceAttrSet("cudo_vm.vm", "price_hr"),
 					resource.TestCheckResourceAttrSet("cudo_vm.vm", "internal_ip_address"),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "renewable_energy", "true"),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "vcpus", "1"),
@@ -127,15 +126,15 @@ resource "cudo_vm" "vm-minimal" {
 
 			ins, err := cl.GetVM(ctx, getParams)
 
-			if err == nil && ins.VM.ShortState != "epil" {
+			if err == nil && ins.VM.State != vm.VM_DELETING {
 				terminateParams := &vm.TerminateVMRequest{
 					Id:        name,
 					ProjectId: projectID,
 				}
 				res, err := cl.TerminateVM(ctx, terminateParams)
-				t.Logf("(%s) %#v: %v", ins.VM.ShortState, res, err)
+				t.Logf("(%s) %#v: %v", ins.VM.State.String(), res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.ShortState)
+				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.State.String())
 			}
 			return nil
 		},
@@ -153,7 +152,6 @@ resource "cudo_vm" "vm-minimal" {
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "data_center_id", "black-mesa"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "gpu_model", ""),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "memory_gib", "2"),
-					resource.TestCheckResourceAttrSet("cudo_vm.vm-minimal", "price_hr"),
 					resource.TestCheckResourceAttrSet("cudo_vm.vm-minimal", "internal_ip_address"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "renewable_energy", "true"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "vcpus", "1"),
@@ -202,15 +200,15 @@ resource "cudo_vm" "vm-oob-delete" {
 
 			ins, err := cl.GetVM(ctx, getParams)
 
-			if err == nil && ins.VM.ShortState != "epil" {
+			if err == nil && ins.VM.State != vm.VM_DELETING {
 				terminateParams := &vm.TerminateVMRequest{
 					Id:        name,
 					ProjectId: projectID,
 				}
 				res, err := cl.TerminateVM(ctx, terminateParams)
-				t.Logf("(%s) %#v: %v", ins.VM.ShortState, res, err)
+				t.Logf("(%s) %#v: %v", ins.VM.State.String(), res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.ShortState)
+				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.State.String())
 			}
 			return nil
 		},
@@ -228,7 +226,6 @@ resource "cudo_vm" "vm-oob-delete" {
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "data_center_id", "black-mesa"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "gpu_model", ""),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "memory_gib", "2"),
-					resource.TestCheckResourceAttrSet("cudo_vm.vm-oob-delete", "price_hr"),
 					resource.TestCheckResourceAttrSet("cudo_vm.vm-oob-delete", "internal_ip_address"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "renewable_energy", "true"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "vcpus", "1"),
@@ -256,7 +253,6 @@ resource "cudo_vm" "vm-oob-delete" {
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "data_center_id", "black-mesa"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "gpu_model", ""),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "memory_gib", "2"),
-					resource.TestCheckResourceAttrSet("cudo_vm.vm-oob-delete", "price_hr"),
 					resource.TestCheckResourceAttrSet("cudo_vm.vm-oob-delete", "internal_ip_address"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "renewable_energy", "true"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "vcpus", "1"),
@@ -330,15 +326,15 @@ resource "cudo_vm" "vm_disk_resource" {
 			}
 
 			getRes, err := cl.GetVM(ctx, getParams)
-			if err == nil && getRes.VM.ShortState != "epil" {
+			if err == nil && getRes.VM.State != vm.VM_DELETING {
 				terminateParams := &vm.TerminateVMRequest{
 					Id:        name,
 					ProjectId: projectID,
 				}
 				res, err := cl.TerminateVM(ctx, terminateParams)
-				t.Logf("(%s) %#v: %v", getRes.VM.ShortState, res, err)
+				t.Logf("(%s) %#v: %v", getRes.VM.State.String(), res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s , %s", getRes.VM.Id, getRes.VM.ShortState)
+				return fmt.Errorf("vm resource not destroyed %s , %s", getRes.VM.Id, getRes.VM.State.String())
 			}
 			return nil
 		},
@@ -358,7 +354,6 @@ resource "cudo_vm" "vm_disk_resource" {
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "memory_gib", "2"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "storage_disks.0.disk_id", diskName1),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "storage_disks.1.disk_id", diskName2),
-					resource.TestCheckResourceAttrSet("cudo_vm.vm_disk_resource", "price_hr"),
 					resource.TestCheckResourceAttrSet("cudo_vm.vm_disk_resource", "internal_ip_address"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "renewable_energy", "true"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "vcpus", "1"),

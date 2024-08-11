@@ -113,32 +113,28 @@ func (r *StorageDiskResource) waitForDiskDelete(ctx context.Context, diskID, pro
 			ProjectId: projectID,
 		})
 		if err != nil {
-			// if not found resource has been deleted
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
-				// tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s not found: ", vmID, projectID))
 				return res, "done", nil
 			}
 			return nil, "", err
 		}
 
-		// tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectID, res.Payload.VM.ShortState))
 		return res, res.Disk.DiskState.String(), nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for Disk %s in project %s ", diskID, projectID))
 
-	pendingStates := []string{
-		vm.Disk_DISK_STATE_INIT.String(),
-		vm.Disk_DISK_STATE_READY.String(),
-		vm.Disk_DISK_STATE_USED.String(),
-		vm.Disk_DISK_STATE_DISABLED.String(),
-		vm.Disk_DISK_STATE_LOCKED.String(),
-		vm.Disk_DISK_STATE_ERROR.String(),
-		vm.Disk_DISK_STATE_CLONE.String(),
-		vm.Disk_DISK_STATE_DELETE.String(),
-	}
 	stateConf := &helper.StateChangeConf{
-		Pending:      pendingStates,
+		Pending: []string{
+			vm.Disk_DISK_STATE_INIT.String(),
+			vm.Disk_DISK_STATE_READY.String(),
+			vm.Disk_DISK_STATE_USED.String(),
+			vm.Disk_DISK_STATE_DISABLED.String(),
+			vm.Disk_DISK_STATE_LOCKED.String(),
+			vm.Disk_DISK_STATE_ERROR.String(),
+			vm.Disk_DISK_STATE_CLONE.String(),
+			vm.Disk_DISK_STATE_DELETE.String(),
+		},
 		Target:       []string{"done"},
 		Refresh:      refreshFunc,
 		Timeout:      20 * time.Minute,
@@ -164,30 +160,26 @@ func (r *StorageDiskResource) waitForDiskCreate(ctx context.Context, diskID, pro
 		if err != nil {
 			// if not found assume resource is initializing
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
-				// tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s not found: ", vmID, projectID))
 				return res, vm.Disk_DISK_STATE_INIT.String(), nil
 			}
 			return nil, "", err
 		}
 
-		// tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectID, res.Payload.VM.ShortState))
 		return res, res.Disk.DiskState.String(), nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for Disk %s in project %s ", diskID, projectID))
 
-	pendingStates := []string{
-		vm.Disk_DISK_STATE_INIT.String(),
-		vm.Disk_DISK_STATE_USED.String(),
-		vm.Disk_DISK_STATE_DISABLED.String(),
-		vm.Disk_DISK_STATE_LOCKED.String(),
-		vm.Disk_DISK_STATE_ERROR.String(),
-		vm.Disk_DISK_STATE_CLONE.String(),
-		vm.Disk_DISK_STATE_DELETE.String(),
-	}
-
 	stateConf := &helper.StateChangeConf{
-		Pending:      pendingStates,
+		Pending: []string{
+			vm.Disk_DISK_STATE_INIT.String(),
+			vm.Disk_DISK_STATE_USED.String(),
+			vm.Disk_DISK_STATE_DISABLED.String(),
+			vm.Disk_DISK_STATE_LOCKED.String(),
+			vm.Disk_DISK_STATE_ERROR.String(),
+			vm.Disk_DISK_STATE_CLONE.String(),
+			vm.Disk_DISK_STATE_DELETE.String(),
+		},
 		Target:       []string{vm.Disk_DISK_STATE_READY.String()},
 		Refresh:      refreshFunc,
 		Timeout:      20 * time.Minute,

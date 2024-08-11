@@ -56,14 +56,14 @@ data "cudo_vm" "test" {
 				Id:        name,
 				ProjectId: projectID,
 			})
-			if err == nil && ins.VM.ShortState != "epil" {
+			if err == nil && ins.VM.State != vm.VM_STOPPING {
 				res, err := cl.TerminateVM(ctx, &vm.TerminateVMRequest{
 					Id:        name,
 					ProjectId: projectID,
 				})
 				t.Log(res, err)
 
-				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.ShortState)
+				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.State.String())
 			}
 			return nil
 		},

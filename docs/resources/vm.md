@@ -75,7 +75,6 @@ resource "cudo_vm" "my-vm" {
 
 - `external_ip_address` (String) The external IP address of the VM instance.
 - `internal_ip_address` (String) The internal IP address of the VM instance.
-- `price_hr` (String) The current price per hour for the VM instance.
 - `renewable_energy` (Boolean) Whether the VM instance is powered by renewable energy
 
 <a id="nestedatt--boot_disk"></a>

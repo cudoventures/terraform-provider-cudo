@@ -37,19 +37,19 @@ resource "cudo_network" "network" {
 			}
 
 			getRes, err := cl.GetNetwork(ctx, getParams)
-			if err == nil && getRes.Network.ShortState != "epil" {
+			if err == nil && (getRes.Network.State != network.Network_DELETING && getRes.Network.State != network.Network_STOPPING && getRes.Network.State != network.Network_SUSPENDING) {
 				stopParams := &network.StopNetworkRequest{
 					Id:        name,
 					ProjectId: projectID,
 				}
 				stopRes, err := cl.StopNetwork(ctx, stopParams)
-				t.Logf("(%s) %#v: %v", getRes.Network.ShortState, stopRes, err)
+				t.Logf("(%s) %#v: %v", getRes.Network.State.String(), stopRes, err)
 				if err != nil {
-					return fmt.Errorf("network resource not stopped %s , %s , %s", getRes.Network.Id, getRes.Network.ShortState, err)
+					return fmt.Errorf("network resource not stopped %s , %s , %s", getRes.Network.Id, getRes.Network.State.String(), err)
 				}
 
 				if _, err := waitForNetworkStop(ctx, projectID, name, cl); err != nil {
-					return fmt.Errorf("error waiting for network stopped %s , %s , %s", getRes.Network.Id, getRes.Network.ShortState, err)
+					return fmt.Errorf("error waiting for network stopped %s , %s , %s", getRes.Network.Id, getRes.Network.State.String(), err)
 				}
 
 				terminateParams := &network.DeleteNetworkRequest{
@@ -57,9 +57,9 @@ resource "cudo_network" "network" {
 					ProjectId: projectID,
 				}
 				res, err := cl.DeleteNetwork(ctx, terminateParams)
-				t.Logf("(%s) %#v: %v", getRes.Network.ShortState, res, err)
+				t.Logf("(%s) %#v: %v", getRes.Network.State.String(), res, err)
 
-				return fmt.Errorf("network resource not deleted %s , %s", getRes.Network.Id, getRes.Network.ShortState)
+				return fmt.Errorf("network resource not deleted %s , %s", getRes.Network.Id, getRes.Network.State.String())
 			}
 			return nil
 		},

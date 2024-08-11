@@ -273,20 +273,37 @@ func waitForNetworkAvailable(ctx context.Context, projectID string, networkID st
 		if err != nil {
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
 				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s not found: ", networkID, projectID))
-				return res, "done", nil
+				return res, network.Network_UNKNOWN.String(), nil
 			}
 			return nil, "", err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.ShortState))
-		return res, res.Network.ShortState, nil
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.State.String()))
+		return res, res.Network.State.String(), nil
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
+	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s", networkID, projectID))
 
 	stateConf := &helper.StateChangeConf{
-		Pending:    []string{"boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"done", "fail", "poff", "runn", "stop", "susp", "unde"},
+		Pending: []string{
+			network.Network_CLONING.String(),
+			network.Network_CREATING_SNAPSHOT.String(),
+			network.Network_DELETING_SNAPSHOT.String(),
+			network.Network_DELETING.String(),
+			network.Network_HOTPLUGGING.String(),
+			network.Network_MIGRATING.String(),
+			network.Network_RECREATING.String(),
+			network.Network_RESIZING_DISK.String(),
+			network.Network_RESIZING.String(),
+			network.Network_REVERTING_SNAPSHOT.String(),
+			network.Network_STARTING.String(),
+			network.Network_STOPPING.String(),
+			network.Network_SUSPENDING.String(),
+			network.Network_UNKNOWN.String(),
+		},
+		Target: []string{
+			network.Network_ACTIVE.String(),
+		},
 		Refresh:    refreshFunc,
 		Timeout:    2 * time.Hour,
 		Delay:      1 * time.Second,
@@ -296,7 +313,7 @@ func waitForNetworkAvailable(ctx context.Context, projectID string, networkID st
 	if res, err := stateConf.WaitForState(ctx); err != nil {
 		return nil, fmt.Errorf("error waiting for network %s in project %s to become available: %w", networkID, projectID, err)
 	} else if res, ok := res.(*network.GetNetworkResponse); ok {
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for network %s in project %s (%s)", networkID, projectID, res.Network.ShortState))
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for network %s in project %s (%s)", networkID, projectID, res.Network.State.String()))
 		return res.Network, nil
 	}
 
@@ -312,25 +329,43 @@ func waitForNetworkStop(ctx context.Context, projectID string, networkID string,
 		if err != nil {
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
 				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is done: ", networkID, projectID))
-				return res, "done", nil
+				return res, network.Network_DELETED.String(), nil
 			}
 			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
 			return nil, "", err
 		}
-		if res.Network.ShortState == "" {
-			tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is stopped: ", networkID, projectID))
-			return res, "done", nil
-		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.ShortState))
-		return res, res.Network.ShortState, nil
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.State.String()))
+		return res, res.Network.State.String(), nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
 
 	stateConf := &helper.StateChangeConf{
-		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"done"},
+		Pending: []string{
+			network.Network_CLONING.String(),
+			network.Network_CREATING_SNAPSHOT.String(),
+			network.Network_DELETING_SNAPSHOT.String(),
+			network.Network_HOTPLUGGING.String(),
+			network.Network_MIGRATING.String(),
+			network.Network_RECREATING.String(),
+			network.Network_RESIZING_DISK.String(),
+			network.Network_RESIZING.String(),
+			network.Network_REVERTING_SNAPSHOT.String(),
+			network.Network_STARTING.String(),
+			network.Network_STOPPING.String(),
+			network.Network_SUSPENDING.String(),
+			// network could be stopped whilst in these states, so network could be in the state when the delete is requested
+			network.Network_UNKNOWN.String(),
+			network.Network_FAILED.String(),
+			network.Network_ACTIVE.String(),
+			network.Network_SUSPENDED.String(),
+		},
+		Target: []string{
+			network.Network_STOPPED.String(),
+			network.Network_DELETING.String(),
+			network.Network_DELETED.String(),
+		},
 		Refresh:    refreshFunc,
 		Timeout:    20 * time.Minute,
 		MinTimeout: 3 * time.Second,
@@ -352,26 +387,22 @@ func waitForNetworkDelete(ctx context.Context, projectID string, networkID strin
 		if err != nil {
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
 				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is done: ", networkID, projectID))
-				return res, "done", nil
+				return res, "deleted", nil
 			}
 
 			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
 			return nil, "", err
 		}
-		if res.Network.ShortState == "" {
-			tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is stopped: ", networkID, projectID))
-			return res, "stop", nil
-		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.ShortState))
-		return res, res.Network.ShortState, nil
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.State.String()))
+		return res, "pending", nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
 
 	stateConf := &helper.StateChangeConf{
-		Pending:    []string{"fail", "poff", "runn", "stop", "susp", "unde", "boot", "clea", "clon", "dsrz", "epil", "hold", "hotp", "init", "migr", "pend", "prol", "save", "shut", "snap", "unkn"},
-		Target:     []string{"done"},
+		Pending:    []string{"pending"},
+		Target:     []string{"deleted"},
 		Refresh:    refreshFunc,
 		Timeout:    2 * time.Hour,
 		MinTimeout: 3 * time.Second,
