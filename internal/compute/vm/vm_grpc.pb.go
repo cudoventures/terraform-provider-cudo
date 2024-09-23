@@ -56,6 +56,7 @@ const (
 	VMService_DetachSecurityGroup_FullMethodName  = "/org.cudo.compute.v1.VMService/DetachSecurityGroup"
 	VMService_UpdateVMMetadata_FullMethodName     = "/org.cudo.compute.v1.VMService/UpdateVMMetadata"
 	VMService_UpdateVMExpireTime_FullMethodName   = "/org.cudo.compute.v1.VMService/UpdateVMExpireTime"
+	VMService_UpdateVMPassword_FullMethodName     = "/org.cudo.compute.v1.VMService/UpdateVMPassword"
 )
 
 // VMServiceClient is the client API for VMService service.
@@ -99,6 +100,7 @@ type VMServiceClient interface {
 	DetachSecurityGroup(ctx context.Context, in *DetachSecurityGroupRequest, opts ...grpc.CallOption) (*DetachSecurityGroupResponse, error)
 	UpdateVMMetadata(ctx context.Context, in *UpdateVMMetadataRequest, opts ...grpc.CallOption) (*UpdateVMMetadataResponse, error)
 	UpdateVMExpireTime(ctx context.Context, in *UpdateVMExpireTimeRequest, opts ...grpc.CallOption) (*UpdateVMExpireTimeResponse, error)
+	UpdateVMPassword(ctx context.Context, in *UpdateVMPasswordRequest, opts ...grpc.CallOption) (*UpdateVMPasswordResponse, error)
 }
 
 type vMServiceClient struct {
@@ -479,6 +481,16 @@ func (c *vMServiceClient) UpdateVMExpireTime(ctx context.Context, in *UpdateVMEx
 	return out, nil
 }
 
+func (c *vMServiceClient) UpdateVMPassword(ctx context.Context, in *UpdateVMPasswordRequest, opts ...grpc.CallOption) (*UpdateVMPasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateVMPasswordResponse)
+	err := c.cc.Invoke(ctx, VMService_UpdateVMPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VMServiceServer is the server API for VMService service.
 // All implementations must embed UnimplementedVMServiceServer
 // for forward compatibility.
@@ -520,6 +532,7 @@ type VMServiceServer interface {
 	DetachSecurityGroup(context.Context, *DetachSecurityGroupRequest) (*DetachSecurityGroupResponse, error)
 	UpdateVMMetadata(context.Context, *UpdateVMMetadataRequest) (*UpdateVMMetadataResponse, error)
 	UpdateVMExpireTime(context.Context, *UpdateVMExpireTimeRequest) (*UpdateVMExpireTimeResponse, error)
+	UpdateVMPassword(context.Context, *UpdateVMPasswordRequest) (*UpdateVMPasswordResponse, error)
 	mustEmbedUnimplementedVMServiceServer()
 }
 
@@ -640,6 +653,9 @@ func (UnimplementedVMServiceServer) UpdateVMMetadata(context.Context, *UpdateVMM
 }
 func (UnimplementedVMServiceServer) UpdateVMExpireTime(context.Context, *UpdateVMExpireTimeRequest) (*UpdateVMExpireTimeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateVMExpireTime not implemented")
+}
+func (UnimplementedVMServiceServer) UpdateVMPassword(context.Context, *UpdateVMPasswordRequest) (*UpdateVMPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateVMPassword not implemented")
 }
 func (UnimplementedVMServiceServer) mustEmbedUnimplementedVMServiceServer() {}
 func (UnimplementedVMServiceServer) testEmbeddedByValue()                   {}
@@ -1328,6 +1344,24 @@ func _VMService_UpdateVMExpireTime_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VMService_UpdateVMPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateVMPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VMServiceServer).UpdateVMPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VMService_UpdateVMPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VMServiceServer).UpdateVMPassword(ctx, req.(*UpdateVMPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VMService_ServiceDesc is the grpc.ServiceDesc for VMService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1482,6 +1516,10 @@ var VMService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateVMExpireTime",
 			Handler:    _VMService_UpdateVMExpireTime_Handler,
+		},
+		{
+			MethodName: "UpdateVMPassword",
+			Handler:    _VMService_UpdateVMPassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

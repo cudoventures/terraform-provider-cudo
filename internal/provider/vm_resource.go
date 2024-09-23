@@ -9,12 +9,15 @@ import (
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
@@ -65,6 +68,16 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 					},
 				},
 				Required: true,
+			},
+			"commitment_months": schema.Int32Attribute{
+				PlanModifiers: []planmodifier.Int32{
+					int32planmodifier.RequiresReplace(),
+				},
+				MarkdownDescription: "The minimum length of time to commit to the VM instance. It cannot be deleted before the commitment end date.",
+				Optional:            true,
+				Computed:            true,
+				Validators:          []validator.Int32{int32validator.OneOf(0, 1, 3, 6, 12, 24, 36)},
+				Default:             int32default.StaticInt32(0),
 			},
 			"cpu_model": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
@@ -120,7 +133,7 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: "VM machine type, from machine type data source",
+				MarkdownDescription: "VM machine type",
 				Optional:            true,
 				Computed:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
@@ -129,7 +142,7 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: "Amount of VM memory in GiB",
+				MarkdownDescription: "Amount of memory in GiB",
 				Optional:            true,
 			},
 			"metadata": schema.MapAttribute{
@@ -259,6 +272,7 @@ type VMResource struct {
 // VMResourceModel describes the resource data model.
 type VMResourceModel struct {
 	BootDisk          *VMBootDiskResourceModel      `tfsdk:"boot_disk"`
+	CommitmentTerm    types.Int32                   `tfsdk:"commitment_months"`
 	DataCenterID      types.String                  `tfsdk:"data_center_id"`
 	CPUModel          types.String                  `tfsdk:"cpu_model"`
 	GPUs              types.Int64                   `tfsdk:"gpus"`
@@ -387,9 +401,26 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
+	commitmentTerm := vm.CommitmentTerm_COMMITMENT_TERM_NONE
+	switch state.CommitmentTerm.ValueInt32() {
+	case 1:
+		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_1_MONTH
+	case 3:
+		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_3_MONTHS
+	case 6:
+		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_6_MONTHS
+	case 12:
+		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_12_MONTHS
+	case 24:
+		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_24_MONTHS
+	case 36:
+		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_36_MONTHS
+	}
+
 	params := &vm.CreateVMRequest{
 		ProjectId:        projectId,
 		BootDisk:         &bootDisk,
+		CommitmentTerm:   commitmentTerm,
 		DataCenterId:     state.DataCenterID.ValueString(),
 		Gpus:             int32(state.GPUs.ValueInt64()),
 		MachineType:      state.MachineType.ValueString(),
@@ -635,32 +666,48 @@ func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VM
 	}
 }
 
-func appendVmState(vm *vm.VM, state *VMResourceModel) {
-	state.DataCenterID = types.StringValue(vm.DatacenterId)
-	state.CPUModel = types.StringValue(vm.CpuModel)
-	state.GPUs = types.Int64Value(int64(vm.GpuQuantity))
-	state.BootDisk.SizeGib = types.Int64Value(int64(vm.BootDiskSizeGib))
-	if vm.PublicImageId != "" {
-		state.BootDisk.ImageID = types.StringValue(vm.PublicImageId)
+func appendVmState(instance *vm.VM, state *VMResourceModel) {
+	var months int32
+	switch instance.CommitmentTerm {
+	case vm.CommitmentTerm_COMMITMENT_TERM_1_MONTH:
+		months = 1
+	case vm.CommitmentTerm_COMMITMENT_TERM_3_MONTHS:
+		months = 3
+	case vm.CommitmentTerm_COMMITMENT_TERM_6_MONTHS:
+		months = 6
+	case vm.CommitmentTerm_COMMITMENT_TERM_12_MONTHS:
+		months = 12
+	case vm.CommitmentTerm_COMMITMENT_TERM_24_MONTHS:
+		months = 24
+	case vm.CommitmentTerm_COMMITMENT_TERM_36_MONTHS:
+		months = 36
 	}
-	if vm.PrivateImageId != "" {
-		state.BootDisk.ImageID = types.StringValue(vm.PrivateImageId)
+	state.CommitmentTerm = types.Int32Value(months)
+	state.DataCenterID = types.StringValue(instance.DatacenterId)
+	state.CPUModel = types.StringValue(instance.CpuModel)
+	state.GPUs = types.Int64Value(int64(instance.GpuQuantity))
+	state.BootDisk.SizeGib = types.Int64Value(int64(instance.BootDiskSizeGib))
+	if instance.PublicImageId != "" {
+		state.BootDisk.ImageID = types.StringValue(instance.PublicImageId)
 	}
-	state.MachineType = types.StringValue(vm.MachineType)
+	if instance.PrivateImageId != "" {
+		state.BootDisk.ImageID = types.StringValue(instance.PrivateImageId)
+	}
+	state.MachineType = types.StringValue(instance.MachineType)
 	for i, nic := range state.Networks {
-		nic.ExternalIPAddress = types.StringValue(vm.Nics[i].ExternalIpAddress)
-		nic.InternalIPAddress = types.StringValue(vm.Nics[i].InternalIpAddress)
+		nic.ExternalIPAddress = types.StringValue(instance.Nics[i].ExternalIpAddress)
+		nic.InternalIPAddress = types.StringValue(instance.Nics[i].InternalIpAddress)
 	}
 	var storageDisks []*VMStorageDiskResourceModel
-	for _, vmDisk := range vm.StorageDisks {
+	for _, vmDisk := range instance.StorageDisks {
 		storageDisks = append(storageDisks, &VMStorageDiskResourceModel{
 			DiskID: types.StringValue(vmDisk.Id),
 		})
 	}
 	state.StorageDisks = storageDisks
-	state.GPUModel = types.StringValue(vm.GpuModel)
-	state.ID = types.StringValue(vm.Id)
-	state.InternalIPAddress = types.StringValue(vm.InternalIpAddress)
-	state.ExternalIPAddress = types.StringValue(vm.ExternalIpAddress)
-	state.RenewableEnergy = types.BoolValue(vm.RenewableEnergy)
+	state.GPUModel = types.StringValue(instance.GpuModel)
+	state.ID = types.StringValue(instance.Id)
+	state.InternalIPAddress = types.StringValue(instance.InternalIpAddress)
+	state.ExternalIPAddress = types.StringValue(instance.ExternalIpAddress)
+	state.RenewableEnergy = types.BoolValue(instance.RenewableEnergy)
 }
