@@ -54,12 +54,13 @@ resource "cudo_vm" "my-vm" {
 
 ### Optional
 
+- `commitment_months` (Number) The minimum length of time to commit to the VM instance. It cannot be deleted before the commitment end date.
 - `cpu_model` (String) The model of the CPU.
 - `data_center_id` (String) The id of the datacenter where the VM instance is located.
 - `gpu_model` (String) The model of the GPU.
 - `gpus` (Number) Number of GPUs
-- `machine_type` (String) VM machine type, from machine type data source
-- `memory_gib` (Number) Amount of VM memory in GiB
+- `machine_type` (String) VM machine type
+- `memory_gib` (Number) Amount of memory in GiB
 - `metadata` (Map of String) Metadata values to associate with the VM instance
 - `networks` (Attributes List) Network adapters for private networks (see [below for nested schema](#nestedatt--networks))
 - `password` (String, Sensitive) Root password for linux, or Admin password for windows
