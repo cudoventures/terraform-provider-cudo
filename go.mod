@@ -1,7 +1,8 @@
 module github.com/CudoVentures/terraform-provider-cudo
 
-go 1.22
-toolchain go1.22.5
+go 1.22.0
+
+toolchain go1.23.4
 
 require (
 	github.com/google/gnostic v0.7.0

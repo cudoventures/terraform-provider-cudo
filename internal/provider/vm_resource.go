@@ -341,16 +341,16 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	sshKeySource := vm.CreateVMRequest_SSH_KEY_SOURCE_PROJECT
+	sshKeySource := vm.SshKeySource_SSH_KEY_SOURCE_PROJECT
 	switch state.SSHKeySource.ValueString() {
 	case "user":
-		sshKeySource = vm.CreateVMRequest_SSH_KEY_SOURCE_USER
+		sshKeySource = vm.SshKeySource_SSH_KEY_SOURCE_USER
 	case "custom":
-		sshKeySource = vm.CreateVMRequest_SSH_KEY_SOURCE_NONE
+		sshKeySource = vm.SshKeySource_SSH_KEY_SOURCE_NONE
 	}
 
 	var customKeys []string
-	if sshKeySource == vm.CreateVMRequest_SSH_KEY_SOURCE_NONE {
+	if sshKeySource == vm.SshKeySource_SSH_KEY_SOURCE_NONE {
 		for _, key := range state.SSHKeys {
 			customKeys = append(customKeys, key.ValueString())
 		}
