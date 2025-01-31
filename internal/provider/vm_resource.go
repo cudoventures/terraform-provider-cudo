@@ -343,9 +343,9 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 
 	sshKeySource := vm.SshKeySource_SSH_KEY_SOURCE_PROJECT
 	switch state.SSHKeySource.ValueString() {
-	case "user":
+	case "personal", "user":
 		sshKeySource = vm.SshKeySource_SSH_KEY_SOURCE_USER
-	case "custom":
+	case "custom", "none":
 		sshKeySource = vm.SshKeySource_SSH_KEY_SOURCE_NONE
 	}
 
