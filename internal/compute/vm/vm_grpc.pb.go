@@ -19,44 +19,45 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	VMService_CountVMs_FullMethodName             = "/org.cudo.compute.v1.VMService/CountVMs"
-	VMService_CreateVM_FullMethodName             = "/org.cudo.compute.v1.VMService/CreateVM"
-	VMService_GetVM_FullMethodName                = "/org.cudo.compute.v1.VMService/GetVM"
-	VMService_ListVMs_FullMethodName              = "/org.cudo.compute.v1.VMService/ListVMs"
-	VMService_MonitorVM_FullMethodName            = "/org.cudo.compute.v1.VMService/MonitorVM"
-	VMService_RebootVM_FullMethodName             = "/org.cudo.compute.v1.VMService/RebootVM"
-	VMService_StartVM_FullMethodName              = "/org.cudo.compute.v1.VMService/StartVM"
-	VMService_StopVM_FullMethodName               = "/org.cudo.compute.v1.VMService/StopVM"
-	VMService_TerminateVM_FullMethodName          = "/org.cudo.compute.v1.VMService/TerminateVM"
-	VMService_ConnectVM_FullMethodName            = "/org.cudo.compute.v1.VMService/ConnectVM"
-	VMService_ResizeVM_FullMethodName             = "/org.cudo.compute.v1.VMService/ResizeVM"
-	VMService_ListVMDisks_FullMethodName          = "/org.cudo.compute.v1.VMService/ListVMDisks"
-	VMService_ListPublicVMImages_FullMethodName   = "/org.cudo.compute.v1.VMService/ListPublicVMImages"
-	VMService_ListVMMachineTypes_FullMethodName   = "/org.cudo.compute.v1.VMService/ListVMMachineTypes"
-	VMService_ListVMMachineTypes2_FullMethodName  = "/org.cudo.compute.v1.VMService/ListVMMachineTypes2"
-	VMService_ListVMDataCenters_FullMethodName    = "/org.cudo.compute.v1.VMService/ListVMDataCenters"
-	VMService_ListVMGpuModels_FullMethodName      = "/org.cudo.compute.v1.VMService/ListVMGpuModels"
-	VMService_CreatePrivateVMImage_FullMethodName = "/org.cudo.compute.v1.VMService/CreatePrivateVMImage"
-	VMService_DeletePrivateVMImage_FullMethodName = "/org.cudo.compute.v1.VMService/DeletePrivateVMImage"
-	VMService_GetPrivateVMImage_FullMethodName    = "/org.cudo.compute.v1.VMService/GetPrivateVMImage"
-	VMService_ListPrivateVMImages_FullMethodName  = "/org.cudo.compute.v1.VMService/ListPrivateVMImages"
-	VMService_UpdatePrivateVMImage_FullMethodName = "/org.cudo.compute.v1.VMService/UpdatePrivateVMImage"
-	VMService_CreateStorageDisk_FullMethodName    = "/org.cudo.compute.v1.VMService/CreateStorageDisk"
-	VMService_ResizeVMDisk_FullMethodName         = "/org.cudo.compute.v1.VMService/ResizeVMDisk"
-	VMService_ListDisks_FullMethodName            = "/org.cudo.compute.v1.VMService/ListDisks"
-	VMService_GetDisk_FullMethodName              = "/org.cudo.compute.v1.VMService/GetDisk"
-	VMService_DeleteStorageDisk_FullMethodName    = "/org.cudo.compute.v1.VMService/DeleteStorageDisk"
-	VMService_AttachStorageDisk_FullMethodName    = "/org.cudo.compute.v1.VMService/AttachStorageDisk"
-	VMService_DetachStorageDisk_FullMethodName    = "/org.cudo.compute.v1.VMService/DetachStorageDisk"
-	VMService_CreateDiskSnapshot_FullMethodName   = "/org.cudo.compute.v1.VMService/CreateDiskSnapshot"
-	VMService_ListDiskSnapshots_FullMethodName    = "/org.cudo.compute.v1.VMService/ListDiskSnapshots"
-	VMService_DeleteDiskSnapshot_FullMethodName   = "/org.cudo.compute.v1.VMService/DeleteDiskSnapshot"
-	VMService_RevertDisk_FullMethodName           = "/org.cudo.compute.v1.VMService/RevertDisk"
-	VMService_AttachSecurityGroup_FullMethodName  = "/org.cudo.compute.v1.VMService/AttachSecurityGroup"
-	VMService_DetachSecurityGroup_FullMethodName  = "/org.cudo.compute.v1.VMService/DetachSecurityGroup"
-	VMService_UpdateVMMetadata_FullMethodName     = "/org.cudo.compute.v1.VMService/UpdateVMMetadata"
-	VMService_UpdateVMExpireTime_FullMethodName   = "/org.cudo.compute.v1.VMService/UpdateVMExpireTime"
-	VMService_UpdateVMPassword_FullMethodName     = "/org.cudo.compute.v1.VMService/UpdateVMPassword"
+	VMService_CountVMs_FullMethodName                  = "/org.cudo.compute.v1.VMService/CountVMs"
+	VMService_CreateVM_FullMethodName                  = "/org.cudo.compute.v1.VMService/CreateVM"
+	VMService_GetVM_FullMethodName                     = "/org.cudo.compute.v1.VMService/GetVM"
+	VMService_ListVMs_FullMethodName                   = "/org.cudo.compute.v1.VMService/ListVMs"
+	VMService_MonitorVM_FullMethodName                 = "/org.cudo.compute.v1.VMService/MonitorVM"
+	VMService_RebootVM_FullMethodName                  = "/org.cudo.compute.v1.VMService/RebootVM"
+	VMService_StartVM_FullMethodName                   = "/org.cudo.compute.v1.VMService/StartVM"
+	VMService_StopVM_FullMethodName                    = "/org.cudo.compute.v1.VMService/StopVM"
+	VMService_TerminateVM_FullMethodName               = "/org.cudo.compute.v1.VMService/TerminateVM"
+	VMService_ConnectVM_FullMethodName                 = "/org.cudo.compute.v1.VMService/ConnectVM"
+	VMService_ResizeVM_FullMethodName                  = "/org.cudo.compute.v1.VMService/ResizeVM"
+	VMService_ListVMDisks_FullMethodName               = "/org.cudo.compute.v1.VMService/ListVMDisks"
+	VMService_ListPublicVMImages_FullMethodName        = "/org.cudo.compute.v1.VMService/ListPublicVMImages"
+	VMService_ListVMMachineTypes_FullMethodName        = "/org.cudo.compute.v1.VMService/ListVMMachineTypes"
+	VMService_ListVMMachineTypes2_FullMethodName       = "/org.cudo.compute.v1.VMService/ListVMMachineTypes2"
+	VMService_ListVMDataCenters_FullMethodName         = "/org.cudo.compute.v1.VMService/ListVMDataCenters"
+	VMService_ListVMGpuModels_FullMethodName           = "/org.cudo.compute.v1.VMService/ListVMGpuModels"
+	VMService_CreatePrivateVMImage_FullMethodName      = "/org.cudo.compute.v1.VMService/CreatePrivateVMImage"
+	VMService_DeletePrivateVMImage_FullMethodName      = "/org.cudo.compute.v1.VMService/DeletePrivateVMImage"
+	VMService_GetPrivateVMImage_FullMethodName         = "/org.cudo.compute.v1.VMService/GetPrivateVMImage"
+	VMService_ListPrivateVMImages_FullMethodName       = "/org.cudo.compute.v1.VMService/ListPrivateVMImages"
+	VMService_UpdatePrivateVMImage_FullMethodName      = "/org.cudo.compute.v1.VMService/UpdatePrivateVMImage"
+	VMService_CreateStorageDisk_FullMethodName         = "/org.cudo.compute.v1.VMService/CreateStorageDisk"
+	VMService_ResizeVMDisk_FullMethodName              = "/org.cudo.compute.v1.VMService/ResizeVMDisk"
+	VMService_ListDisks_FullMethodName                 = "/org.cudo.compute.v1.VMService/ListDisks"
+	VMService_GetDisk_FullMethodName                   = "/org.cudo.compute.v1.VMService/GetDisk"
+	VMService_DeleteStorageDisk_FullMethodName         = "/org.cudo.compute.v1.VMService/DeleteStorageDisk"
+	VMService_AttachStorageDisk_FullMethodName         = "/org.cudo.compute.v1.VMService/AttachStorageDisk"
+	VMService_DetachStorageDisk_FullMethodName         = "/org.cudo.compute.v1.VMService/DetachStorageDisk"
+	VMService_CreateDiskSnapshot_FullMethodName        = "/org.cudo.compute.v1.VMService/CreateDiskSnapshot"
+	VMService_ListDiskSnapshots_FullMethodName         = "/org.cudo.compute.v1.VMService/ListDiskSnapshots"
+	VMService_DeleteDiskSnapshot_FullMethodName        = "/org.cudo.compute.v1.VMService/DeleteDiskSnapshot"
+	VMService_RevertDisk_FullMethodName                = "/org.cudo.compute.v1.VMService/RevertDisk"
+	VMService_AttachSecurityGroup_FullMethodName       = "/org.cudo.compute.v1.VMService/AttachSecurityGroup"
+	VMService_DetachSecurityGroup_FullMethodName       = "/org.cudo.compute.v1.VMService/DetachSecurityGroup"
+	VMService_UpdateVMMetadata_FullMethodName          = "/org.cudo.compute.v1.VMService/UpdateVMMetadata"
+	VMService_UpdateVMExpireTime_FullMethodName        = "/org.cudo.compute.v1.VMService/UpdateVMExpireTime"
+	VMService_UpdateVMPassword_FullMethodName          = "/org.cudo.compute.v1.VMService/UpdateVMPassword"
+	VMService_UpdateVMAuthorizedSSHKeys_FullMethodName = "/org.cudo.compute.v1.VMService/UpdateVMAuthorizedSSHKeys"
 )
 
 // VMServiceClient is the client API for VMService service.
@@ -101,6 +102,7 @@ type VMServiceClient interface {
 	UpdateVMMetadata(ctx context.Context, in *UpdateVMMetadataRequest, opts ...grpc.CallOption) (*UpdateVMMetadataResponse, error)
 	UpdateVMExpireTime(ctx context.Context, in *UpdateVMExpireTimeRequest, opts ...grpc.CallOption) (*UpdateVMExpireTimeResponse, error)
 	UpdateVMPassword(ctx context.Context, in *UpdateVMPasswordRequest, opts ...grpc.CallOption) (*UpdateVMPasswordResponse, error)
+	UpdateVMAuthorizedSSHKeys(ctx context.Context, in *UpdateVMAuthorizedSSHKeysRequest, opts ...grpc.CallOption) (*UpdateVMAuthorizedSSHKeysResponse, error)
 }
 
 type vMServiceClient struct {
@@ -491,6 +493,16 @@ func (c *vMServiceClient) UpdateVMPassword(ctx context.Context, in *UpdateVMPass
 	return out, nil
 }
 
+func (c *vMServiceClient) UpdateVMAuthorizedSSHKeys(ctx context.Context, in *UpdateVMAuthorizedSSHKeysRequest, opts ...grpc.CallOption) (*UpdateVMAuthorizedSSHKeysResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateVMAuthorizedSSHKeysResponse)
+	err := c.cc.Invoke(ctx, VMService_UpdateVMAuthorizedSSHKeys_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VMServiceServer is the server API for VMService service.
 // All implementations must embed UnimplementedVMServiceServer
 // for forward compatibility.
@@ -533,6 +545,7 @@ type VMServiceServer interface {
 	UpdateVMMetadata(context.Context, *UpdateVMMetadataRequest) (*UpdateVMMetadataResponse, error)
 	UpdateVMExpireTime(context.Context, *UpdateVMExpireTimeRequest) (*UpdateVMExpireTimeResponse, error)
 	UpdateVMPassword(context.Context, *UpdateVMPasswordRequest) (*UpdateVMPasswordResponse, error)
+	UpdateVMAuthorizedSSHKeys(context.Context, *UpdateVMAuthorizedSSHKeysRequest) (*UpdateVMAuthorizedSSHKeysResponse, error)
 	mustEmbedUnimplementedVMServiceServer()
 }
 
@@ -656,6 +669,9 @@ func (UnimplementedVMServiceServer) UpdateVMExpireTime(context.Context, *UpdateV
 }
 func (UnimplementedVMServiceServer) UpdateVMPassword(context.Context, *UpdateVMPasswordRequest) (*UpdateVMPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateVMPassword not implemented")
+}
+func (UnimplementedVMServiceServer) UpdateVMAuthorizedSSHKeys(context.Context, *UpdateVMAuthorizedSSHKeysRequest) (*UpdateVMAuthorizedSSHKeysResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateVMAuthorizedSSHKeys not implemented")
 }
 func (UnimplementedVMServiceServer) mustEmbedUnimplementedVMServiceServer() {}
 func (UnimplementedVMServiceServer) testEmbeddedByValue()                   {}
@@ -1362,6 +1378,24 @@ func _VMService_UpdateVMPassword_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VMService_UpdateVMAuthorizedSSHKeys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateVMAuthorizedSSHKeysRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VMServiceServer).UpdateVMAuthorizedSSHKeys(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VMService_UpdateVMAuthorizedSSHKeys_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VMServiceServer).UpdateVMAuthorizedSSHKeys(ctx, req.(*UpdateVMAuthorizedSSHKeysRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VMService_ServiceDesc is the grpc.ServiceDesc for VMService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1520,6 +1554,10 @@ var VMService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateVMPassword",
 			Handler:    _VMService_UpdateVMPassword_Handler,
+		},
+		{
+			MethodName: "UpdateVMAuthorizedSSHKeys",
+			Handler:    _VMService_UpdateVMAuthorizedSSHKeys_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
