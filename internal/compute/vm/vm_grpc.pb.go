@@ -58,6 +58,8 @@ const (
 	VMService_UpdateVMExpireTime_FullMethodName        = "/org.cudo.compute.v1.VMService/UpdateVMExpireTime"
 	VMService_UpdateVMPassword_FullMethodName          = "/org.cudo.compute.v1.VMService/UpdateVMPassword"
 	VMService_UpdateVMAuthorizedSSHKeys_FullMethodName = "/org.cudo.compute.v1.VMService/UpdateVMAuthorizedSSHKeys"
+	VMService_CommitVM_FullMethodName                  = "/org.cudo.compute.v1.VMService/CommitVM"
+	VMService_GetVMMachineType_FullMethodName          = "/org.cudo.compute.v1.VMService/GetVMMachineType"
 )
 
 // VMServiceClient is the client API for VMService service.
@@ -103,6 +105,8 @@ type VMServiceClient interface {
 	UpdateVMExpireTime(ctx context.Context, in *UpdateVMExpireTimeRequest, opts ...grpc.CallOption) (*UpdateVMExpireTimeResponse, error)
 	UpdateVMPassword(ctx context.Context, in *UpdateVMPasswordRequest, opts ...grpc.CallOption) (*UpdateVMPasswordResponse, error)
 	UpdateVMAuthorizedSSHKeys(ctx context.Context, in *UpdateVMAuthorizedSSHKeysRequest, opts ...grpc.CallOption) (*UpdateVMAuthorizedSSHKeysResponse, error)
+	CommitVM(ctx context.Context, in *CommitVMRequest, opts ...grpc.CallOption) (*CommitVMResponse, error)
+	GetVMMachineType(ctx context.Context, in *GetVMMachineTypeRequest, opts ...grpc.CallOption) (*GetVMMachineTypeResponse, error)
 }
 
 type vMServiceClient struct {
@@ -503,6 +507,26 @@ func (c *vMServiceClient) UpdateVMAuthorizedSSHKeys(ctx context.Context, in *Upd
 	return out, nil
 }
 
+func (c *vMServiceClient) CommitVM(ctx context.Context, in *CommitVMRequest, opts ...grpc.CallOption) (*CommitVMResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CommitVMResponse)
+	err := c.cc.Invoke(ctx, VMService_CommitVM_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vMServiceClient) GetVMMachineType(ctx context.Context, in *GetVMMachineTypeRequest, opts ...grpc.CallOption) (*GetVMMachineTypeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetVMMachineTypeResponse)
+	err := c.cc.Invoke(ctx, VMService_GetVMMachineType_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VMServiceServer is the server API for VMService service.
 // All implementations must embed UnimplementedVMServiceServer
 // for forward compatibility.
@@ -546,6 +570,8 @@ type VMServiceServer interface {
 	UpdateVMExpireTime(context.Context, *UpdateVMExpireTimeRequest) (*UpdateVMExpireTimeResponse, error)
 	UpdateVMPassword(context.Context, *UpdateVMPasswordRequest) (*UpdateVMPasswordResponse, error)
 	UpdateVMAuthorizedSSHKeys(context.Context, *UpdateVMAuthorizedSSHKeysRequest) (*UpdateVMAuthorizedSSHKeysResponse, error)
+	CommitVM(context.Context, *CommitVMRequest) (*CommitVMResponse, error)
+	GetVMMachineType(context.Context, *GetVMMachineTypeRequest) (*GetVMMachineTypeResponse, error)
 	mustEmbedUnimplementedVMServiceServer()
 }
 
@@ -672,6 +698,12 @@ func (UnimplementedVMServiceServer) UpdateVMPassword(context.Context, *UpdateVMP
 }
 func (UnimplementedVMServiceServer) UpdateVMAuthorizedSSHKeys(context.Context, *UpdateVMAuthorizedSSHKeysRequest) (*UpdateVMAuthorizedSSHKeysResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateVMAuthorizedSSHKeys not implemented")
+}
+func (UnimplementedVMServiceServer) CommitVM(context.Context, *CommitVMRequest) (*CommitVMResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommitVM not implemented")
+}
+func (UnimplementedVMServiceServer) GetVMMachineType(context.Context, *GetVMMachineTypeRequest) (*GetVMMachineTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVMMachineType not implemented")
 }
 func (UnimplementedVMServiceServer) mustEmbedUnimplementedVMServiceServer() {}
 func (UnimplementedVMServiceServer) testEmbeddedByValue()                   {}
@@ -1396,6 +1428,42 @@ func _VMService_UpdateVMAuthorizedSSHKeys_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VMService_CommitVM_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CommitVMRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VMServiceServer).CommitVM(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VMService_CommitVM_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VMServiceServer).CommitVM(ctx, req.(*CommitVMRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _VMService_GetVMMachineType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVMMachineTypeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VMServiceServer).GetVMMachineType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VMService_GetVMMachineType_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VMServiceServer).GetVMMachineType(ctx, req.(*GetVMMachineTypeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // VMService_ServiceDesc is the grpc.ServiceDesc for VMService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1558,6 +1626,14 @@ var VMService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateVMAuthorizedSSHKeys",
 			Handler:    _VMService_UpdateVMAuthorizedSSHKeys_Handler,
+		},
+		{
+			MethodName: "CommitVM",
+			Handler:    _VMService_CommitVM_Handler,
+		},
+		{
+			MethodName: "GetVMMachineType",
+			Handler:    _VMService_GetVMMachineType_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

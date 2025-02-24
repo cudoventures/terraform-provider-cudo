@@ -16,8 +16,7 @@ func TestAcc_RegionsDataSource(t *testing.T) {
 				Config: getProviderConfig() + testAccRegionsDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.cudo_vm_data_centers.test", "data_centers.#", "1"),
-					resource.TestCheckResourceAttr("data.cudo_vm_data_centers.test", "data_centers.0.id", "black-mesa"),
-					resource.TestCheckResourceAttr("data.cudo_vm_data_centers.test", "data_centers.0.region_id", "gb-bournemouth"),
+					resource.TestCheckResourceAttr("data.cudo_vm_data_centers.test", "data_centers.0.id", "gb-bournemouth-1"),
 				),
 			},
 		},

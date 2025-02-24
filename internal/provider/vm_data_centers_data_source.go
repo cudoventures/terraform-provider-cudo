@@ -23,8 +23,7 @@ type VMDataCentersDataSource struct {
 }
 
 type VMDataCenterDataSourceModel struct {
-	ID       types.String `tfsdk:"id"`
-	RegionID types.String `tfsdk:"region_id"`
+	ID types.String `tfsdk:"id"`
 }
 
 // VMDataCentersDataSourceModelModel describes the data source data model.
@@ -54,10 +53,6 @@ func (d *VMDataCentersDataSource) Schema(ctx context.Context, req datasource.Sch
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
 							MarkdownDescription: "Data center identifier",
-							Computed:            true,
-						},
-						"region_id": schema.StringAttribute{
-							MarkdownDescription: "Region identifier",
 							Computed:            true,
 						},
 					},
@@ -101,8 +96,7 @@ func (d *VMDataCentersDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	for _, dc := range res.DataCenters {
 		dataCenter := VMDataCenterDataSourceModel{
-			ID:       types.StringValue(dc.Id),
-			RegionID: types.StringValue(dc.RegionId),
+			ID: types.StringValue(dc.Id),
 		}
 
 		state.DataCenters = append(state.DataCenters, dataCenter)
