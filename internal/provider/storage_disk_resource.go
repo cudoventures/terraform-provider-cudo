@@ -126,14 +126,14 @@ func (r *StorageDiskResource) waitForDiskDelete(ctx context.Context, diskID, pro
 
 	stateConf := &helper.StateChangeConf{
 		Pending: []string{
-			vm.Disk_DISK_STATE_INIT.String(),
-			vm.Disk_DISK_STATE_READY.String(),
-			vm.Disk_DISK_STATE_USED.String(),
-			vm.Disk_DISK_STATE_DISABLED.String(),
-			vm.Disk_DISK_STATE_LOCKED.String(),
-			vm.Disk_DISK_STATE_ERROR.String(),
-			vm.Disk_DISK_STATE_CLONE.String(),
-			vm.Disk_DISK_STATE_DELETE.String(),
+			vm.Disk_UNKNOWN.String(),
+			vm.Disk_ATTACHED.String(),
+			vm.Disk_CLONING.String(),
+			vm.Disk_CREATING.String(),
+			vm.Disk_DELETING.String(),
+			vm.Disk_DISABLED.String(),
+			vm.Disk_FAILED.String(),
+			vm.Disk_UPDATING.String(),
 		},
 		Target:       []string{"done"},
 		Refresh:      refreshFunc,
@@ -160,7 +160,7 @@ func (r *StorageDiskResource) waitForDiskCreate(ctx context.Context, diskID, pro
 		if err != nil {
 			// if not found assume resource is initializing
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
-				return res, vm.Disk_DISK_STATE_INIT.String(), nil
+				return res, vm.Disk_CREATING.String(), nil
 			}
 			return nil, "", err
 		}
@@ -172,15 +172,15 @@ func (r *StorageDiskResource) waitForDiskCreate(ctx context.Context, diskID, pro
 
 	stateConf := &helper.StateChangeConf{
 		Pending: []string{
-			vm.Disk_DISK_STATE_INIT.String(),
-			vm.Disk_DISK_STATE_USED.String(),
-			vm.Disk_DISK_STATE_DISABLED.String(),
-			vm.Disk_DISK_STATE_LOCKED.String(),
-			vm.Disk_DISK_STATE_ERROR.String(),
-			vm.Disk_DISK_STATE_CLONE.String(),
-			vm.Disk_DISK_STATE_DELETE.String(),
+			vm.Disk_CREATING.String(),
+			vm.Disk_ATTACHED.String(),
+			vm.Disk_DISABLED.String(),
+			vm.Disk_UPDATING.String(),
+			vm.Disk_FAILED.String(),
+			vm.Disk_CLONING.String(),
+			vm.Disk_DELETING.String(),
 		},
-		Target:       []string{vm.Disk_DISK_STATE_READY.String()},
+		Target:       []string{vm.Disk_READY.String()},
 		Refresh:      refreshFunc,
 		Timeout:      20 * time.Minute,
 		Delay:        1 * time.Second,

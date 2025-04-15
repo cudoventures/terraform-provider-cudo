@@ -42,7 +42,7 @@ data "cudo_storage_disk" "storage_disk_datasource" {
 				ProjectId: projectID,
 			})
 
-			if err == nil && ins.Disk.DiskState != vm.Disk_DISK_STATE_DELETE {
+			if err == nil && ins.Disk.DiskState != vm.Disk_DELETING {
 				res, err := cl.DeleteStorageDisk(ctx, &vm.DeleteStorageDiskRequest{
 					Id:        name,
 					ProjectId: projectID,
