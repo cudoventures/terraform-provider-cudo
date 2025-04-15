@@ -33,7 +33,7 @@ func TestAcc_NetworkDataSource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.cudo_network.network", "id", name),
 					resource.TestCheckResourceAttr("data.cudo_network.network", "data_center_id", "black-mesa"),
-					resource.TestCheckResourceAttr("data.cudo_network.network", "ip_range", "10.132.10.0/24"),
+					resource.TestCheckResourceAttr("data.cudo_network.network", "ip_range", "192.168.0.0/24"),
 					resource.TestCheckResourceAttrSet("data.cudo_network.network", "internal_ip_address"),
 					resource.TestCheckResourceAttrSet("data.cudo_network.network", "external_ip_address"),
 					resource.TestCheckResourceAttrSet("data.cudo_network.network", "gateway"),
