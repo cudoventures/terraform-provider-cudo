@@ -26,7 +26,7 @@ resource "cudo_vm" "my-vm" {
    data_center_id     = "black-mesa"
    vcpus              = 1
    boot_disk = {
-     image_id = "alpine-linux-317"
+     image_id = "alpine-linux-319"
      size_gib = 1
    }
    memory_gib         = 2

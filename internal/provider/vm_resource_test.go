@@ -26,7 +26,7 @@ resource "cudo_vm" "vm" {
    data_center_id     = "black-mesa"
    vcpus              = 1
    boot_disk = {
-     image_id = "alpine-linux-317"
+     image_id = "alpine-linux-319"
      size_gib = 1
    }
    memory_gib         = 2
@@ -71,7 +71,7 @@ resource "cudo_vm" "vm" {
 			{
 				Config: getProviderConfig() + vmConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("cudo_vm.vm", "boot_disk.image_id", "alpine-linux-317"),
+					resource.TestCheckResourceAttr("cudo_vm.vm", "boot_disk.image_id", "alpine-linux-319"),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "boot_disk.size_gib", "1"),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "machine_type", "standard"),
 					resource.TestCheckResourceAttr("cudo_vm.vm", "cpu_model", "Haswell-noTSX-IBRS"),
@@ -101,7 +101,7 @@ func TestAcc_VMResourceMinimal(t *testing.T) {
 	vmConfig := fmt.Sprintf(`
 resource "cudo_vm" "vm-minimal" {
    boot_disk = {
-     image_id = "alpine-linux-317"
+     image_id = "alpine-linux-319"
    }
    id                = "%s"
    machine_type       = "standard"
@@ -145,7 +145,7 @@ resource "cudo_vm" "vm-minimal" {
 			{
 				Config: getProviderConfig() + vmConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "boot_disk.image_id", "alpine-linux-317"),
+					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "boot_disk.image_id", "alpine-linux-319"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "boot_disk.size_gib", "1"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "machine_type", "standard"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-minimal", "cpu_model", "Haswell-noTSX-IBRS"),
@@ -175,7 +175,7 @@ func TestAcc_VMResourceOOBDelete(t *testing.T) {
 	vmConfig := fmt.Sprintf(`
 resource "cudo_vm" "vm-oob-delete" {
    boot_disk = {
-     image_id = "alpine-linux-317"
+     image_id = "alpine-linux-319"
    }
    id                = "%s"
    machine_type       = "standard"
@@ -219,7 +219,7 @@ resource "cudo_vm" "vm-oob-delete" {
 			{
 				Config: getProviderConfig() + vmConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "boot_disk.image_id", "alpine-linux-317"),
+					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "boot_disk.image_id", "alpine-linux-319"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "boot_disk.size_gib", "1"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "machine_type", "standard"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "cpu_model", "Haswell-noTSX-IBRS"),
@@ -246,7 +246,7 @@ resource "cudo_vm" "vm-oob-delete" {
 			{
 				RefreshState: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "boot_disk.image_id", "alpine-linux-317"),
+					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "boot_disk.image_id", "alpine-linux-319"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "boot_disk.size_gib", "1"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "machine_type", "standard"),
 					resource.TestCheckResourceAttr("cudo_vm.vm-oob-delete", "cpu_model", "Haswell-noTSX-IBRS"),
@@ -296,7 +296,7 @@ resource "cudo_vm" "vm_disk_resource" {
    data_center_id     = "black-mesa"
    vcpus              = 1
    boot_disk = {
-     image_id = "alpine-linux-317"
+     image_id = "alpine-linux-319"
      size_gib = 1
    }
    memory_gib         = 2
@@ -345,7 +345,7 @@ resource "cudo_vm" "vm_disk_resource" {
 			{
 				Config: getProviderConfig() + diskConfig + vmConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "boot_disk.image_id", "alpine-linux-317"),
+					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "boot_disk.image_id", "alpine-linux-319"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "boot_disk.size_gib", "1"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "machine_type", "standard"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "cpu_model", "Haswell-noTSX-IBRS"),
