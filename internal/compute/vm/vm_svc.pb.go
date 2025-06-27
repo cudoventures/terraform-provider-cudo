@@ -7,10 +7,6 @@
 package vm
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	compute "github.com/CudoVentures/terraform-provider-cudo/internal/compute"
 	_ "github.com/google/gnostic/openapiv3"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -22,6 +18,9 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	_ "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -5009,7 +5008,7 @@ var File_svc_compute_vm_vm_svc_proto protoreflect.FileDescriptor
 
 const file_svc_compute_vm_vm_svc_proto_rawDesc = "" +
 	"\n" +
-	"\x1bsvc/compute/vm/vm_svc.proto\x12\x13org.cudo.compute.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x19google/type/decimal.proto\x1a\x18google/type/latlng.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a\x17svc/compute/types.proto\x1a\x17svc/compute/vm/vm.proto\"\xa8\v\n" +
+	"\x1bsvc/compute/vm/vm_svc.proto\x12\x13org.cudo.compute.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x19google/type/decimal.proto\x1a\x18google/type/latlng.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a\x17svc/compute/types.proto\x1a\x17svc/compute/vm/vm.proto\"\xa8\v\n" +
 	"\x0fCreateVMRequest\x12)\n" +
 	"\x0edata_center_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12&\n" +
 	"\fmachine_type\x18\x02 \x01(\tB\x03\xe0A\x02R\vmachineType\x12\"\n" +
@@ -5489,7 +5488,7 @@ const file_svc_compute_vm_vm_svc_proto_rawDesc = "" +
 	"\bCommitVM\x12$.org.cudo.compute.v1.CommitVMRequest\x1a%.org.cudo.compute.v1.CommitVMResponse\"n\xbaG8\n" +
 	"\x10Virtual Machines\x12\x1aCommit VM for a fixed term*\bCommitVM\x82\xd3\xe4\x93\x02-:\x01*\"(/v1/projects/{project_id}/vm/{id}/commit\x12\xf8\x01\n" +
 	"\x10GetVMMachineType\x12,.org.cudo.compute.v1.GetVMMachineTypeRequest\x1a-.org.cudo.compute.v1.GetVMMachineTypeResponse\"\x86\x01\xbaG6\n" +
-	"\x10Virtual Machines\x12\x10Get machine type*\x10GetVMMachineType\x82\xd3\xe4\x93\x02G\x12E/v1/vms/data-centers/{data_center_id}/machine_types/{machine_type_id}B<Z:github.com/CudoVentures/cudo-compute-market/svc/compute/vmb\x06proto3"
+	"\x10Virtual Machines\x12\x10Get machine type*\x10GetVMMachineType\x82\xd3\xe4\x93\x02G\x12E/v1/vms/data-centers/{data_center_id}/machine_types/{machine_type_id}BEZCgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/vmb\x06proto3"
 
 var (
 	file_svc_compute_vm_vm_svc_proto_rawDescOnce sync.Once

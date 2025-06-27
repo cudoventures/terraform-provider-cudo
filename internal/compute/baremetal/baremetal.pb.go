@@ -7,10 +7,6 @@
 package baremetal
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	compute "github.com/CudoVentures/terraform-provider-cudo/internal/compute"
 	vm "github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -18,6 +14,9 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -1557,7 +1556,7 @@ var File_svc_compute_baremetal_baremetal_proto protoreflect.FileDescriptor
 
 const file_svc_compute_baremetal_baremetal_proto_rawDesc = "" +
 	"\n" +
-	"%svc/compute/baremetal/baremetal.proto\x12\x13org.cudo.compute.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x17svc/compute/types.proto\x1a\x17svc/compute/vm/vm.proto\"\xbe\x04\n" +
+	"%svc/compute/baremetal/baremetal.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x17svc/compute/types.proto\x1a\x17svc/compute/vm/vm.proto\"\xbe\x04\n" +
 	"\vMachineType\x12)\n" +
 	"\x0edata_center_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12\x13\n" +
 	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\x12'\n" +
@@ -1747,7 +1746,7 @@ const file_svc_compute_baremetal_baremetal_proto_rawDesc = "" +
 	"\x03OFF\x10\x02\x12\x0f\n" +
 	"\vPOWERING_ON\x10\x03\x12\x10\n" +
 	"\fPOWERING_OFF\x10\x04\x12\r\n" +
-	"\tREBOOTING\x10\x05BCZAgithub.com/CudoVentures/cudo-compute-market/svc/compute/baremetalb\x06proto3"
+	"\tREBOOTING\x10\x05BLZJgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/baremetalb\x06proto3"
 
 var (
 	file_svc_compute_baremetal_baremetal_proto_rawDescOnce sync.Once

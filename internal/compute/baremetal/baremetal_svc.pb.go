@@ -1751,7 +1751,7 @@ const file_svc_compute_baremetal_baremetal_svc_proto_rawDesc = "" +
 	"Bare Metal\x12\x18Rename a cluster machine\x1a\x1dRename a machine in a cluster*\x14RenameClusterMachine\x82\xd3\xe4\x93\x028\"6/v1/projects/{project_id}/cluster-machines/{id}:rename\x12\xb6\x02\n" +
 	"\x14UpdateClusterMachine\x120.org.cudo.compute.v1.UpdateClusterMachineRequest\x1a#.org.cudo.compute.v1.ClusterMachine\"\xc6\x01\xbaG[\n" +
 	"\n" +
-	"Bare Metal\x12\x18Update a cluster machine\x1a\x1dUpdate a machine in a cluster*\x14UpdateClusterMachine\x82\xd3\xe4\x93\x02b:\x0fcluster_machine2O/v1/projects/{cluster_machine.project_id}/cluster-machines/{cluster_machine.id}BCZAgithub.com/CudoVentures/cudo-compute-market/svc/compute/baremetalb\x06proto3"
+	"Bare Metal\x12\x18Update a cluster machine\x1a\x1dUpdate a machine in a cluster*\x14UpdateClusterMachine\x82\xd3\xe4\x93\x02b:\x0fcluster_machine2O/v1/projects/{cluster_machine.project_id}/cluster-machines/{cluster_machine.id}BLZJgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/baremetalb\x06proto3"
 
 var (
 	file_svc_compute_baremetal_baremetal_svc_proto_rawDescOnce sync.Once

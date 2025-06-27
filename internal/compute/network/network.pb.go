@@ -7,16 +7,15 @@
 package network
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	vm "github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	decimal "google.golang.org/genproto/googleapis/type/decimal"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -215,7 +214,7 @@ const file_svc_compute_network_network_proto_rawDesc = "" +
 	"\x18VROUTER_INSTANCE_UNKNOWN\x10\x00\x12\x1a\n" +
 	"\x16VROUTER_INSTANCE_SMALL\x10\x01\x12\x1b\n" +
 	"\x17VROUTER_INSTANCE_MEDIUM\x10\x02\x12\x1a\n" +
-	"\x16VROUTER_INSTANCE_LARGE\x10\x03BAZ?github.com/CudoVentures/cudo-compute-market/svc/compute/networkb\x06proto3"
+	"\x16VROUTER_INSTANCE_LARGE\x10\x03BJZHgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/networkb\x06proto3"
 
 var (
 	file_svc_compute_network_network_proto_rawDescOnce sync.Once

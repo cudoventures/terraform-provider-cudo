@@ -98,7 +98,7 @@ const file_svc_compute_types_proto_rawDesc = "" +
 	"\x19COMMITMENT_TERM_12_MONTHS\x10\x04\x12\x1d\n" +
 	"\x19COMMITMENT_TERM_24_MONTHS\x10\x05\x12\x1d\n" +
 	"\x19COMMITMENT_TERM_36_MONTHS\x10\x06\x12\x1d\n" +
-	"\x19COMMITMENT_TERM_60_MONTHS\x10\aB9Z7github.com/CudoVentures/cudo-compute-market/svc/computeb\x06proto3"
+	"\x19COMMITMENT_TERM_60_MONTHS\x10\aBBZ@github.com/CudoVentures/terraform-provider-cudo/internal/computeb\x06proto3"
 
 var (
 	file_svc_compute_types_proto_rawDescOnce sync.Once

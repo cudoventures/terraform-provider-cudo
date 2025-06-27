@@ -7,10 +7,6 @@
 package network
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	securitygroup "github.com/CudoVentures/terraform-provider-cudo/internal/compute/securitygroup"
 	_ "github.com/google/gnostic/openapiv3"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -20,6 +16,9 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	_ "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -673,50 +672,6 @@ func (x *CreateSecurityGroupRequest) GetSecurityGroup() *securitygroup.SecurityG
 	return nil
 }
 
-type CreateSecurityGroupResponse struct {
-	state         protoimpl.MessageState       `protogen:"open.v1"`
-	SecurityGroup *securitygroup.SecurityGroup `protobuf:"bytes,1,opt,name=security_group,json=securityGroup,proto3" json:"security_group,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateSecurityGroupResponse) Reset() {
-	*x = CreateSecurityGroupResponse{}
-	mi := &file_svc_compute_network_network_svc_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateSecurityGroupResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateSecurityGroupResponse) ProtoMessage() {}
-
-func (x *CreateSecurityGroupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_network_network_svc_proto_msgTypes[11]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateSecurityGroupResponse.ProtoReflect.Descriptor instead.
-func (*CreateSecurityGroupResponse) Descriptor() ([]byte, []int) {
-	return file_svc_compute_network_network_svc_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *CreateSecurityGroupResponse) GetSecurityGroup() *securitygroup.SecurityGroup {
-	if x != nil {
-		return x.SecurityGroup
-	}
-	return nil
-}
-
 type UpdateSecurityGroupRequest struct {
 	state         protoimpl.MessageState       `protogen:"open.v1"`
 	SecurityGroup *securitygroup.SecurityGroup `protobuf:"bytes,1,opt,name=security_group,json=securityGroup,proto3" json:"security_group,omitempty"`
@@ -726,7 +681,7 @@ type UpdateSecurityGroupRequest struct {
 
 func (x *UpdateSecurityGroupRequest) Reset() {
 	*x = UpdateSecurityGroupRequest{}
-	mi := &file_svc_compute_network_network_svc_proto_msgTypes[12]
+	mi := &file_svc_compute_network_network_svc_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -738,7 +693,7 @@ func (x *UpdateSecurityGroupRequest) String() string {
 func (*UpdateSecurityGroupRequest) ProtoMessage() {}
 
 func (x *UpdateSecurityGroupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_network_network_svc_proto_msgTypes[12]
+	mi := &file_svc_compute_network_network_svc_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -751,54 +706,10 @@ func (x *UpdateSecurityGroupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSecurityGroupRequest.ProtoReflect.Descriptor instead.
 func (*UpdateSecurityGroupRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_network_network_svc_proto_rawDescGZIP(), []int{12}
+	return file_svc_compute_network_network_svc_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *UpdateSecurityGroupRequest) GetSecurityGroup() *securitygroup.SecurityGroup {
-	if x != nil {
-		return x.SecurityGroup
-	}
-	return nil
-}
-
-type UpdateSecurityGroupResponse struct {
-	state         protoimpl.MessageState       `protogen:"open.v1"`
-	SecurityGroup *securitygroup.SecurityGroup `protobuf:"bytes,1,opt,name=security_group,json=securityGroup,proto3" json:"security_group,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UpdateSecurityGroupResponse) Reset() {
-	*x = UpdateSecurityGroupResponse{}
-	mi := &file_svc_compute_network_network_svc_proto_msgTypes[13]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateSecurityGroupResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateSecurityGroupResponse) ProtoMessage() {}
-
-func (x *UpdateSecurityGroupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_network_network_svc_proto_msgTypes[13]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateSecurityGroupResponse.ProtoReflect.Descriptor instead.
-func (*UpdateSecurityGroupResponse) Descriptor() ([]byte, []int) {
-	return file_svc_compute_network_network_svc_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *UpdateSecurityGroupResponse) GetSecurityGroup() *securitygroup.SecurityGroup {
 	if x != nil {
 		return x.SecurityGroup
 	}
@@ -815,7 +726,7 @@ type DeleteSecurityGroupRequest struct {
 
 func (x *DeleteSecurityGroupRequest) Reset() {
 	*x = DeleteSecurityGroupRequest{}
-	mi := &file_svc_compute_network_network_svc_proto_msgTypes[14]
+	mi := &file_svc_compute_network_network_svc_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -827,7 +738,7 @@ func (x *DeleteSecurityGroupRequest) String() string {
 func (*DeleteSecurityGroupRequest) ProtoMessage() {}
 
 func (x *DeleteSecurityGroupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_network_network_svc_proto_msgTypes[14]
+	mi := &file_svc_compute_network_network_svc_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -840,7 +751,7 @@ func (x *DeleteSecurityGroupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSecurityGroupRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSecurityGroupRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_network_network_svc_proto_rawDescGZIP(), []int{14}
+	return file_svc_compute_network_network_svc_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DeleteSecurityGroupRequest) GetProjectId() string {
@@ -918,17 +829,13 @@ const file_svc_compute_network_network_svc_proto_rawDesc = "" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
 	"\x02id\x18\x03 \x01(\tB\x03\xe0A\x02R\x02id\"l\n" +
 	"\x1aCreateSecurityGroupRequest\x12N\n" +
-	"\x0esecurity_group\x18\x01 \x01(\v2\".org.cudo.compute.v1.SecurityGroupB\x03\xe0A\x02R\rsecurityGroup\"m\n" +
-	"\x1bCreateSecurityGroupResponse\x12N\n" +
 	"\x0esecurity_group\x18\x01 \x01(\v2\".org.cudo.compute.v1.SecurityGroupB\x03\xe0A\x02R\rsecurityGroup\"l\n" +
 	"\x1aUpdateSecurityGroupRequest\x12N\n" +
-	"\x0esecurity_group\x18\x01 \x01(\v2\".org.cudo.compute.v1.SecurityGroupB\x03\xe0A\x02R\rsecurityGroup\"m\n" +
-	"\x1bUpdateSecurityGroupResponse\x12N\n" +
 	"\x0esecurity_group\x18\x01 \x01(\v2\".org.cudo.compute.v1.SecurityGroupB\x03\xe0A\x02R\rsecurityGroup\"U\n" +
 	"\x1aDeleteSecurityGroupRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id2\x9a\x12\n" +
+	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id2\xfe\x11\n" +
 	"\x0eNetworkService\x12\xb3\x01\n" +
 	"\rCreateNetwork\x12).org.cudo.compute.v1.CreateNetworkRequest\x1a\x1c.org.cudo.compute.v1.Network\"Y\xbaG)\n" +
 	"\bNetworks\x12\x0eCreate network*\rCreateNetwork\x82\xd3\xe4\x93\x02':\x01*\"\"/v1/projects/{project_id}/networks\x12\xa9\x01\n" +
@@ -943,17 +850,17 @@ const file_svc_compute_network_network_svc_proto_rawDesc = "" +
 	"\fStartNetwork\x12(.org.cudo.compute.v1.StartNetworkRequest\x1a\x16.google.protobuf.Empty\"_\xbaG'\n" +
 	"\bNetworks\x12\rStart network*\fStartNetwork\x82\xd3\xe4\x93\x02/\"-/v1/projects/{project_id}/networks/{id}/start\x12\xac\x01\n" +
 	"\vStopNetwork\x12'.org.cudo.compute.v1.StopNetworkRequest\x1a\x16.google.protobuf.Empty\"\\\xbaG%\n" +
-	"\bNetworks\x12\fStop network*\vStopNetwork\x82\xd3\xe4\x93\x02.\",/v1/projects/{project_id}/networks/{id}/stop\x12\x8d\x02\n" +
-	"\x13CreateSecurityGroup\x12/.org.cudo.compute.v1.CreateSecurityGroupRequest\x1a0.org.cudo.compute.v1.CreateSecurityGroupResponse\"\x92\x01\xbaG6\n" +
+	"\bNetworks\x12\fStop network*\vStopNetwork\x82\xd3\xe4\x93\x02.\",/v1/projects/{project_id}/networks/{id}/stop\x12\xff\x01\n" +
+	"\x13CreateSecurityGroup\x12/.org.cudo.compute.v1.CreateSecurityGroupRequest\x1a\".org.cudo.compute.v1.SecurityGroup\"\x92\x01\xbaG6\n" +
 	"\bNetworks\x12\x15Create security group*\x13CreateSecurityGroup\x82\xd3\xe4\x93\x02S:\x0esecurity_group\"A/v1/projects/{security_group.project_id}/networks/security-groups\x12\xda\x01\n" +
 	"\x10GetSecurityGroup\x12,.org.cudo.compute.v1.GetSecurityGroupRequest\x1a\".org.cudo.compute.v1.SecurityGroup\"t\xbaG2\n" +
 	"\bNetworks\x12\x14Get a security group*\x10GetSecurityGroup\x82\xd3\xe4\x93\x029\x127/v1/projects/{project_id}/networks/security-groups/{id}\x12\xe8\x01\n" +
 	"\x12ListSecurityGroups\x12..org.cudo.compute.v1.ListSecurityGroupsRequest\x1a/.org.cudo.compute.v1.ListSecurityGroupsResponse\"q\xbaG4\n" +
-	"\bNetworks\x12\x14List security groups*\x12ListSecurityGroups\x82\xd3\xe4\x93\x024\x122/v1/projects/{project_id}/networks/security-groups\x12\xa1\x02\n" +
-	"\x13UpdateSecurityGroup\x12/.org.cudo.compute.v1.UpdateSecurityGroupRequest\x1a0.org.cudo.compute.v1.UpdateSecurityGroupResponse\"\xa6\x01\xbaG6\n" +
+	"\bNetworks\x12\x14List security groups*\x12ListSecurityGroups\x82\xd3\xe4\x93\x024\x122/v1/projects/{project_id}/networks/security-groups\x12\x93\x02\n" +
+	"\x13UpdateSecurityGroup\x12/.org.cudo.compute.v1.UpdateSecurityGroupRequest\x1a\".org.cudo.compute.v1.SecurityGroup\"\xa6\x01\xbaG6\n" +
 	"\bNetworks\x12\x15Update security group*\x13UpdateSecurityGroup\x82\xd3\xe4\x93\x02g:\x0esecurity_group2U/v1/projects/{security_group.project_id}/networks/security-groups/{security_group.id}\x12\xd8\x01\n" +
 	"\x13DeleteSecurityGroup\x12/.org.cudo.compute.v1.DeleteSecurityGroupRequest\x1a\x16.google.protobuf.Empty\"x\xbaG6\n" +
-	"\bNetworks\x12\x15Delete security group*\x13DeleteSecurityGroup\x82\xd3\xe4\x93\x029*7/v1/projects/{project_id}/networks/security-groups/{id}BAZ?github.com/CudoVentures/cudo-compute-market/svc/compute/networkb\x06proto3"
+	"\bNetworks\x12\x15Delete security group*\x13DeleteSecurityGroup\x82\xd3\xe4\x93\x029*7/v1/projects/{project_id}/networks/security-groups/{id}BJZHgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/networkb\x06proto3"
 
 var (
 	file_svc_compute_network_network_svc_proto_rawDescOnce sync.Once
@@ -967,7 +874,7 @@ func file_svc_compute_network_network_svc_proto_rawDescGZIP() []byte {
 	return file_svc_compute_network_network_svc_proto_rawDescData
 }
 
-var file_svc_compute_network_network_svc_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_svc_compute_network_network_svc_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_svc_compute_network_network_svc_proto_goTypes = []any{
 	(*GetSecurityGroupRequest)(nil),     // 0: org.cudo.compute.v1.GetSecurityGroupRequest
 	(*ListSecurityGroupsRequest)(nil),   // 1: org.cudo.compute.v1.ListSecurityGroupsRequest
@@ -980,50 +887,46 @@ var file_svc_compute_network_network_svc_proto_goTypes = []any{
 	(*StartNetworkRequest)(nil),         // 8: org.cudo.compute.v1.StartNetworkRequest
 	(*StopNetworkRequest)(nil),          // 9: org.cudo.compute.v1.StopNetworkRequest
 	(*CreateSecurityGroupRequest)(nil),  // 10: org.cudo.compute.v1.CreateSecurityGroupRequest
-	(*CreateSecurityGroupResponse)(nil), // 11: org.cudo.compute.v1.CreateSecurityGroupResponse
-	(*UpdateSecurityGroupRequest)(nil),  // 12: org.cudo.compute.v1.UpdateSecurityGroupRequest
-	(*UpdateSecurityGroupResponse)(nil), // 13: org.cudo.compute.v1.UpdateSecurityGroupResponse
-	(*DeleteSecurityGroupRequest)(nil),  // 14: org.cudo.compute.v1.DeleteSecurityGroupRequest
-	(*securitygroup.SecurityGroup)(nil), // 15: org.cudo.compute.v1.SecurityGroup
-	(VRouterSize)(0),                    // 16: org.cudo.compute.v1.VRouterSize
-	(*Network)(nil),                     // 17: org.cudo.compute.v1.Network
-	(*emptypb.Empty)(nil),               // 18: google.protobuf.Empty
+	(*UpdateSecurityGroupRequest)(nil),  // 11: org.cudo.compute.v1.UpdateSecurityGroupRequest
+	(*DeleteSecurityGroupRequest)(nil),  // 12: org.cudo.compute.v1.DeleteSecurityGroupRequest
+	(*securitygroup.SecurityGroup)(nil), // 13: org.cudo.compute.v1.SecurityGroup
+	(VRouterSize)(0),                    // 14: org.cudo.compute.v1.VRouterSize
+	(*Network)(nil),                     // 15: org.cudo.compute.v1.Network
+	(*emptypb.Empty)(nil),               // 16: google.protobuf.Empty
 }
 var file_svc_compute_network_network_svc_proto_depIdxs = []int32{
-	15, // 0: org.cudo.compute.v1.ListSecurityGroupsResponse.security_groups:type_name -> org.cudo.compute.v1.SecurityGroup
-	16, // 1: org.cudo.compute.v1.CreateNetworkRequest.vrouter_size:type_name -> org.cudo.compute.v1.VRouterSize
-	17, // 2: org.cudo.compute.v1.ListNetworksResponse.networks:type_name -> org.cudo.compute.v1.Network
-	15, // 3: org.cudo.compute.v1.CreateSecurityGroupRequest.security_group:type_name -> org.cudo.compute.v1.SecurityGroup
-	15, // 4: org.cudo.compute.v1.CreateSecurityGroupResponse.security_group:type_name -> org.cudo.compute.v1.SecurityGroup
-	15, // 5: org.cudo.compute.v1.UpdateSecurityGroupRequest.security_group:type_name -> org.cudo.compute.v1.SecurityGroup
-	15, // 6: org.cudo.compute.v1.UpdateSecurityGroupResponse.security_group:type_name -> org.cudo.compute.v1.SecurityGroup
-	3,  // 7: org.cudo.compute.v1.NetworkService.CreateNetwork:input_type -> org.cudo.compute.v1.CreateNetworkRequest
-	4,  // 8: org.cudo.compute.v1.NetworkService.GetNetwork:input_type -> org.cudo.compute.v1.GetNetworkRequest
-	5,  // 9: org.cudo.compute.v1.NetworkService.ListNetworks:input_type -> org.cudo.compute.v1.ListNetworksRequest
-	7,  // 10: org.cudo.compute.v1.NetworkService.DeleteNetwork:input_type -> org.cudo.compute.v1.DeleteNetworkRequest
-	8,  // 11: org.cudo.compute.v1.NetworkService.StartNetwork:input_type -> org.cudo.compute.v1.StartNetworkRequest
-	9,  // 12: org.cudo.compute.v1.NetworkService.StopNetwork:input_type -> org.cudo.compute.v1.StopNetworkRequest
-	10, // 13: org.cudo.compute.v1.NetworkService.CreateSecurityGroup:input_type -> org.cudo.compute.v1.CreateSecurityGroupRequest
-	0,  // 14: org.cudo.compute.v1.NetworkService.GetSecurityGroup:input_type -> org.cudo.compute.v1.GetSecurityGroupRequest
-	1,  // 15: org.cudo.compute.v1.NetworkService.ListSecurityGroups:input_type -> org.cudo.compute.v1.ListSecurityGroupsRequest
-	12, // 16: org.cudo.compute.v1.NetworkService.UpdateSecurityGroup:input_type -> org.cudo.compute.v1.UpdateSecurityGroupRequest
-	14, // 17: org.cudo.compute.v1.NetworkService.DeleteSecurityGroup:input_type -> org.cudo.compute.v1.DeleteSecurityGroupRequest
-	17, // 18: org.cudo.compute.v1.NetworkService.CreateNetwork:output_type -> org.cudo.compute.v1.Network
-	17, // 19: org.cudo.compute.v1.NetworkService.GetNetwork:output_type -> org.cudo.compute.v1.Network
-	6,  // 20: org.cudo.compute.v1.NetworkService.ListNetworks:output_type -> org.cudo.compute.v1.ListNetworksResponse
-	18, // 21: org.cudo.compute.v1.NetworkService.DeleteNetwork:output_type -> google.protobuf.Empty
-	18, // 22: org.cudo.compute.v1.NetworkService.StartNetwork:output_type -> google.protobuf.Empty
-	18, // 23: org.cudo.compute.v1.NetworkService.StopNetwork:output_type -> google.protobuf.Empty
-	11, // 24: org.cudo.compute.v1.NetworkService.CreateSecurityGroup:output_type -> org.cudo.compute.v1.CreateSecurityGroupResponse
-	15, // 25: org.cudo.compute.v1.NetworkService.GetSecurityGroup:output_type -> org.cudo.compute.v1.SecurityGroup
-	2,  // 26: org.cudo.compute.v1.NetworkService.ListSecurityGroups:output_type -> org.cudo.compute.v1.ListSecurityGroupsResponse
-	13, // 27: org.cudo.compute.v1.NetworkService.UpdateSecurityGroup:output_type -> org.cudo.compute.v1.UpdateSecurityGroupResponse
-	18, // 28: org.cudo.compute.v1.NetworkService.DeleteSecurityGroup:output_type -> google.protobuf.Empty
-	18, // [18:29] is the sub-list for method output_type
-	7,  // [7:18] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	13, // 0: org.cudo.compute.v1.ListSecurityGroupsResponse.security_groups:type_name -> org.cudo.compute.v1.SecurityGroup
+	14, // 1: org.cudo.compute.v1.CreateNetworkRequest.vrouter_size:type_name -> org.cudo.compute.v1.VRouterSize
+	15, // 2: org.cudo.compute.v1.ListNetworksResponse.networks:type_name -> org.cudo.compute.v1.Network
+	13, // 3: org.cudo.compute.v1.CreateSecurityGroupRequest.security_group:type_name -> org.cudo.compute.v1.SecurityGroup
+	13, // 4: org.cudo.compute.v1.UpdateSecurityGroupRequest.security_group:type_name -> org.cudo.compute.v1.SecurityGroup
+	3,  // 5: org.cudo.compute.v1.NetworkService.CreateNetwork:input_type -> org.cudo.compute.v1.CreateNetworkRequest
+	4,  // 6: org.cudo.compute.v1.NetworkService.GetNetwork:input_type -> org.cudo.compute.v1.GetNetworkRequest
+	5,  // 7: org.cudo.compute.v1.NetworkService.ListNetworks:input_type -> org.cudo.compute.v1.ListNetworksRequest
+	7,  // 8: org.cudo.compute.v1.NetworkService.DeleteNetwork:input_type -> org.cudo.compute.v1.DeleteNetworkRequest
+	8,  // 9: org.cudo.compute.v1.NetworkService.StartNetwork:input_type -> org.cudo.compute.v1.StartNetworkRequest
+	9,  // 10: org.cudo.compute.v1.NetworkService.StopNetwork:input_type -> org.cudo.compute.v1.StopNetworkRequest
+	10, // 11: org.cudo.compute.v1.NetworkService.CreateSecurityGroup:input_type -> org.cudo.compute.v1.CreateSecurityGroupRequest
+	0,  // 12: org.cudo.compute.v1.NetworkService.GetSecurityGroup:input_type -> org.cudo.compute.v1.GetSecurityGroupRequest
+	1,  // 13: org.cudo.compute.v1.NetworkService.ListSecurityGroups:input_type -> org.cudo.compute.v1.ListSecurityGroupsRequest
+	11, // 14: org.cudo.compute.v1.NetworkService.UpdateSecurityGroup:input_type -> org.cudo.compute.v1.UpdateSecurityGroupRequest
+	12, // 15: org.cudo.compute.v1.NetworkService.DeleteSecurityGroup:input_type -> org.cudo.compute.v1.DeleteSecurityGroupRequest
+	15, // 16: org.cudo.compute.v1.NetworkService.CreateNetwork:output_type -> org.cudo.compute.v1.Network
+	15, // 17: org.cudo.compute.v1.NetworkService.GetNetwork:output_type -> org.cudo.compute.v1.Network
+	6,  // 18: org.cudo.compute.v1.NetworkService.ListNetworks:output_type -> org.cudo.compute.v1.ListNetworksResponse
+	16, // 19: org.cudo.compute.v1.NetworkService.DeleteNetwork:output_type -> google.protobuf.Empty
+	16, // 20: org.cudo.compute.v1.NetworkService.StartNetwork:output_type -> google.protobuf.Empty
+	16, // 21: org.cudo.compute.v1.NetworkService.StopNetwork:output_type -> google.protobuf.Empty
+	13, // 22: org.cudo.compute.v1.NetworkService.CreateSecurityGroup:output_type -> org.cudo.compute.v1.SecurityGroup
+	13, // 23: org.cudo.compute.v1.NetworkService.GetSecurityGroup:output_type -> org.cudo.compute.v1.SecurityGroup
+	2,  // 24: org.cudo.compute.v1.NetworkService.ListSecurityGroups:output_type -> org.cudo.compute.v1.ListSecurityGroupsResponse
+	13, // 25: org.cudo.compute.v1.NetworkService.UpdateSecurityGroup:output_type -> org.cudo.compute.v1.SecurityGroup
+	16, // 26: org.cudo.compute.v1.NetworkService.DeleteSecurityGroup:output_type -> google.protobuf.Empty
+	16, // [16:27] is the sub-list for method output_type
+	5,  // [5:16] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_svc_compute_network_network_svc_proto_init() }
@@ -1038,7 +941,7 @@ func file_svc_compute_network_network_svc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_svc_compute_network_network_svc_proto_rawDesc), len(file_svc_compute_network_network_svc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -534,7 +534,7 @@ const file_svc_compute_volume_volume_svc_proto_rawDesc = "" +
 	"\vListVolumes\x12'.org.cudo.compute.v1.ListVolumesRequest\x1a(.org.cudo.compute.v1.ListVolumesResponse\"j\xbaG>\n" +
 	"\x06Volume\x12\fList volumes\x1a\x19List volumes in a project*\vListVolumes\x82\xd3\xe4\x93\x02#\x12!/v1/projects/{project_id}/volumes\x12\xe4\x01\n" +
 	"\fUpdateVolume\x12(.org.cudo.compute.v1.UpdateVolumeRequest\x1a\x1b.org.cudo.compute.v1.Volume\"\x8c\x01\xbaGE\n" +
-	"\x06Volume\x12\x0fUpdate a volume\x1a\x1cUpdate a volume in a project*\fUpdateVolume\x82\xd3\xe4\x93\x02>:\x06volume24/v1/projects/{volume.project_id}/volumes/{volume.id}B@Z>github.com/CudoVentures/cudo-compute-market/svc/compute/volumeb\x06proto3"
+	"\x06Volume\x12\x0fUpdate a volume\x1a\x1cUpdate a volume in a project*\fUpdateVolume\x82\xd3\xe4\x93\x02>:\x06volume24/v1/projects/{volume.project_id}/volumes/{volume.id}BIZGgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/volumeb\x06proto3"
 
 var (
 	file_svc_compute_volume_volume_svc_proto_rawDescOnce sync.Once

@@ -7,10 +7,6 @@
 package vm
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	compute "github.com/CudoVentures/terraform-provider-cudo/internal/compute"
 	securitygroup "github.com/CudoVentures/terraform-provider-cudo/internal/compute/securitygroup"
 	_ "github.com/google/gnostic/openapiv3"
@@ -19,6 +15,9 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -1795,7 +1794,7 @@ const file_svc_compute_vm_vm_proto_rawDesc = "" +
 	"\x16SSH_KEY_SOURCE_UNKNOWN\x10\x00\x12\x1a\n" +
 	"\x16SSH_KEY_SOURCE_PROJECT\x10\x01\x12\x17\n" +
 	"\x13SSH_KEY_SOURCE_USER\x10\x02\x12\x17\n" +
-	"\x13SSH_KEY_SOURCE_NONE\x10\x03B<Z:github.com/CudoVentures/cudo-compute-market/svc/compute/vmb\x06proto3"
+	"\x13SSH_KEY_SOURCE_NONE\x10\x03BEZCgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/vmb\x06proto3"
 
 var (
 	file_svc_compute_vm_vm_proto_rawDescOnce sync.Once

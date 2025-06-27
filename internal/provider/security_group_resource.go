@@ -273,7 +273,7 @@ func (r *SecurityGroupResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	state.Rules = getRuleModels(res.SecurityGroup.Rules)
+	state.Rules = getRuleModels(res.Rules)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -342,7 +342,7 @@ func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	state.Rules = getRuleModels(res.SecurityGroup.Rules)
+	state.Rules = getRuleModels(res.Rules)
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

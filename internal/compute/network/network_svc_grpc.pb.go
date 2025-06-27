@@ -8,7 +8,6 @@ package network
 
 import (
 	context "context"
-
 	securitygroup "github.com/CudoVentures/terraform-provider-cudo/internal/compute/securitygroup"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -45,10 +44,10 @@ type NetworkServiceClient interface {
 	DeleteNetwork(ctx context.Context, in *DeleteNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	StartNetwork(ctx context.Context, in *StartNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	StopNetwork(ctx context.Context, in *StopNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	CreateSecurityGroup(ctx context.Context, in *CreateSecurityGroupRequest, opts ...grpc.CallOption) (*CreateSecurityGroupResponse, error)
+	CreateSecurityGroup(ctx context.Context, in *CreateSecurityGroupRequest, opts ...grpc.CallOption) (*securitygroup.SecurityGroup, error)
 	GetSecurityGroup(ctx context.Context, in *GetSecurityGroupRequest, opts ...grpc.CallOption) (*securitygroup.SecurityGroup, error)
 	ListSecurityGroups(ctx context.Context, in *ListSecurityGroupsRequest, opts ...grpc.CallOption) (*ListSecurityGroupsResponse, error)
-	UpdateSecurityGroup(ctx context.Context, in *UpdateSecurityGroupRequest, opts ...grpc.CallOption) (*UpdateSecurityGroupResponse, error)
+	UpdateSecurityGroup(ctx context.Context, in *UpdateSecurityGroupRequest, opts ...grpc.CallOption) (*securitygroup.SecurityGroup, error)
 	DeleteSecurityGroup(ctx context.Context, in *DeleteSecurityGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -120,9 +119,9 @@ func (c *networkServiceClient) StopNetwork(ctx context.Context, in *StopNetworkR
 	return out, nil
 }
 
-func (c *networkServiceClient) CreateSecurityGroup(ctx context.Context, in *CreateSecurityGroupRequest, opts ...grpc.CallOption) (*CreateSecurityGroupResponse, error) {
+func (c *networkServiceClient) CreateSecurityGroup(ctx context.Context, in *CreateSecurityGroupRequest, opts ...grpc.CallOption) (*securitygroup.SecurityGroup, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateSecurityGroupResponse)
+	out := new(securitygroup.SecurityGroup)
 	err := c.cc.Invoke(ctx, NetworkService_CreateSecurityGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -150,9 +149,9 @@ func (c *networkServiceClient) ListSecurityGroups(ctx context.Context, in *ListS
 	return out, nil
 }
 
-func (c *networkServiceClient) UpdateSecurityGroup(ctx context.Context, in *UpdateSecurityGroupRequest, opts ...grpc.CallOption) (*UpdateSecurityGroupResponse, error) {
+func (c *networkServiceClient) UpdateSecurityGroup(ctx context.Context, in *UpdateSecurityGroupRequest, opts ...grpc.CallOption) (*securitygroup.SecurityGroup, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateSecurityGroupResponse)
+	out := new(securitygroup.SecurityGroup)
 	err := c.cc.Invoke(ctx, NetworkService_UpdateSecurityGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -180,10 +179,10 @@ type NetworkServiceServer interface {
 	DeleteNetwork(context.Context, *DeleteNetworkRequest) (*emptypb.Empty, error)
 	StartNetwork(context.Context, *StartNetworkRequest) (*emptypb.Empty, error)
 	StopNetwork(context.Context, *StopNetworkRequest) (*emptypb.Empty, error)
-	CreateSecurityGroup(context.Context, *CreateSecurityGroupRequest) (*CreateSecurityGroupResponse, error)
+	CreateSecurityGroup(context.Context, *CreateSecurityGroupRequest) (*securitygroup.SecurityGroup, error)
 	GetSecurityGroup(context.Context, *GetSecurityGroupRequest) (*securitygroup.SecurityGroup, error)
 	ListSecurityGroups(context.Context, *ListSecurityGroupsRequest) (*ListSecurityGroupsResponse, error)
-	UpdateSecurityGroup(context.Context, *UpdateSecurityGroupRequest) (*UpdateSecurityGroupResponse, error)
+	UpdateSecurityGroup(context.Context, *UpdateSecurityGroupRequest) (*securitygroup.SecurityGroup, error)
 	DeleteSecurityGroup(context.Context, *DeleteSecurityGroupRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedNetworkServiceServer()
 }
@@ -213,7 +212,7 @@ func (UnimplementedNetworkServiceServer) StartNetwork(context.Context, *StartNet
 func (UnimplementedNetworkServiceServer) StopNetwork(context.Context, *StopNetworkRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopNetwork not implemented")
 }
-func (UnimplementedNetworkServiceServer) CreateSecurityGroup(context.Context, *CreateSecurityGroupRequest) (*CreateSecurityGroupResponse, error) {
+func (UnimplementedNetworkServiceServer) CreateSecurityGroup(context.Context, *CreateSecurityGroupRequest) (*securitygroup.SecurityGroup, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSecurityGroup not implemented")
 }
 func (UnimplementedNetworkServiceServer) GetSecurityGroup(context.Context, *GetSecurityGroupRequest) (*securitygroup.SecurityGroup, error) {
@@ -222,7 +221,7 @@ func (UnimplementedNetworkServiceServer) GetSecurityGroup(context.Context, *GetS
 func (UnimplementedNetworkServiceServer) ListSecurityGroups(context.Context, *ListSecurityGroupsRequest) (*ListSecurityGroupsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListSecurityGroups not implemented")
 }
-func (UnimplementedNetworkServiceServer) UpdateSecurityGroup(context.Context, *UpdateSecurityGroupRequest) (*UpdateSecurityGroupResponse, error) {
+func (UnimplementedNetworkServiceServer) UpdateSecurityGroup(context.Context, *UpdateSecurityGroupRequest) (*securitygroup.SecurityGroup, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSecurityGroup not implemented")
 }
 func (UnimplementedNetworkServiceServer) DeleteSecurityGroup(context.Context, *DeleteSecurityGroupRequest) (*emptypb.Empty, error) {

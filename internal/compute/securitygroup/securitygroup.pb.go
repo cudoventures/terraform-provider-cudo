@@ -325,7 +325,7 @@ const file_svc_compute_securitygroup_securitygroup_proto_rawDesc = "" +
 	"\bRuleType\x12\x15\n" +
 	"\x11RULE_TYPE_UNKNOWN\x10\x00\x12\x15\n" +
 	"\x11RULE_TYPE_INBOUND\x10\x01\x12\x16\n" +
-	"\x12RULE_TYPE_OUTBOUND\x10\x02BGZEgithub.com/CudoVentures/cudo-compute-market/svc/compute/securitygroupb\x06proto3"
+	"\x12RULE_TYPE_OUTBOUND\x10\x02BPZNgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/securitygroupb\x06proto3"
 
 var (
 	file_svc_compute_securitygroup_securitygroup_proto_rawDescOnce sync.Once

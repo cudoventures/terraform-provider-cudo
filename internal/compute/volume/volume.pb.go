@@ -7,10 +7,6 @@
 package volume
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	compute "github.com/CudoVentures/terraform-provider-cudo/internal/compute"
 	_ "github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -18,6 +14,9 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -312,7 +311,7 @@ const file_svc_compute_volume_volume_proto_rawDesc = "" +
 	"\x0edata_center_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12Q\n" +
 	"\x0fcommitment_term\x18\x02 \x01(\x0e2#.org.cudo.compute.v1.CommitmentTermB\x03\xe0A\x02R\x0ecommitmentTerm\x12;\n" +
 	"\fgib_price_hr\x18\x03 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x02R\n" +
-	"gibPriceHrB@Z>github.com/CudoVentures/cudo-compute-market/svc/compute/volumeb\x06proto3"
+	"gibPriceHrBIZGgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/volumeb\x06proto3"
 
 var (
 	file_svc_compute_volume_volume_proto_rawDescOnce sync.Once
