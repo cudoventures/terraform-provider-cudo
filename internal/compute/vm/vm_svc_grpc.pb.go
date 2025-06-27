@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: svc/compute/vm/vm.proto
+// source: svc/compute/vm/vm_svc.proto
 
 package vm
 
@@ -30,7 +30,6 @@ const (
 	VMService_TerminateVM_FullMethodName               = "/org.cudo.compute.v1.VMService/TerminateVM"
 	VMService_ConnectVM_FullMethodName                 = "/org.cudo.compute.v1.VMService/ConnectVM"
 	VMService_ResizeVM_FullMethodName                  = "/org.cudo.compute.v1.VMService/ResizeVM"
-	VMService_ListVMDisks_FullMethodName               = "/org.cudo.compute.v1.VMService/ListVMDisks"
 	VMService_ListPublicVMImages_FullMethodName        = "/org.cudo.compute.v1.VMService/ListPublicVMImages"
 	VMService_ListVMMachineTypes_FullMethodName        = "/org.cudo.compute.v1.VMService/ListVMMachineTypes"
 	VMService_ListVMMachineTypes2_FullMethodName       = "/org.cudo.compute.v1.VMService/ListVMMachineTypes2"
@@ -48,10 +47,6 @@ const (
 	VMService_DeleteStorageDisk_FullMethodName         = "/org.cudo.compute.v1.VMService/DeleteStorageDisk"
 	VMService_AttachStorageDisk_FullMethodName         = "/org.cudo.compute.v1.VMService/AttachStorageDisk"
 	VMService_DetachStorageDisk_FullMethodName         = "/org.cudo.compute.v1.VMService/DetachStorageDisk"
-	VMService_CreateDiskSnapshot_FullMethodName        = "/org.cudo.compute.v1.VMService/CreateDiskSnapshot"
-	VMService_ListDiskSnapshots_FullMethodName         = "/org.cudo.compute.v1.VMService/ListDiskSnapshots"
-	VMService_DeleteDiskSnapshot_FullMethodName        = "/org.cudo.compute.v1.VMService/DeleteDiskSnapshot"
-	VMService_RevertDisk_FullMethodName                = "/org.cudo.compute.v1.VMService/RevertDisk"
 	VMService_AttachSecurityGroup_FullMethodName       = "/org.cudo.compute.v1.VMService/AttachSecurityGroup"
 	VMService_DetachSecurityGroup_FullMethodName       = "/org.cudo.compute.v1.VMService/DetachSecurityGroup"
 	VMService_UpdateVMMetadata_FullMethodName          = "/org.cudo.compute.v1.VMService/UpdateVMMetadata"
@@ -77,10 +72,9 @@ type VMServiceClient interface {
 	TerminateVM(ctx context.Context, in *TerminateVMRequest, opts ...grpc.CallOption) (*TerminateVMResponse, error)
 	ConnectVM(ctx context.Context, in *ConnectVMRequest, opts ...grpc.CallOption) (*ConnectVMResponse, error)
 	ResizeVM(ctx context.Context, in *ResizeVMRequest, opts ...grpc.CallOption) (*ResizeVMResponse, error)
-	ListVMDisks(ctx context.Context, in *ListVMDisksRequest, opts ...grpc.CallOption) (*ListVMDisksResponse, error)
 	ListPublicVMImages(ctx context.Context, in *ListPublicVMImagesRequest, opts ...grpc.CallOption) (*ListPublicVMImagesResponse, error)
 	ListVMMachineTypes(ctx context.Context, in *ListVMMachineTypesRequest, opts ...grpc.CallOption) (*ListVMMachineTypesResponse, error)
-	ListVMMachineTypes2(ctx context.Context, in *ListVMMachineTypes2Request, opts ...grpc.CallOption) (*ListVMMachineTypes2Response, error)
+	ListVMMachineTypes2(ctx context.Context, in *ListVMMachineTypesRequest, opts ...grpc.CallOption) (*ListVMMachineTypesResponse, error)
 	ListVMDataCenters(ctx context.Context, in *ListVMDataCentersRequest, opts ...grpc.CallOption) (*ListVMDataCentersResponse, error)
 	ListVMGpuModels(ctx context.Context, in *ListVMGpuModelsRequest, opts ...grpc.CallOption) (*ListVMGpuModelsResponse, error)
 	CreatePrivateVMImage(ctx context.Context, in *CreatePrivateVMImageRequest, opts ...grpc.CallOption) (*CreatePrivateVMImageResponse, error)
@@ -95,10 +89,6 @@ type VMServiceClient interface {
 	DeleteStorageDisk(ctx context.Context, in *DeleteStorageDiskRequest, opts ...grpc.CallOption) (*DeleteStorageDiskResponse, error)
 	AttachStorageDisk(ctx context.Context, in *AttachStorageDiskRequest, opts ...grpc.CallOption) (*AttachStorageDiskResponse, error)
 	DetachStorageDisk(ctx context.Context, in *DetachStorageDiskRequest, opts ...grpc.CallOption) (*DetachStorageDiskResponse, error)
-	CreateDiskSnapshot(ctx context.Context, in *CreateDiskSnapshotRequest, opts ...grpc.CallOption) (*CreateDiskSnapshotResponse, error)
-	ListDiskSnapshots(ctx context.Context, in *ListDiskSnapshotsRequest, opts ...grpc.CallOption) (*ListDiskSnapshotsResponse, error)
-	DeleteDiskSnapshot(ctx context.Context, in *DeleteDiskSnapshotRequest, opts ...grpc.CallOption) (*DeleteDiskSnapshotResponse, error)
-	RevertDisk(ctx context.Context, in *RevertDiskRequest, opts ...grpc.CallOption) (*RevertDiskResponse, error)
 	AttachSecurityGroup(ctx context.Context, in *AttachSecurityGroupRequest, opts ...grpc.CallOption) (*AttachSecurityGroupResponse, error)
 	DetachSecurityGroup(ctx context.Context, in *DetachSecurityGroupRequest, opts ...grpc.CallOption) (*DetachSecurityGroupResponse, error)
 	UpdateVMMetadata(ctx context.Context, in *UpdateVMMetadataRequest, opts ...grpc.CallOption) (*UpdateVMMetadataResponse, error)
@@ -227,16 +217,6 @@ func (c *vMServiceClient) ResizeVM(ctx context.Context, in *ResizeVMRequest, opt
 	return out, nil
 }
 
-func (c *vMServiceClient) ListVMDisks(ctx context.Context, in *ListVMDisksRequest, opts ...grpc.CallOption) (*ListVMDisksResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListVMDisksResponse)
-	err := c.cc.Invoke(ctx, VMService_ListVMDisks_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *vMServiceClient) ListPublicVMImages(ctx context.Context, in *ListPublicVMImagesRequest, opts ...grpc.CallOption) (*ListPublicVMImagesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListPublicVMImagesResponse)
@@ -257,9 +237,9 @@ func (c *vMServiceClient) ListVMMachineTypes(ctx context.Context, in *ListVMMach
 	return out, nil
 }
 
-func (c *vMServiceClient) ListVMMachineTypes2(ctx context.Context, in *ListVMMachineTypes2Request, opts ...grpc.CallOption) (*ListVMMachineTypes2Response, error) {
+func (c *vMServiceClient) ListVMMachineTypes2(ctx context.Context, in *ListVMMachineTypesRequest, opts ...grpc.CallOption) (*ListVMMachineTypesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListVMMachineTypes2Response)
+	out := new(ListVMMachineTypesResponse)
 	err := c.cc.Invoke(ctx, VMService_ListVMMachineTypes2_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -407,46 +387,6 @@ func (c *vMServiceClient) DetachStorageDisk(ctx context.Context, in *DetachStora
 	return out, nil
 }
 
-func (c *vMServiceClient) CreateDiskSnapshot(ctx context.Context, in *CreateDiskSnapshotRequest, opts ...grpc.CallOption) (*CreateDiskSnapshotResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateDiskSnapshotResponse)
-	err := c.cc.Invoke(ctx, VMService_CreateDiskSnapshot_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *vMServiceClient) ListDiskSnapshots(ctx context.Context, in *ListDiskSnapshotsRequest, opts ...grpc.CallOption) (*ListDiskSnapshotsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListDiskSnapshotsResponse)
-	err := c.cc.Invoke(ctx, VMService_ListDiskSnapshots_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *vMServiceClient) DeleteDiskSnapshot(ctx context.Context, in *DeleteDiskSnapshotRequest, opts ...grpc.CallOption) (*DeleteDiskSnapshotResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteDiskSnapshotResponse)
-	err := c.cc.Invoke(ctx, VMService_DeleteDiskSnapshot_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *vMServiceClient) RevertDisk(ctx context.Context, in *RevertDiskRequest, opts ...grpc.CallOption) (*RevertDiskResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RevertDiskResponse)
-	err := c.cc.Invoke(ctx, VMService_RevertDisk_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *vMServiceClient) AttachSecurityGroup(ctx context.Context, in *AttachSecurityGroupRequest, opts ...grpc.CallOption) (*AttachSecurityGroupResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AttachSecurityGroupResponse)
@@ -542,10 +482,9 @@ type VMServiceServer interface {
 	TerminateVM(context.Context, *TerminateVMRequest) (*TerminateVMResponse, error)
 	ConnectVM(context.Context, *ConnectVMRequest) (*ConnectVMResponse, error)
 	ResizeVM(context.Context, *ResizeVMRequest) (*ResizeVMResponse, error)
-	ListVMDisks(context.Context, *ListVMDisksRequest) (*ListVMDisksResponse, error)
 	ListPublicVMImages(context.Context, *ListPublicVMImagesRequest) (*ListPublicVMImagesResponse, error)
 	ListVMMachineTypes(context.Context, *ListVMMachineTypesRequest) (*ListVMMachineTypesResponse, error)
-	ListVMMachineTypes2(context.Context, *ListVMMachineTypes2Request) (*ListVMMachineTypes2Response, error)
+	ListVMMachineTypes2(context.Context, *ListVMMachineTypesRequest) (*ListVMMachineTypesResponse, error)
 	ListVMDataCenters(context.Context, *ListVMDataCentersRequest) (*ListVMDataCentersResponse, error)
 	ListVMGpuModels(context.Context, *ListVMGpuModelsRequest) (*ListVMGpuModelsResponse, error)
 	CreatePrivateVMImage(context.Context, *CreatePrivateVMImageRequest) (*CreatePrivateVMImageResponse, error)
@@ -560,10 +499,6 @@ type VMServiceServer interface {
 	DeleteStorageDisk(context.Context, *DeleteStorageDiskRequest) (*DeleteStorageDiskResponse, error)
 	AttachStorageDisk(context.Context, *AttachStorageDiskRequest) (*AttachStorageDiskResponse, error)
 	DetachStorageDisk(context.Context, *DetachStorageDiskRequest) (*DetachStorageDiskResponse, error)
-	CreateDiskSnapshot(context.Context, *CreateDiskSnapshotRequest) (*CreateDiskSnapshotResponse, error)
-	ListDiskSnapshots(context.Context, *ListDiskSnapshotsRequest) (*ListDiskSnapshotsResponse, error)
-	DeleteDiskSnapshot(context.Context, *DeleteDiskSnapshotRequest) (*DeleteDiskSnapshotResponse, error)
-	RevertDisk(context.Context, *RevertDiskRequest) (*RevertDiskResponse, error)
 	AttachSecurityGroup(context.Context, *AttachSecurityGroupRequest) (*AttachSecurityGroupResponse, error)
 	DetachSecurityGroup(context.Context, *DetachSecurityGroupRequest) (*DetachSecurityGroupResponse, error)
 	UpdateVMMetadata(context.Context, *UpdateVMMetadataRequest) (*UpdateVMMetadataResponse, error)
@@ -615,16 +550,13 @@ func (UnimplementedVMServiceServer) ConnectVM(context.Context, *ConnectVMRequest
 func (UnimplementedVMServiceServer) ResizeVM(context.Context, *ResizeVMRequest) (*ResizeVMResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResizeVM not implemented")
 }
-func (UnimplementedVMServiceServer) ListVMDisks(context.Context, *ListVMDisksRequest) (*ListVMDisksResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListVMDisks not implemented")
-}
 func (UnimplementedVMServiceServer) ListPublicVMImages(context.Context, *ListPublicVMImagesRequest) (*ListPublicVMImagesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPublicVMImages not implemented")
 }
 func (UnimplementedVMServiceServer) ListVMMachineTypes(context.Context, *ListVMMachineTypesRequest) (*ListVMMachineTypesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListVMMachineTypes not implemented")
 }
-func (UnimplementedVMServiceServer) ListVMMachineTypes2(context.Context, *ListVMMachineTypes2Request) (*ListVMMachineTypes2Response, error) {
+func (UnimplementedVMServiceServer) ListVMMachineTypes2(context.Context, *ListVMMachineTypesRequest) (*ListVMMachineTypesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListVMMachineTypes2 not implemented")
 }
 func (UnimplementedVMServiceServer) ListVMDataCenters(context.Context, *ListVMDataCentersRequest) (*ListVMDataCentersResponse, error) {
@@ -668,18 +600,6 @@ func (UnimplementedVMServiceServer) AttachStorageDisk(context.Context, *AttachSt
 }
 func (UnimplementedVMServiceServer) DetachStorageDisk(context.Context, *DetachStorageDiskRequest) (*DetachStorageDiskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DetachStorageDisk not implemented")
-}
-func (UnimplementedVMServiceServer) CreateDiskSnapshot(context.Context, *CreateDiskSnapshotRequest) (*CreateDiskSnapshotResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateDiskSnapshot not implemented")
-}
-func (UnimplementedVMServiceServer) ListDiskSnapshots(context.Context, *ListDiskSnapshotsRequest) (*ListDiskSnapshotsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListDiskSnapshots not implemented")
-}
-func (UnimplementedVMServiceServer) DeleteDiskSnapshot(context.Context, *DeleteDiskSnapshotRequest) (*DeleteDiskSnapshotResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteDiskSnapshot not implemented")
-}
-func (UnimplementedVMServiceServer) RevertDisk(context.Context, *RevertDiskRequest) (*RevertDiskResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RevertDisk not implemented")
 }
 func (UnimplementedVMServiceServer) AttachSecurityGroup(context.Context, *AttachSecurityGroupRequest) (*AttachSecurityGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AttachSecurityGroup not implemented")
@@ -924,24 +844,6 @@ func _VMService_ResizeVM_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _VMService_ListVMDisks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListVMDisksRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VMServiceServer).ListVMDisks(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: VMService_ListVMDisks_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VMServiceServer).ListVMDisks(ctx, req.(*ListVMDisksRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _VMService_ListPublicVMImages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListPublicVMImagesRequest)
 	if err := dec(in); err != nil {
@@ -979,7 +881,7 @@ func _VMService_ListVMMachineTypes_Handler(srv interface{}, ctx context.Context,
 }
 
 func _VMService_ListVMMachineTypes2_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListVMMachineTypes2Request)
+	in := new(ListVMMachineTypesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -991,7 +893,7 @@ func _VMService_ListVMMachineTypes2_Handler(srv interface{}, ctx context.Context
 		FullMethod: VMService_ListVMMachineTypes2_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VMServiceServer).ListVMMachineTypes2(ctx, req.(*ListVMMachineTypes2Request))
+		return srv.(VMServiceServer).ListVMMachineTypes2(ctx, req.(*ListVMMachineTypesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1248,78 +1150,6 @@ func _VMService_DetachStorageDisk_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _VMService_CreateDiskSnapshot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateDiskSnapshotRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VMServiceServer).CreateDiskSnapshot(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: VMService_CreateDiskSnapshot_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VMServiceServer).CreateDiskSnapshot(ctx, req.(*CreateDiskSnapshotRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _VMService_ListDiskSnapshots_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListDiskSnapshotsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VMServiceServer).ListDiskSnapshots(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: VMService_ListDiskSnapshots_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VMServiceServer).ListDiskSnapshots(ctx, req.(*ListDiskSnapshotsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _VMService_DeleteDiskSnapshot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteDiskSnapshotRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VMServiceServer).DeleteDiskSnapshot(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: VMService_DeleteDiskSnapshot_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VMServiceServer).DeleteDiskSnapshot(ctx, req.(*DeleteDiskSnapshotRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _VMService_RevertDisk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RevertDiskRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VMServiceServer).RevertDisk(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: VMService_RevertDisk_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VMServiceServer).RevertDisk(ctx, req.(*RevertDiskRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _VMService_AttachSecurityGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AttachSecurityGroupRequest)
 	if err := dec(in); err != nil {
@@ -1516,10 +1346,6 @@ var VMService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _VMService_ResizeVM_Handler,
 		},
 		{
-			MethodName: "ListVMDisks",
-			Handler:    _VMService_ListVMDisks_Handler,
-		},
-		{
 			MethodName: "ListPublicVMImages",
 			Handler:    _VMService_ListPublicVMImages_Handler,
 		},
@@ -1588,22 +1414,6 @@ var VMService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _VMService_DetachStorageDisk_Handler,
 		},
 		{
-			MethodName: "CreateDiskSnapshot",
-			Handler:    _VMService_CreateDiskSnapshot_Handler,
-		},
-		{
-			MethodName: "ListDiskSnapshots",
-			Handler:    _VMService_ListDiskSnapshots_Handler,
-		},
-		{
-			MethodName: "DeleteDiskSnapshot",
-			Handler:    _VMService_DeleteDiskSnapshot_Handler,
-		},
-		{
-			MethodName: "RevertDisk",
-			Handler:    _VMService_RevertDisk_Handler,
-		},
-		{
 			MethodName: "AttachSecurityGroup",
 			Handler:    _VMService_AttachSecurityGroup_Handler,
 		},
@@ -1637,5 +1447,5 @@ var VMService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "svc/compute/vm/vm.proto",
+	Metadata: "svc/compute/vm/vm_svc.proto",
 }

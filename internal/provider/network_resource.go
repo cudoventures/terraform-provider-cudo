@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -179,12 +180,12 @@ func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	state.ID = types.StringValue(res.Network.Id)
-	state.DataCenterId = types.StringValue(res.Network.DataCenterId)
-	state.ExternalIPAddress = types.StringValue(res.Network.ExternalIpAddress)
-	state.InternalIPAddress = types.StringValue(res.Network.InternalIpAddress)
-	state.IPRange = types.StringValue(res.Network.IpRange)
-	state.Gateway = types.StringValue(res.Network.Gateway)
+	state.ID = types.StringValue(res.Id)
+	state.DataCenterId = types.StringValue(res.DataCenterId)
+	state.ExternalIPAddress = types.StringValue(res.ExternalIpAddress)
+	state.InternalIPAddress = types.StringValue(res.InternalIpAddress)
+	state.IPRange = types.StringValue(res.IpRange)
+	state.Gateway = types.StringValue(res.Gateway)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -273,36 +274,37 @@ func waitForNetworkAvailable(ctx context.Context, projectID string, networkID st
 		if err != nil {
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
 				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s not found: ", networkID, projectID))
-				return res, network.Network_UNKNOWN.String(), nil
+				return res, vm.VM_UNKNOWN.String(), nil
 			}
 			return nil, "", err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.State.String()))
-		return res, res.Network.State.String(), nil
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.State.String()))
+		return res, res.State.String(), nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s", networkID, projectID))
 
 	stateConf := &helper.StateChangeConf{
 		Pending: []string{
-			network.Network_CLONING.String(),
-			network.Network_CREATING_SNAPSHOT.String(),
-			network.Network_DELETING_SNAPSHOT.String(),
-			network.Network_DELETING.String(),
-			network.Network_HOTPLUGGING.String(),
-			network.Network_MIGRATING.String(),
-			network.Network_RECREATING.String(),
-			network.Network_RESIZING_DISK.String(),
-			network.Network_RESIZING.String(),
-			network.Network_REVERTING_SNAPSHOT.String(),
-			network.Network_STARTING.String(),
-			network.Network_STOPPING.String(),
-			network.Network_SUSPENDING.String(),
-			network.Network_UNKNOWN.String(),
+			vm.VM_CLONING.String(),
+			vm.VM_CREATING_SNAPSHOT.String(),
+			vm.VM_DELETING_SNAPSHOT.String(),
+			vm.VM_DELETING.String(),
+			vm.VM_HOTPLUGGING.String(),
+			vm.VM_MIGRATING.String(),
+			vm.VM_RECREATING.String(),
+			vm.VM_RESIZING_DISK.String(),
+			vm.VM_RESIZING.String(),
+			vm.VM_REVERTING_SNAPSHOT.String(),
+			vm.VM_STARTING.String(),
+			vm.VM_STOPPING.String(),
+			vm.VM_SUSPENDING.String(),
+			vm.VM_UNKNOWN.String(),
+			vm.VM_PENDING.String(),
 		},
 		Target: []string{
-			network.Network_ACTIVE.String(),
+			vm.VM_ACTIVE.String(),
 		},
 		Refresh:    refreshFunc,
 		Timeout:    2 * time.Hour,
@@ -312,9 +314,9 @@ func waitForNetworkAvailable(ctx context.Context, projectID string, networkID st
 
 	if res, err := stateConf.WaitForState(ctx); err != nil {
 		return nil, fmt.Errorf("error waiting for network %s in project %s to become available: %w", networkID, projectID, err)
-	} else if res, ok := res.(*network.GetNetworkResponse); ok {
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for network %s in project %s (%s)", networkID, projectID, res.Network.State.String()))
-		return res.Network, nil
+	} else if res, ok := res.(*network.Network); ok {
+		tflog.Trace(ctx, fmt.Sprintf("completed waiting for network %s in project %s (%s)", networkID, projectID, res.State.String()))
+		return res, nil
 	}
 
 	return nil, nil
@@ -329,42 +331,43 @@ func waitForNetworkStop(ctx context.Context, projectID string, networkID string,
 		if err != nil {
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
 				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is done: ", networkID, projectID))
-				return res, network.Network_DELETED.String(), nil
+				return res, vm.VM_DELETED.String(), nil
 			}
 			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
 			return nil, "", err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.State.String()))
-		return res, res.Network.State.String(), nil
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.State.String()))
+		return res, res.State.String(), nil
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
 
 	stateConf := &helper.StateChangeConf{
 		Pending: []string{
-			network.Network_CLONING.String(),
-			network.Network_CREATING_SNAPSHOT.String(),
-			network.Network_DELETING_SNAPSHOT.String(),
-			network.Network_HOTPLUGGING.String(),
-			network.Network_MIGRATING.String(),
-			network.Network_RECREATING.String(),
-			network.Network_RESIZING_DISK.String(),
-			network.Network_RESIZING.String(),
-			network.Network_REVERTING_SNAPSHOT.String(),
-			network.Network_STARTING.String(),
-			network.Network_STOPPING.String(),
-			network.Network_SUSPENDING.String(),
+			vm.VM_CLONING.String(),
+			vm.VM_CREATING_SNAPSHOT.String(),
+			vm.VM_DELETING_SNAPSHOT.String(),
+			vm.VM_HOTPLUGGING.String(),
+			vm.VM_MIGRATING.String(),
+			vm.VM_RECREATING.String(),
+			vm.VM_RESIZING_DISK.String(),
+			vm.VM_RESIZING.String(),
+			vm.VM_REVERTING_SNAPSHOT.String(),
+			vm.VM_STARTING.String(),
+			vm.VM_STOPPING.String(),
+			vm.VM_SUSPENDING.String(),
+			vm.VM_PENDING.String(),
 			// network could be stopped whilst in these states, so network could be in the state when the delete is requested
-			network.Network_UNKNOWN.String(),
-			network.Network_FAILED.String(),
-			network.Network_ACTIVE.String(),
-			network.Network_SUSPENDED.String(),
+			vm.VM_UNKNOWN.String(),
+			vm.VM_FAILED.String(),
+			vm.VM_ACTIVE.String(),
+			vm.VM_SUSPENDED.String(),
 		},
 		Target: []string{
-			network.Network_STOPPED.String(),
-			network.Network_DELETING.String(),
-			network.Network_DELETED.String(),
+			vm.VM_STOPPED.String(),
+			vm.VM_DELETING.String(),
+			vm.VM_DELETED.String(),
 		},
 		Refresh:    refreshFunc,
 		Timeout:    20 * time.Minute,
@@ -394,7 +397,7 @@ func waitForNetworkDelete(ctx context.Context, projectID string, networkID strin
 			return nil, "", err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.Network.State.String()))
+		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.State.String()))
 		return res, "pending", nil
 	}
 

@@ -125,7 +125,7 @@ func (d *SecurityGroupDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	res, err := d.client.NetworkClient.GetSecurityGroup(ctx, &network.GetSecurityGroupRequest{
+	sg, err := d.client.NetworkClient.GetSecurityGroup(ctx, &network.GetSecurityGroupRequest{
 		ProjectId: d.client.DefaultProjectID,
 		Id:        state.ID.ValueString(),
 	})
@@ -137,7 +137,6 @@ func (d *SecurityGroupDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	sg := res.SecurityGroup
 	state.ID = types.StringValue(sg.Id)
 	state.DataCenterID = types.StringValue(sg.DataCenterId)
 	state.Description = types.StringValue(sg.Description)

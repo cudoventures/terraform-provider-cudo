@@ -58,7 +58,7 @@ func TestAcc_SecurityGroupResource(t *testing.T) {
 				res, err := cl.DeleteSecurityGroup(ctx, deleteParams)
 				t.Logf("%#v: %v", res, err)
 
-				return fmt.Errorf("security groupd not deleted %s", getRes.SecurityGroup.Id)
+				return fmt.Errorf("security groupd not deleted %s", getRes.Id)
 			}
 			return nil
 		},

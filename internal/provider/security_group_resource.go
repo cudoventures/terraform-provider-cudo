@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/securitygroup"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -161,30 +162,30 @@ func getNullableString(value string) basetypes.StringValue {
 	return result
 }
 
-func getRuleModels(rules []*network.SecurityGroup_Rule) []RuleModel {
+func getRuleModels(rules []*securitygroup.SecurityGroup_Rule) []RuleModel {
 	var ruleModels []RuleModel
 	for _, rule := range rules {
 		protocol := ""
 		switch rule.Protocol {
-		case network.SecurityGroup_Rule_PROTOCOL_ALL:
+		case securitygroup.SecurityGroup_Rule_PROTOCOL_ALL:
 			protocol = "all"
-		case network.SecurityGroup_Rule_PROTOCOL_ICMP:
+		case securitygroup.SecurityGroup_Rule_PROTOCOL_ICMP:
 			protocol = "icmp"
-		case network.SecurityGroup_Rule_PROTOCOL_ICMPv6:
+		case securitygroup.SecurityGroup_Rule_PROTOCOL_ICMPv6:
 			protocol = "icmpv6"
-		case network.SecurityGroup_Rule_PROTOCOL_IPSEC:
+		case securitygroup.SecurityGroup_Rule_PROTOCOL_IPSEC:
 			protocol = "ipsec"
-		case network.SecurityGroup_Rule_PROTOCOL_TCP:
+		case securitygroup.SecurityGroup_Rule_PROTOCOL_TCP:
 			protocol = "tcp"
-		case network.SecurityGroup_Rule_PROTOCOL_UDP:
+		case securitygroup.SecurityGroup_Rule_PROTOCOL_UDP:
 			protocol = "udp"
 		}
 
 		ruleType := ""
 		switch rule.RuleType {
-		case network.SecurityGroup_Rule_RULE_TYPE_INBOUND:
+		case securitygroup.SecurityGroup_Rule_RULE_TYPE_INBOUND:
 			ruleType = "inbound"
-		case network.SecurityGroup_Rule_RULE_TYPE_OUTBOUND:
+		case securitygroup.SecurityGroup_Rule_RULE_TYPE_OUTBOUND:
 			ruleType = "outbound"
 		}
 
@@ -203,35 +204,35 @@ func getRuleModels(rules []*network.SecurityGroup_Rule) []RuleModel {
 	return ruleModels
 }
 
-func getRuleParams(stateRules []RuleModel) []*network.SecurityGroup_Rule {
-	var rules []*network.SecurityGroup_Rule
+func getRuleParams(stateRules []RuleModel) []*securitygroup.SecurityGroup_Rule {
+	var rules []*securitygroup.SecurityGroup_Rule
 
 	for _, r := range stateRules {
-		var protocol network.SecurityGroup_Rule_Protocol
+		var protocol securitygroup.SecurityGroup_Rule_Protocol
 		switch r.Protocol.ValueString() {
 		case "tcp":
-			protocol = network.SecurityGroup_Rule_PROTOCOL_TCP
+			protocol = securitygroup.SecurityGroup_Rule_PROTOCOL_TCP
 		case "udp":
-			protocol = network.SecurityGroup_Rule_PROTOCOL_UDP
+			protocol = securitygroup.SecurityGroup_Rule_PROTOCOL_UDP
 		case "icmp":
-			protocol = network.SecurityGroup_Rule_PROTOCOL_ICMP
+			protocol = securitygroup.SecurityGroup_Rule_PROTOCOL_ICMP
 		case "icmpv6":
-			protocol = network.SecurityGroup_Rule_PROTOCOL_ICMPv6
+			protocol = securitygroup.SecurityGroup_Rule_PROTOCOL_ICMPv6
 		case "ipsec":
-			protocol = network.SecurityGroup_Rule_PROTOCOL_IPSEC
+			protocol = securitygroup.SecurityGroup_Rule_PROTOCOL_IPSEC
 		default:
-			protocol = network.SecurityGroup_Rule_PROTOCOL_ALL
+			protocol = securitygroup.SecurityGroup_Rule_PROTOCOL_ALL
 		}
 
-		var ruleType network.SecurityGroup_Rule_RuleType
+		var ruleType securitygroup.SecurityGroup_Rule_RuleType
 		switch r.RuleType.ValueString() {
 		case "inbound":
-			ruleType = network.SecurityGroup_Rule_RULE_TYPE_INBOUND
+			ruleType = securitygroup.SecurityGroup_Rule_RULE_TYPE_INBOUND
 		case "outbound":
-			ruleType = network.SecurityGroup_Rule_RULE_TYPE_OUTBOUND
+			ruleType = securitygroup.SecurityGroup_Rule_RULE_TYPE_OUTBOUND
 		}
 
-		rule := network.SecurityGroup_Rule{
+		rule := securitygroup.SecurityGroup_Rule{
 			IcmpType:    r.IcmpType.ValueString(),
 			Id:          r.Id.ValueString(),
 			IpRangeCidr: r.IpRangeCidr.ValueString(),
@@ -256,7 +257,7 @@ func (r *SecurityGroupResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	res, err := r.client.NetworkClient.CreateSecurityGroup(ctx, &network.CreateSecurityGroupRequest{
-		SecurityGroup: &network.SecurityGroup{
+		SecurityGroup: &securitygroup.SecurityGroup{
 			ProjectId:    r.client.DefaultProjectID,
 			DataCenterId: state.DataCenterID.ValueString(),
 			Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
@@ -304,11 +305,11 @@ func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	state.Id = types.StringValue(res.SecurityGroup.Id)
-	state.Description = types.StringValue(res.SecurityGroup.Description)
-	state.DataCenterID = types.StringValue(res.SecurityGroup.DataCenterId)
-	state.Id = types.StringValue(res.SecurityGroup.Id)
-	state.Rules = getRuleModels(res.SecurityGroup.Rules)
+	state.Id = types.StringValue(res.Id)
+	state.Description = types.StringValue(res.Description)
+	state.DataCenterID = types.StringValue(res.DataCenterId)
+	state.Id = types.StringValue(res.Id)
+	state.Rules = getRuleModels(res.Rules)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
@@ -325,7 +326,7 @@ func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	res, err := r.client.NetworkClient.UpdateSecurityGroup(ctx, &network.UpdateSecurityGroupRequest{
-		SecurityGroup: &network.SecurityGroup{
+		SecurityGroup: &securitygroup.SecurityGroup{
 			Id:           state.Id.ValueString(),
 			ProjectId:    r.client.DefaultProjectID,
 			DataCenterId: state.DataCenterID.ValueString(),

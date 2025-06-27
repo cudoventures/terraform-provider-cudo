@@ -2,15 +2,18 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: svc/compute/network/network.proto
+// source: svc/compute/network/network_svc.proto
 
 package network
 
 import (
 	context "context"
+
+	securitygroup "github.com/CudoVentures/terraform-provider-cudo/internal/compute/securitygroup"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -36,17 +39,17 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NetworkServiceClient interface {
-	CreateNetwork(ctx context.Context, in *CreateNetworkRequest, opts ...grpc.CallOption) (*CreateNetworkResponse, error)
-	GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*GetNetworkResponse, error)
+	CreateNetwork(ctx context.Context, in *CreateNetworkRequest, opts ...grpc.CallOption) (*Network, error)
+	GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*Network, error)
 	ListNetworks(ctx context.Context, in *ListNetworksRequest, opts ...grpc.CallOption) (*ListNetworksResponse, error)
-	DeleteNetwork(ctx context.Context, in *DeleteNetworkRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error)
-	StartNetwork(ctx context.Context, in *StartNetworkRequest, opts ...grpc.CallOption) (*StartNetworkResponse, error)
-	StopNetwork(ctx context.Context, in *StopNetworkRequest, opts ...grpc.CallOption) (*StopNetworkResponse, error)
+	DeleteNetwork(ctx context.Context, in *DeleteNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	StartNetwork(ctx context.Context, in *StartNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	StopNetwork(ctx context.Context, in *StopNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CreateSecurityGroup(ctx context.Context, in *CreateSecurityGroupRequest, opts ...grpc.CallOption) (*CreateSecurityGroupResponse, error)
-	GetSecurityGroup(ctx context.Context, in *GetSecurityGroupRequest, opts ...grpc.CallOption) (*GetSecurityGroupResponse, error)
+	GetSecurityGroup(ctx context.Context, in *GetSecurityGroupRequest, opts ...grpc.CallOption) (*securitygroup.SecurityGroup, error)
 	ListSecurityGroups(ctx context.Context, in *ListSecurityGroupsRequest, opts ...grpc.CallOption) (*ListSecurityGroupsResponse, error)
 	UpdateSecurityGroup(ctx context.Context, in *UpdateSecurityGroupRequest, opts ...grpc.CallOption) (*UpdateSecurityGroupResponse, error)
-	DeleteSecurityGroup(ctx context.Context, in *DeleteSecurityGroupRequest, opts ...grpc.CallOption) (*DeleteSecurityGroupResponse, error)
+	DeleteSecurityGroup(ctx context.Context, in *DeleteSecurityGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type networkServiceClient struct {
@@ -57,9 +60,9 @@ func NewNetworkServiceClient(cc grpc.ClientConnInterface) NetworkServiceClient {
 	return &networkServiceClient{cc}
 }
 
-func (c *networkServiceClient) CreateNetwork(ctx context.Context, in *CreateNetworkRequest, opts ...grpc.CallOption) (*CreateNetworkResponse, error) {
+func (c *networkServiceClient) CreateNetwork(ctx context.Context, in *CreateNetworkRequest, opts ...grpc.CallOption) (*Network, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateNetworkResponse)
+	out := new(Network)
 	err := c.cc.Invoke(ctx, NetworkService_CreateNetwork_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -67,9 +70,9 @@ func (c *networkServiceClient) CreateNetwork(ctx context.Context, in *CreateNetw
 	return out, nil
 }
 
-func (c *networkServiceClient) GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*GetNetworkResponse, error) {
+func (c *networkServiceClient) GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*Network, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetNetworkResponse)
+	out := new(Network)
 	err := c.cc.Invoke(ctx, NetworkService_GetNetwork_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -87,9 +90,9 @@ func (c *networkServiceClient) ListNetworks(ctx context.Context, in *ListNetwork
 	return out, nil
 }
 
-func (c *networkServiceClient) DeleteNetwork(ctx context.Context, in *DeleteNetworkRequest, opts ...grpc.CallOption) (*DeleteNetworkResponse, error) {
+func (c *networkServiceClient) DeleteNetwork(ctx context.Context, in *DeleteNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteNetworkResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, NetworkService_DeleteNetwork_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -97,9 +100,9 @@ func (c *networkServiceClient) DeleteNetwork(ctx context.Context, in *DeleteNetw
 	return out, nil
 }
 
-func (c *networkServiceClient) StartNetwork(ctx context.Context, in *StartNetworkRequest, opts ...grpc.CallOption) (*StartNetworkResponse, error) {
+func (c *networkServiceClient) StartNetwork(ctx context.Context, in *StartNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StartNetworkResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, NetworkService_StartNetwork_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -107,9 +110,9 @@ func (c *networkServiceClient) StartNetwork(ctx context.Context, in *StartNetwor
 	return out, nil
 }
 
-func (c *networkServiceClient) StopNetwork(ctx context.Context, in *StopNetworkRequest, opts ...grpc.CallOption) (*StopNetworkResponse, error) {
+func (c *networkServiceClient) StopNetwork(ctx context.Context, in *StopNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StopNetworkResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, NetworkService_StopNetwork_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -127,9 +130,9 @@ func (c *networkServiceClient) CreateSecurityGroup(ctx context.Context, in *Crea
 	return out, nil
 }
 
-func (c *networkServiceClient) GetSecurityGroup(ctx context.Context, in *GetSecurityGroupRequest, opts ...grpc.CallOption) (*GetSecurityGroupResponse, error) {
+func (c *networkServiceClient) GetSecurityGroup(ctx context.Context, in *GetSecurityGroupRequest, opts ...grpc.CallOption) (*securitygroup.SecurityGroup, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetSecurityGroupResponse)
+	out := new(securitygroup.SecurityGroup)
 	err := c.cc.Invoke(ctx, NetworkService_GetSecurityGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -157,9 +160,9 @@ func (c *networkServiceClient) UpdateSecurityGroup(ctx context.Context, in *Upda
 	return out, nil
 }
 
-func (c *networkServiceClient) DeleteSecurityGroup(ctx context.Context, in *DeleteSecurityGroupRequest, opts ...grpc.CallOption) (*DeleteSecurityGroupResponse, error) {
+func (c *networkServiceClient) DeleteSecurityGroup(ctx context.Context, in *DeleteSecurityGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteSecurityGroupResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, NetworkService_DeleteSecurityGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -171,17 +174,17 @@ func (c *networkServiceClient) DeleteSecurityGroup(ctx context.Context, in *Dele
 // All implementations must embed UnimplementedNetworkServiceServer
 // for forward compatibility.
 type NetworkServiceServer interface {
-	CreateNetwork(context.Context, *CreateNetworkRequest) (*CreateNetworkResponse, error)
-	GetNetwork(context.Context, *GetNetworkRequest) (*GetNetworkResponse, error)
+	CreateNetwork(context.Context, *CreateNetworkRequest) (*Network, error)
+	GetNetwork(context.Context, *GetNetworkRequest) (*Network, error)
 	ListNetworks(context.Context, *ListNetworksRequest) (*ListNetworksResponse, error)
-	DeleteNetwork(context.Context, *DeleteNetworkRequest) (*DeleteNetworkResponse, error)
-	StartNetwork(context.Context, *StartNetworkRequest) (*StartNetworkResponse, error)
-	StopNetwork(context.Context, *StopNetworkRequest) (*StopNetworkResponse, error)
+	DeleteNetwork(context.Context, *DeleteNetworkRequest) (*emptypb.Empty, error)
+	StartNetwork(context.Context, *StartNetworkRequest) (*emptypb.Empty, error)
+	StopNetwork(context.Context, *StopNetworkRequest) (*emptypb.Empty, error)
 	CreateSecurityGroup(context.Context, *CreateSecurityGroupRequest) (*CreateSecurityGroupResponse, error)
-	GetSecurityGroup(context.Context, *GetSecurityGroupRequest) (*GetSecurityGroupResponse, error)
+	GetSecurityGroup(context.Context, *GetSecurityGroupRequest) (*securitygroup.SecurityGroup, error)
 	ListSecurityGroups(context.Context, *ListSecurityGroupsRequest) (*ListSecurityGroupsResponse, error)
 	UpdateSecurityGroup(context.Context, *UpdateSecurityGroupRequest) (*UpdateSecurityGroupResponse, error)
-	DeleteSecurityGroup(context.Context, *DeleteSecurityGroupRequest) (*DeleteSecurityGroupResponse, error)
+	DeleteSecurityGroup(context.Context, *DeleteSecurityGroupRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedNetworkServiceServer()
 }
 
@@ -192,28 +195,28 @@ type NetworkServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedNetworkServiceServer struct{}
 
-func (UnimplementedNetworkServiceServer) CreateNetwork(context.Context, *CreateNetworkRequest) (*CreateNetworkResponse, error) {
+func (UnimplementedNetworkServiceServer) CreateNetwork(context.Context, *CreateNetworkRequest) (*Network, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNetwork not implemented")
 }
-func (UnimplementedNetworkServiceServer) GetNetwork(context.Context, *GetNetworkRequest) (*GetNetworkResponse, error) {
+func (UnimplementedNetworkServiceServer) GetNetwork(context.Context, *GetNetworkRequest) (*Network, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNetwork not implemented")
 }
 func (UnimplementedNetworkServiceServer) ListNetworks(context.Context, *ListNetworksRequest) (*ListNetworksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListNetworks not implemented")
 }
-func (UnimplementedNetworkServiceServer) DeleteNetwork(context.Context, *DeleteNetworkRequest) (*DeleteNetworkResponse, error) {
+func (UnimplementedNetworkServiceServer) DeleteNetwork(context.Context, *DeleteNetworkRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteNetwork not implemented")
 }
-func (UnimplementedNetworkServiceServer) StartNetwork(context.Context, *StartNetworkRequest) (*StartNetworkResponse, error) {
+func (UnimplementedNetworkServiceServer) StartNetwork(context.Context, *StartNetworkRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartNetwork not implemented")
 }
-func (UnimplementedNetworkServiceServer) StopNetwork(context.Context, *StopNetworkRequest) (*StopNetworkResponse, error) {
+func (UnimplementedNetworkServiceServer) StopNetwork(context.Context, *StopNetworkRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopNetwork not implemented")
 }
 func (UnimplementedNetworkServiceServer) CreateSecurityGroup(context.Context, *CreateSecurityGroupRequest) (*CreateSecurityGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSecurityGroup not implemented")
 }
-func (UnimplementedNetworkServiceServer) GetSecurityGroup(context.Context, *GetSecurityGroupRequest) (*GetSecurityGroupResponse, error) {
+func (UnimplementedNetworkServiceServer) GetSecurityGroup(context.Context, *GetSecurityGroupRequest) (*securitygroup.SecurityGroup, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSecurityGroup not implemented")
 }
 func (UnimplementedNetworkServiceServer) ListSecurityGroups(context.Context, *ListSecurityGroupsRequest) (*ListSecurityGroupsResponse, error) {
@@ -222,7 +225,7 @@ func (UnimplementedNetworkServiceServer) ListSecurityGroups(context.Context, *Li
 func (UnimplementedNetworkServiceServer) UpdateSecurityGroup(context.Context, *UpdateSecurityGroupRequest) (*UpdateSecurityGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSecurityGroup not implemented")
 }
-func (UnimplementedNetworkServiceServer) DeleteSecurityGroup(context.Context, *DeleteSecurityGroupRequest) (*DeleteSecurityGroupResponse, error) {
+func (UnimplementedNetworkServiceServer) DeleteSecurityGroup(context.Context, *DeleteSecurityGroupRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSecurityGroup not implemented")
 }
 func (UnimplementedNetworkServiceServer) mustEmbedUnimplementedNetworkServiceServer() {}
@@ -497,5 +500,5 @@ var NetworkService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "svc/compute/network/network.proto",
+	Metadata: "svc/compute/network/network_svc.proto",
 }

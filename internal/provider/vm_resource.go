@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 
@@ -401,20 +402,20 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	commitmentTerm := vm.CommitmentTerm_COMMITMENT_TERM_NONE
+	commitmentTerm := compute.CommitmentTerm_COMMITMENT_TERM_NONE
 	switch state.CommitmentTerm.ValueInt32() {
 	case 1:
-		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_1_MONTH
+		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_1_MONTH
 	case 3:
-		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_3_MONTHS
+		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_3_MONTHS
 	case 6:
-		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_6_MONTHS
+		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_6_MONTHS
 	case 12:
-		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_12_MONTHS
+		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_12_MONTHS
 	case 24:
-		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_24_MONTHS
+		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_24_MONTHS
 	case 36:
-		commitmentTerm = vm.CommitmentTerm_COMMITMENT_TERM_36_MONTHS
+		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_36_MONTHS
 	}
 
 	params := &vm.CreateVMRequest{
@@ -669,17 +670,17 @@ func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VM
 func appendVmState(instance *vm.VM, state *VMResourceModel) {
 	var months int32
 	switch instance.CommitmentTerm {
-	case vm.CommitmentTerm_COMMITMENT_TERM_1_MONTH:
+	case compute.CommitmentTerm_COMMITMENT_TERM_1_MONTH:
 		months = 1
-	case vm.CommitmentTerm_COMMITMENT_TERM_3_MONTHS:
+	case compute.CommitmentTerm_COMMITMENT_TERM_3_MONTHS:
 		months = 3
-	case vm.CommitmentTerm_COMMITMENT_TERM_6_MONTHS:
+	case compute.CommitmentTerm_COMMITMENT_TERM_6_MONTHS:
 		months = 6
-	case vm.CommitmentTerm_COMMITMENT_TERM_12_MONTHS:
+	case compute.CommitmentTerm_COMMITMENT_TERM_12_MONTHS:
 		months = 12
-	case vm.CommitmentTerm_COMMITMENT_TERM_24_MONTHS:
+	case compute.CommitmentTerm_COMMITMENT_TERM_24_MONTHS:
 		months = 24
-	case vm.CommitmentTerm_COMMITMENT_TERM_36_MONTHS:
+	case compute.CommitmentTerm_COMMITMENT_TERM_36_MONTHS:
 		months = 36
 	}
 	state.CommitmentTerm = types.Int32Value(months)
