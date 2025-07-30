@@ -127,7 +127,6 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		CidrPrefix:   state.IPRange.ValueString(),
 		DataCenterId: state.DataCenterId.ValueString(),
 		Id:           state.ID.ValueString(),
-		VrouterSize:  network.VRouterSize_VROUTER_INSTANCE_SMALL,
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(
