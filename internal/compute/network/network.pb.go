@@ -25,56 +25,74 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type VRouterSize int32
+type Network_State int32
 
 const (
-	VRouterSize_VROUTER_INSTANCE_UNKNOWN VRouterSize = 0
-	VRouterSize_VROUTER_INSTANCE_SMALL   VRouterSize = 1
-	VRouterSize_VROUTER_INSTANCE_MEDIUM  VRouterSize = 2
-	VRouterSize_VROUTER_INSTANCE_LARGE   VRouterSize = 3
+	Network_STATE_UNKNOWN Network_State = 0
+	Network_ACTIVE        Network_State = 1
+	Network_CREATING      Network_State = 2
+	Network_DELETED       Network_State = 3
+	Network_DELETING      Network_State = 4
+	Network_FAILED        Network_State = 5
+	Network_STARTING      Network_State = 6
+	Network_STOPPED       Network_State = 7
+	Network_STOPPING      Network_State = 8
+	Network_UPDATING      Network_State = 9
 )
 
-// Enum value maps for VRouterSize.
+// Enum value maps for Network_State.
 var (
-	VRouterSize_name = map[int32]string{
-		0: "VROUTER_INSTANCE_UNKNOWN",
-		1: "VROUTER_INSTANCE_SMALL",
-		2: "VROUTER_INSTANCE_MEDIUM",
-		3: "VROUTER_INSTANCE_LARGE",
+	Network_State_name = map[int32]string{
+		0: "STATE_UNKNOWN",
+		1: "ACTIVE",
+		2: "CREATING",
+		3: "DELETED",
+		4: "DELETING",
+		5: "FAILED",
+		6: "STARTING",
+		7: "STOPPED",
+		8: "STOPPING",
+		9: "UPDATING",
 	}
-	VRouterSize_value = map[string]int32{
-		"VROUTER_INSTANCE_UNKNOWN": 0,
-		"VROUTER_INSTANCE_SMALL":   1,
-		"VROUTER_INSTANCE_MEDIUM":  2,
-		"VROUTER_INSTANCE_LARGE":   3,
+	Network_State_value = map[string]int32{
+		"STATE_UNKNOWN": 0,
+		"ACTIVE":        1,
+		"CREATING":      2,
+		"DELETED":       3,
+		"DELETING":      4,
+		"FAILED":        5,
+		"STARTING":      6,
+		"STOPPED":       7,
+		"STOPPING":      8,
+		"UPDATING":      9,
 	}
 )
 
-func (x VRouterSize) Enum() *VRouterSize {
-	p := new(VRouterSize)
+func (x Network_State) Enum() *Network_State {
+	p := new(Network_State)
 	*p = x
 	return p
 }
 
-func (x VRouterSize) String() string {
+func (x Network_State) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (VRouterSize) Descriptor() protoreflect.EnumDescriptor {
+func (Network_State) Descriptor() protoreflect.EnumDescriptor {
 	return file_svc_compute_network_network_proto_enumTypes[0].Descriptor()
 }
 
-func (VRouterSize) Type() protoreflect.EnumType {
+func (Network_State) Type() protoreflect.EnumType {
 	return &file_svc_compute_network_network_proto_enumTypes[0]
 }
 
-func (x VRouterSize) Number() protoreflect.EnumNumber {
+func (x Network_State) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use VRouterSize.Descriptor instead.
-func (VRouterSize) EnumDescriptor() ([]byte, []int) {
-	return file_svc_compute_network_network_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use Network_State.Descriptor instead.
+func (Network_State) EnumDescriptor() ([]byte, []int) {
+	return file_svc_compute_network_network_proto_rawDescGZIP(), []int{0, 0}
 }
 
 type Network struct {
@@ -83,12 +101,12 @@ type Network struct {
 	DataCenterId      string                 `protobuf:"bytes,2,opt,name=data_center_id,json=dataCenterId,proto3" json:"data_center_id,omitempty"`
 	IpRange           string                 `protobuf:"bytes,3,opt,name=ip_range,json=ipRange,proto3" json:"ip_range,omitempty"`
 	Gateway           string                 `protobuf:"bytes,4,opt,name=gateway,proto3" json:"gateway,omitempty"`
-	Size              VRouterSize            `protobuf:"varint,5,opt,name=size,proto3,enum=org.cudo.compute.v1.VRouterSize" json:"size,omitempty"`
 	PriceHr           *decimal.Decimal       `protobuf:"bytes,6,opt,name=price_hr,json=priceHr,proto3" json:"price_hr,omitempty"`
 	ExternalIpAddress string                 `protobuf:"bytes,7,opt,name=external_ip_address,json=externalIpAddress,proto3" json:"external_ip_address,omitempty"`
 	InternalIpAddress string                 `protobuf:"bytes,8,opt,name=internal_ip_address,json=internalIpAddress,proto3" json:"internal_ip_address,omitempty"`
-	State             vm.VM_VmState          `protobuf:"varint,12,opt,name=state,proto3,enum=org.cudo.compute.v1.VM_VmState" json:"state,omitempty"`
+	VmState           vm.VM_VmState          `protobuf:"varint,12,opt,name=vm_state,json=vmState,proto3,enum=org.cudo.compute.v1.VM_VmState" json:"vm_state,omitempty"`
 	CreateTime        *timestamppb.Timestamp `protobuf:"bytes,31,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	State             Network_State          `protobuf:"varint,13,opt,name=state,proto3,enum=org.cudo.compute.v1.Network_State" json:"state,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -151,13 +169,6 @@ func (x *Network) GetGateway() string {
 	return ""
 }
 
-func (x *Network) GetSize() VRouterSize {
-	if x != nil {
-		return x.Size
-	}
-	return VRouterSize_VROUTER_INSTANCE_UNKNOWN
-}
-
 func (x *Network) GetPriceHr() *decimal.Decimal {
 	if x != nil {
 		return x.PriceHr
@@ -179,9 +190,9 @@ func (x *Network) GetInternalIpAddress() string {
 	return ""
 }
 
-func (x *Network) GetState() vm.VM_VmState {
+func (x *Network) GetVmState() vm.VM_VmState {
 	if x != nil {
-		return x.State
+		return x.VmState
 	}
 	return vm.VM_VmState(0)
 }
@@ -193,28 +204,43 @@ func (x *Network) GetCreateTime() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Network) GetState() Network_State {
+	if x != nil {
+		return x.State
+	}
+	return Network_STATE_UNKNOWN
+}
+
 var File_svc_compute_network_network_proto protoreflect.FileDescriptor
 
 const file_svc_compute_network_network_proto_rawDesc = "" +
 	"\n" +
-	"!svc/compute/network/network.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x17svc/compute/vm/vm.proto\"\xe4\x03\n" +
+	"!svc/compute/network/network.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x17svc/compute/vm/vm.proto\"\x94\x05\n" +
 	"\aNetwork\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12)\n" +
 	"\x0edata_center_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12\x1e\n" +
-	"\bip_range\x18\x03 \x01(\tB\x03\xe0A\x02R\aipRange\x12\x1d\n" +
-	"\agateway\x18\x04 \x01(\tB\x03\xe0A\x02R\agateway\x129\n" +
-	"\x04size\x18\x05 \x01(\x0e2 .org.cudo.compute.v1.VRouterSizeB\x03\xe0A\x02R\x04size\x124\n" +
-	"\bprice_hr\x18\x06 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x02R\apriceHr\x123\n" +
-	"\x13external_ip_address\x18\a \x01(\tB\x03\xe0A\x02R\x11externalIpAddress\x123\n" +
-	"\x13internal_ip_address\x18\b \x01(\tB\x03\xe0A\x02R\x11internalIpAddress\x12:\n" +
-	"\x05state\x18\f \x01(\x0e2\x1f.org.cudo.compute.v1.VM.VmStateB\x03\xe0A\x02R\x05state\x12C\n" +
+	"\bip_range\x18\x03 \x01(\tB\x03\xe0A\x02R\aipRange\x12 \n" +
+	"\agateway\x18\x04 \x01(\tB\x06\xe0A\x03\xe0A\x02R\agateway\x127\n" +
+	"\bprice_hr\x18\x06 \x01(\v2\x14.google.type.DecimalB\x06\xe0A\x03\xe0A\x02R\apriceHr\x126\n" +
+	"\x13external_ip_address\x18\a \x01(\tB\x06\xe0A\x03\xe0A\x02R\x11externalIpAddress\x126\n" +
+	"\x13internal_ip_address\x18\b \x01(\tB\x06\xe0A\x03\xe0A\x02R\x11internalIpAddress\x12B\n" +
+	"\bvm_state\x18\f \x01(\x0e2\x1f.org.cudo.compute.v1.VM.VmStateB\x06\xe0A\x03\xe0A\x02R\avmState\x12C\n" +
 	"\vcreate_time\x18\x1f \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x03\xe0A\x02R\n" +
-	"createTime*\x80\x01\n" +
-	"\vVRouterSize\x12\x1c\n" +
-	"\x18VROUTER_INSTANCE_UNKNOWN\x10\x00\x12\x1a\n" +
-	"\x16VROUTER_INSTANCE_SMALL\x10\x01\x12\x1b\n" +
-	"\x17VROUTER_INSTANCE_MEDIUM\x10\x02\x12\x1a\n" +
-	"\x16VROUTER_INSTANCE_LARGE\x10\x03BJZHgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/networkb\x06proto3"
+	"createTime\x12@\n" +
+	"\x05state\x18\r \x01(\x0e2\".org.cudo.compute.v1.Network.StateB\x06\xe0A\x03\xe0A\x02R\x05state\"\x92\x01\n" +
+	"\x05State\x12\x11\n" +
+	"\rSTATE_UNKNOWN\x10\x00\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x01\x12\f\n" +
+	"\bCREATING\x10\x02\x12\v\n" +
+	"\aDELETED\x10\x03\x12\f\n" +
+	"\bDELETING\x10\x04\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x05\x12\f\n" +
+	"\bSTARTING\x10\x06\x12\v\n" +
+	"\aSTOPPED\x10\a\x12\f\n" +
+	"\bSTOPPING\x10\b\x12\f\n" +
+	"\bUPDATING\x10\tBJZHgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/networkb\x06proto3"
 
 var (
 	file_svc_compute_network_network_proto_rawDescOnce sync.Once
@@ -231,17 +257,17 @@ func file_svc_compute_network_network_proto_rawDescGZIP() []byte {
 var file_svc_compute_network_network_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_svc_compute_network_network_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_svc_compute_network_network_proto_goTypes = []any{
-	(VRouterSize)(0),              // 0: org.cudo.compute.v1.VRouterSize
+	(Network_State)(0),            // 0: org.cudo.compute.v1.Network.State
 	(*Network)(nil),               // 1: org.cudo.compute.v1.Network
 	(*decimal.Decimal)(nil),       // 2: google.type.Decimal
 	(vm.VM_VmState)(0),            // 3: org.cudo.compute.v1.VM.VmState
 	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
 }
 var file_svc_compute_network_network_proto_depIdxs = []int32{
-	0, // 0: org.cudo.compute.v1.Network.size:type_name -> org.cudo.compute.v1.VRouterSize
-	2, // 1: org.cudo.compute.v1.Network.price_hr:type_name -> google.type.Decimal
-	3, // 2: org.cudo.compute.v1.Network.state:type_name -> org.cudo.compute.v1.VM.VmState
-	4, // 3: org.cudo.compute.v1.Network.create_time:type_name -> google.protobuf.Timestamp
+	2, // 0: org.cudo.compute.v1.Network.price_hr:type_name -> google.type.Decimal
+	3, // 1: org.cudo.compute.v1.Network.vm_state:type_name -> org.cudo.compute.v1.VM.VmState
+	4, // 2: org.cudo.compute.v1.Network.create_time:type_name -> google.protobuf.Timestamp
+	0, // 3: org.cudo.compute.v1.Network.state:type_name -> org.cudo.compute.v1.Network.State
 	4, // [4:4] is the sub-list for method output_type
 	4, // [4:4] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name

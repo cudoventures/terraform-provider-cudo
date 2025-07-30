@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
-	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
@@ -38,7 +37,7 @@ resource "cudo_network" "network" {
 			}
 
 			getRes, err := cl.GetNetwork(ctx, getParams)
-			if err == nil && (getRes.State != vm.VM_DELETING && getRes.State != vm.VM_STOPPING && getRes.State != vm.VM_SUSPENDING) {
+			if err == nil && (getRes.State != network.Network_DELETING && getRes.State != network.Network_STOPPING) {
 				stopParams := &network.StopNetworkRequest{
 					Id:        name,
 					ProjectId: projectID,
@@ -49,16 +48,16 @@ resource "cudo_network" "network" {
 					return fmt.Errorf("network resource not stopped %s , %s , %s", getRes.Id, getRes.State.String(), err)
 				}
 
-				if _, err := waitForNetworkStop(ctx, projectID, name, cl); err != nil {
-					return fmt.Errorf("error waiting for network stopped %s , %s , %s", getRes.Id, getRes.State.String(), err)
-				}
-
 				terminateParams := &network.DeleteNetworkRequest{
 					Id:        name,
 					ProjectId: projectID,
 				}
 				res, err := cl.DeleteNetwork(ctx, terminateParams)
 				t.Logf("(%s) %#v: %v", getRes.State.String(), res, err)
+
+				if _, err := waitForNetworkDelete(ctx, projectID, name, cl); err != nil {
+					return fmt.Errorf("error waiting for network stopped %s , %s , %s", getRes.Id, getRes.State.String(), err)
+				}
 
 				return fmt.Errorf("network resource not deleted %s , %s", getRes.Id, getRes.State.String())
 			}

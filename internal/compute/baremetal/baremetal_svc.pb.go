@@ -7,6 +7,7 @@
 package baremetal
 
 import (
+	compute "github.com/CudoVentures/terraform-provider-cudo/internal/compute"
 	_ "github.com/google/gnostic/openapiv3"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "google.golang.org/genproto/googleapis/type/decimal"
@@ -651,9 +652,11 @@ func (x *PowerOffMachineInstanceRequest) GetForce() bool {
 }
 
 type ListMachineTypesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageNumber    int32                  `protobuf:"varint,1,opt,name=page_number,json=pageNumber,proto3" json:"page_number,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	PageNumber int32                  `protobuf:"varint,1,opt,name=page_number,json=pageNumber,proto3" json:"page_number,omitempty"`
+	PageSize   int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Return custom prices for a specific project.
+	ProjectId     string `protobuf:"bytes,3,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -700,6 +703,13 @@ func (x *ListMachineTypesRequest) GetPageSize() int32 {
 		return x.PageSize
 	}
 	return 0
+}
+
+func (x *ListMachineTypesRequest) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
 }
 
 type ListMachineTypesResponse struct {
@@ -807,8 +817,8 @@ func (*ListMachineOperatingSystemsRequest) Descriptor() ([]byte, []int) {
 }
 
 type ListMachineOperatingSystemsResponse struct {
-	state         protoimpl.MessageState                       `protogen:"open.v1"`
-	Images        []*ListMachineOperatingSystemsResponse_Image `protobuf:"bytes,1,rep,name=images,proto3" json:"images,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Images        []*compute.Image       `protobuf:"bytes,1,rep,name=images,proto3" json:"images,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -843,7 +853,7 @@ func (*ListMachineOperatingSystemsResponse) Descriptor() ([]byte, []int) {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *ListMachineOperatingSystemsResponse) GetImages() []*ListMachineOperatingSystemsResponse_Image {
+func (x *ListMachineOperatingSystemsResponse) GetImages() []*compute.Image {
 	if x != nil {
 		return x.Images
 	}
@@ -946,6 +956,111 @@ func (x *DeleteClusterRequest) GetId() string {
 	return ""
 }
 
+type GetClusterMachineTypeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DataCenterId  string                 `protobuf:"bytes,1,opt,name=data_center_id,json=dataCenterId,proto3" json:"data_center_id,omitempty"`
+	MachineTypeId string                 `protobuf:"bytes,2,opt,name=machine_type_id,json=machineTypeId,proto3" json:"machine_type_id,omitempty"`
+	// Return custom prices for a specific project.
+	ProjectId     string `protobuf:"bytes,3,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetClusterMachineTypeRequest) Reset() {
+	*x = GetClusterMachineTypeRequest{}
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetClusterMachineTypeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetClusterMachineTypeRequest) ProtoMessage() {}
+
+func (x *GetClusterMachineTypeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetClusterMachineTypeRequest.ProtoReflect.Descriptor instead.
+func (*GetClusterMachineTypeRequest) Descriptor() ([]byte, []int) {
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GetClusterMachineTypeRequest) GetDataCenterId() string {
+	if x != nil {
+		return x.DataCenterId
+	}
+	return ""
+}
+
+func (x *GetClusterMachineTypeRequest) GetMachineTypeId() string {
+	if x != nil {
+		return x.MachineTypeId
+	}
+	return ""
+}
+
+func (x *GetClusterMachineTypeRequest) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
+}
+
+type GetClusterMachineTypeResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MachineType   *MachineType           `protobuf:"bytes,1,opt,name=machine_type,json=machineType,proto3" json:"machine_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetClusterMachineTypeResponse) Reset() {
+	*x = GetClusterMachineTypeResponse{}
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetClusterMachineTypeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetClusterMachineTypeResponse) ProtoMessage() {}
+
+func (x *GetClusterMachineTypeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetClusterMachineTypeResponse.ProtoReflect.Descriptor instead.
+func (*GetClusterMachineTypeResponse) Descriptor() ([]byte, []int) {
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GetClusterMachineTypeResponse) GetMachineType() *MachineType {
+	if x != nil {
+		return x.MachineType
+	}
+	return nil
+}
+
 type GetClusterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
@@ -956,7 +1071,7 @@ type GetClusterRequest struct {
 
 func (x *GetClusterRequest) Reset() {
 	*x = GetClusterRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[17]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -968,7 +1083,7 @@ func (x *GetClusterRequest) String() string {
 func (*GetClusterRequest) ProtoMessage() {}
 
 func (x *GetClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[17]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -981,7 +1096,7 @@ func (x *GetClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetClusterRequest.ProtoReflect.Descriptor instead.
 func (*GetClusterRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{17}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *GetClusterRequest) GetProjectId() string {
@@ -998,6 +1113,135 @@ func (x *GetClusterRequest) GetId() string {
 	return ""
 }
 
+type ListClusterMachineTypesRequest struct {
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	PageNumber int32                  `protobuf:"varint,1,opt,name=page_number,json=pageNumber,proto3" json:"page_number,omitempty"`
+	PageSize   int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Return custom prices for a specific project.
+	ProjectId     string `protobuf:"bytes,3,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListClusterMachineTypesRequest) Reset() {
+	*x = ListClusterMachineTypesRequest{}
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListClusterMachineTypesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListClusterMachineTypesRequest) ProtoMessage() {}
+
+func (x *ListClusterMachineTypesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListClusterMachineTypesRequest.ProtoReflect.Descriptor instead.
+func (*ListClusterMachineTypesRequest) Descriptor() ([]byte, []int) {
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ListClusterMachineTypesRequest) GetPageNumber() int32 {
+	if x != nil {
+		return x.PageNumber
+	}
+	return 0
+}
+
+func (x *ListClusterMachineTypesRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListClusterMachineTypesRequest) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
+}
+
+type ListClusterMachineTypesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MachineTypes  []*MachineType         `protobuf:"bytes,1,rep,name=machine_types,json=machineTypes,proto3" json:"machine_types,omitempty"`
+	TotalCount    int32                  `protobuf:"varint,2,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	PageNumber    int32                  `protobuf:"varint,3,opt,name=page_number,json=pageNumber,proto3" json:"page_number,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListClusterMachineTypesResponse) Reset() {
+	*x = ListClusterMachineTypesResponse{}
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListClusterMachineTypesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListClusterMachineTypesResponse) ProtoMessage() {}
+
+func (x *ListClusterMachineTypesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListClusterMachineTypesResponse.ProtoReflect.Descriptor instead.
+func (*ListClusterMachineTypesResponse) Descriptor() ([]byte, []int) {
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *ListClusterMachineTypesResponse) GetMachineTypes() []*MachineType {
+	if x != nil {
+		return x.MachineTypes
+	}
+	return nil
+}
+
+func (x *ListClusterMachineTypesResponse) GetTotalCount() int32 {
+	if x != nil {
+		return x.TotalCount
+	}
+	return 0
+}
+
+func (x *ListClusterMachineTypesResponse) GetPageNumber() int32 {
+	if x != nil {
+		return x.PageNumber
+	}
+	return 0
+}
+
+func (x *ListClusterMachineTypesResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
 type ListClustersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
@@ -1009,7 +1253,7 @@ type ListClustersRequest struct {
 
 func (x *ListClustersRequest) Reset() {
 	*x = ListClustersRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[18]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1021,7 +1265,7 @@ func (x *ListClustersRequest) String() string {
 func (*ListClustersRequest) ProtoMessage() {}
 
 func (x *ListClustersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[18]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1034,7 +1278,7 @@ func (x *ListClustersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClustersRequest.ProtoReflect.Descriptor instead.
 func (*ListClustersRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{18}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ListClustersRequest) GetProjectId() string {
@@ -1070,7 +1314,7 @@ type ListClustersResponse struct {
 
 func (x *ListClustersResponse) Reset() {
 	*x = ListClustersResponse{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[19]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1082,7 +1326,7 @@ func (x *ListClustersResponse) String() string {
 func (*ListClustersResponse) ProtoMessage() {}
 
 func (x *ListClustersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[19]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1095,7 +1339,7 @@ func (x *ListClustersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClustersResponse.ProtoReflect.Descriptor instead.
 func (*ListClustersResponse) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{19}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListClustersResponse) GetClusters() []*Cluster {
@@ -1140,7 +1384,7 @@ type UpdateClusterRequest struct {
 
 func (x *UpdateClusterRequest) Reset() {
 	*x = UpdateClusterRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[20]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1152,7 +1396,7 @@ func (x *UpdateClusterRequest) String() string {
 func (*UpdateClusterRequest) ProtoMessage() {}
 
 func (x *UpdateClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[20]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1165,7 +1409,7 @@ func (x *UpdateClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateClusterRequest.ProtoReflect.Descriptor instead.
 func (*UpdateClusterRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{20}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *UpdateClusterRequest) GetCluster() *Cluster {
@@ -1196,7 +1440,7 @@ type UpdateClusterMachineRequest struct {
 
 func (x *UpdateClusterMachineRequest) Reset() {
 	*x = UpdateClusterMachineRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[21]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1208,7 +1452,7 @@ func (x *UpdateClusterMachineRequest) String() string {
 func (*UpdateClusterMachineRequest) ProtoMessage() {}
 
 func (x *UpdateClusterMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[21]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1221,7 +1465,7 @@ func (x *UpdateClusterMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateClusterMachineRequest.ProtoReflect.Descriptor instead.
 func (*UpdateClusterMachineRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{21}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *UpdateClusterMachineRequest) GetClusterMachine() *ClusterMachine {
@@ -1248,7 +1492,7 @@ type RebootClusterMachineRequest struct {
 
 func (x *RebootClusterMachineRequest) Reset() {
 	*x = RebootClusterMachineRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[22]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1260,7 +1504,7 @@ func (x *RebootClusterMachineRequest) String() string {
 func (*RebootClusterMachineRequest) ProtoMessage() {}
 
 func (x *RebootClusterMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[22]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1273,7 +1517,7 @@ func (x *RebootClusterMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RebootClusterMachineRequest.ProtoReflect.Descriptor instead.
 func (*RebootClusterMachineRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{22}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *RebootClusterMachineRequest) GetProjectId() string {
@@ -1301,7 +1545,7 @@ type RenameClusterMachineRequest struct {
 
 func (x *RenameClusterMachineRequest) Reset() {
 	*x = RenameClusterMachineRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[23]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1313,7 +1557,7 @@ func (x *RenameClusterMachineRequest) String() string {
 func (*RenameClusterMachineRequest) ProtoMessage() {}
 
 func (x *RenameClusterMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[23]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1326,7 +1570,7 @@ func (x *RenameClusterMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameClusterMachineRequest.ProtoReflect.Descriptor instead.
 func (*RenameClusterMachineRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{23}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *RenameClusterMachineRequest) GetProjectId() string {
@@ -1360,7 +1604,7 @@ type DeleteClusterMachineRequest struct {
 
 func (x *DeleteClusterMachineRequest) Reset() {
 	*x = DeleteClusterMachineRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[24]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1372,7 +1616,7 @@ func (x *DeleteClusterMachineRequest) String() string {
 func (*DeleteClusterMachineRequest) ProtoMessage() {}
 
 func (x *DeleteClusterMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[24]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1385,7 +1629,7 @@ func (x *DeleteClusterMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteClusterMachineRequest.ProtoReflect.Descriptor instead.
 func (*DeleteClusterMachineRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{24}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *DeleteClusterMachineRequest) GetProjectId() string {
@@ -1402,163 +1646,11 @@ func (x *DeleteClusterMachineRequest) GetId() string {
 	return ""
 }
 
-type ListMachineOperatingSystemsResponse_Image struct {
-	state             protoimpl.MessageState                               `protogen:"open.v1"`
-	Id                string                                               `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name              string                                               `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Description       string                                               `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	DisplayName       string                                               `protobuf:"bytes,4,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	Platform          string                                               `protobuf:"bytes,5,opt,name=platform,proto3" json:"platform,omitempty"`
-	SizeGib           int32                                                `protobuf:"varint,7,opt,name=size_gib,json=sizeGib,proto3" json:"size_gib,omitempty"`
-	InstalledPackages []*ListMachineOperatingSystemsResponse_Image_Package `protobuf:"bytes,8,rep,name=installed_packages,json=installedPackages,proto3" json:"installed_packages,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image) Reset() {
-	*x = ListMachineOperatingSystemsResponse_Image{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[25]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListMachineOperatingSystemsResponse_Image) ProtoMessage() {}
-
-func (x *ListMachineOperatingSystemsResponse_Image) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[25]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListMachineOperatingSystemsResponse_Image.ProtoReflect.Descriptor instead.
-func (*ListMachineOperatingSystemsResponse_Image) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{14, 0}
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image) GetDescription() string {
-	if x != nil {
-		return x.Description
-	}
-	return ""
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image) GetDisplayName() string {
-	if x != nil {
-		return x.DisplayName
-	}
-	return ""
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image) GetPlatform() string {
-	if x != nil {
-		return x.Platform
-	}
-	return ""
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image) GetSizeGib() int32 {
-	if x != nil {
-		return x.SizeGib
-	}
-	return 0
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image) GetInstalledPackages() []*ListMachineOperatingSystemsResponse_Image_Package {
-	if x != nil {
-		return x.InstalledPackages
-	}
-	return nil
-}
-
-type ListMachineOperatingSystemsResponse_Image_Package struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Version       string                 `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image_Package) Reset() {
-	*x = ListMachineOperatingSystemsResponse_Image_Package{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[26]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image_Package) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListMachineOperatingSystemsResponse_Image_Package) ProtoMessage() {}
-
-func (x *ListMachineOperatingSystemsResponse_Image_Package) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[26]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListMachineOperatingSystemsResponse_Image_Package.ProtoReflect.Descriptor instead.
-func (*ListMachineOperatingSystemsResponse_Image_Package) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{14, 0, 0}
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image_Package) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image_Package) GetDescription() string {
-	if x != nil {
-		return x.Description
-	}
-	return ""
-}
-
-func (x *ListMachineOperatingSystemsResponse_Image_Package) GetVersion() string {
-	if x != nil {
-		return x.Version
-	}
-	return ""
-}
-
 var File_svc_compute_baremetal_baremetal_svc_proto protoreflect.FileDescriptor
 
 const file_svc_compute_baremetal_baremetal_svc_proto_rawDesc = "" +
 	"\n" +
-	")svc/compute/baremetal/baremetal_svc.proto\x12\x13org.cudo.compute.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x19google/type/decimal.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a%svc/compute/baremetal/baremetal.proto\"t\n" +
+	")svc/compute/baremetal/baremetal_svc.proto\x12\x13org.cudo.compute.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x19google/type/decimal.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a\x17svc/compute/types.proto\x1a%svc/compute/baremetal/baremetal.proto\"t\n" +
 	"\x1cCreateMachineInstanceRequest\x12T\n" +
 	"\x10machine_instance\x18\x01 \x01(\v2$.org.cudo.compute.v1.MachineInstanceB\x03\xe0A\x02R\x0fmachineInstance\"W\n" +
 	"\x1cDeleteMachineInstanceRequest\x12\"\n" +
@@ -1609,11 +1701,13 @@ const file_svc_compute_baremetal_baremetal_svc_proto_rawDesc = "" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
 	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\x12\x14\n" +
-	"\x05force\x18\x03 \x01(\bR\x05force\"W\n" +
-	"\x17ListMachineTypesRequest\x12\x1f\n" +
-	"\vpage_number\x18\x01 \x01(\x05R\n" +
-	"pageNumber\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"\xcf\x01\n" +
+	"\x05force\x18\x03 \x01(\bR\x05force\"\x85\x01\n" +
+	"\x17ListMachineTypesRequest\x12$\n" +
+	"\vpage_number\x18\x01 \x01(\x05B\x03\xe0A\x01R\n" +
+	"pageNumber\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"project_id\x18\x03 \x01(\tB\x03\xe0A\x01R\tprojectId\"\xcf\x01\n" +
 	"\x18ListMachineTypesResponse\x12E\n" +
 	"\rmachine_types\x18\x01 \x03(\v2 .org.cudo.compute.v1.MachineTypeR\fmachineTypes\x12$\n" +
 	"\vtotal_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\n" +
@@ -1621,31 +1715,39 @@ const file_svc_compute_baremetal_baremetal_svc_proto_rawDesc = "" +
 	"\vpage_number\x18\x03 \x01(\x05B\x03\xe0A\x02R\n" +
 	"pageNumber\x12 \n" +
 	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x02R\bpageSize\"$\n" +
-	"\"ListMachineOperatingSystemsRequest\"\xb0\x04\n" +
-	"#ListMachineOperatingSystemsResponse\x12[\n" +
-	"\x06images\x18\x01 \x03(\v2>.org.cudo.compute.v1.ListMachineOperatingSystemsResponse.ImageB\x03\xe0A\x02R\x06images\x1a\xab\x03\n" +
-	"\x05Image\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x02R\vdescription\x12&\n" +
-	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12\x1f\n" +
-	"\bplatform\x18\x05 \x01(\tB\x03\xe0A\x02R\bplatform\x12\x1e\n" +
-	"\bsize_gib\x18\a \x01(\x05B\x03\xe0A\x02R\asizeGib\x12z\n" +
-	"\x12installed_packages\x18\b \x03(\v2F.org.cudo.compute.v1.ListMachineOperatingSystemsResponse.Image.PackageB\x03\xe0A\x02R\x11installedPackages\x1ah\n" +
-	"\aPackage\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x02R\vdescription\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x02R\aversion\"S\n" +
+	"\"ListMachineOperatingSystemsRequest\"^\n" +
+	"#ListMachineOperatingSystemsResponse\x127\n" +
+	"\x06images\x18\x01 \x03(\v2\x1a.org.cudo.compute.v1.ImageB\x03\xe0A\x02R\x06images\"S\n" +
 	"\x14CreateClusterRequest\x12;\n" +
 	"\acluster\x18\x01 \x01(\v2\x1c.org.cudo.compute.v1.ClusterB\x03\xe0A\x02R\acluster\"O\n" +
 	"\x14DeleteClusterRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"L\n" +
+	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"\x9a\x01\n" +
+	"\x1cGetClusterMachineTypeRequest\x12)\n" +
+	"\x0edata_center_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12+\n" +
+	"\x0fmachine_type_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rmachineTypeId\x12\"\n" +
+	"\n" +
+	"project_id\x18\x03 \x01(\tB\x03\xe0A\x01R\tprojectId\"i\n" +
+	"\x1dGetClusterMachineTypeResponse\x12H\n" +
+	"\fmachine_type\x18\x01 \x01(\v2 .org.cudo.compute.v1.MachineTypeB\x03\xe0A\x02R\vmachineType\"L\n" +
 	"\x11GetClusterRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"w\n" +
+	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"\x8c\x01\n" +
+	"\x1eListClusterMachineTypesRequest\x12$\n" +
+	"\vpage_number\x18\x01 \x01(\x05B\x03\xe0A\x01R\n" +
+	"pageNumber\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"project_id\x18\x03 \x01(\tB\x03\xe0A\x01R\tprojectId\"\xd6\x01\n" +
+	"\x1fListClusterMachineTypesResponse\x12E\n" +
+	"\rmachine_types\x18\x01 \x03(\v2 .org.cudo.compute.v1.MachineTypeR\fmachineTypes\x12$\n" +
+	"\vtotal_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\n" +
+	"totalCount\x12$\n" +
+	"\vpage_number\x18\x03 \x01(\x05B\x03\xe0A\x02R\n" +
+	"pageNumber\x12 \n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x02R\bpageSize\"w\n" +
 	"\x13ListClustersRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1f\n" +
@@ -1765,111 +1867,111 @@ func file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP() []byte {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescData
 }
 
-var file_svc_compute_baremetal_baremetal_svc_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_svc_compute_baremetal_baremetal_svc_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_svc_compute_baremetal_baremetal_svc_proto_goTypes = []any{
-	(*CreateMachineInstanceRequest)(nil),                      // 0: org.cudo.compute.v1.CreateMachineInstanceRequest
-	(*DeleteMachineInstanceRequest)(nil),                      // 1: org.cudo.compute.v1.DeleteMachineInstanceRequest
-	(*GetMachineInstanceRequest)(nil),                         // 2: org.cudo.compute.v1.GetMachineInstanceRequest
-	(*ListMachineInstancesRequest)(nil),                       // 3: org.cudo.compute.v1.ListMachineInstancesRequest
-	(*ListMachineInstancesResponse)(nil),                      // 4: org.cudo.compute.v1.ListMachineInstancesResponse
-	(*UpdateMachineInstanceRequest)(nil),                      // 5: org.cudo.compute.v1.UpdateMachineInstanceRequest
-	(*DeployMachineInstanceRequest)(nil),                      // 6: org.cudo.compute.v1.DeployMachineInstanceRequest
-	(*UndeployMachineInstanceRequest)(nil),                    // 7: org.cudo.compute.v1.UndeployMachineInstanceRequest
-	(*EraseMachineInstanceRequest)(nil),                       // 8: org.cudo.compute.v1.EraseMachineInstanceRequest
-	(*PowerOnMachineInstanceRequest)(nil),                     // 9: org.cudo.compute.v1.PowerOnMachineInstanceRequest
-	(*PowerOffMachineInstanceRequest)(nil),                    // 10: org.cudo.compute.v1.PowerOffMachineInstanceRequest
-	(*ListMachineTypesRequest)(nil),                           // 11: org.cudo.compute.v1.ListMachineTypesRequest
-	(*ListMachineTypesResponse)(nil),                          // 12: org.cudo.compute.v1.ListMachineTypesResponse
-	(*ListMachineOperatingSystemsRequest)(nil),                // 13: org.cudo.compute.v1.ListMachineOperatingSystemsRequest
-	(*ListMachineOperatingSystemsResponse)(nil),               // 14: org.cudo.compute.v1.ListMachineOperatingSystemsResponse
-	(*CreateClusterRequest)(nil),                              // 15: org.cudo.compute.v1.CreateClusterRequest
-	(*DeleteClusterRequest)(nil),                              // 16: org.cudo.compute.v1.DeleteClusterRequest
-	(*GetClusterRequest)(nil),                                 // 17: org.cudo.compute.v1.GetClusterRequest
-	(*ListClustersRequest)(nil),                               // 18: org.cudo.compute.v1.ListClustersRequest
-	(*ListClustersResponse)(nil),                              // 19: org.cudo.compute.v1.ListClustersResponse
-	(*UpdateClusterRequest)(nil),                              // 20: org.cudo.compute.v1.UpdateClusterRequest
-	(*UpdateClusterMachineRequest)(nil),                       // 21: org.cudo.compute.v1.UpdateClusterMachineRequest
-	(*RebootClusterMachineRequest)(nil),                       // 22: org.cudo.compute.v1.RebootClusterMachineRequest
-	(*RenameClusterMachineRequest)(nil),                       // 23: org.cudo.compute.v1.RenameClusterMachineRequest
-	(*DeleteClusterMachineRequest)(nil),                       // 24: org.cudo.compute.v1.DeleteClusterMachineRequest
-	(*ListMachineOperatingSystemsResponse_Image)(nil),         // 25: org.cudo.compute.v1.ListMachineOperatingSystemsResponse.Image
-	(*ListMachineOperatingSystemsResponse_Image_Package)(nil), // 26: org.cudo.compute.v1.ListMachineOperatingSystemsResponse.Image.Package
-	(*MachineInstance)(nil),                                   // 27: org.cudo.compute.v1.MachineInstance
-	(*fieldmaskpb.FieldMask)(nil),                             // 28: google.protobuf.FieldMask
-	(*MachineType)(nil),                                       // 29: org.cudo.compute.v1.MachineType
-	(*Cluster)(nil),                                           // 30: org.cudo.compute.v1.Cluster
-	(*ClusterMachine)(nil),                                    // 31: org.cudo.compute.v1.ClusterMachine
-	(*ListClusterMachineTypesRequest)(nil),                    // 32: org.cudo.compute.v1.ListClusterMachineTypesRequest
-	(*GetClusterMachineTypeRequest)(nil),                      // 33: org.cudo.compute.v1.GetClusterMachineTypeRequest
-	(*emptypb.Empty)(nil),                                     // 34: google.protobuf.Empty
-	(*ListClusterMachineTypesResponse)(nil),                   // 35: org.cudo.compute.v1.ListClusterMachineTypesResponse
-	(*GetClusterMachineTypeResponse)(nil),                     // 36: org.cudo.compute.v1.GetClusterMachineTypeResponse
+	(*CreateMachineInstanceRequest)(nil),        // 0: org.cudo.compute.v1.CreateMachineInstanceRequest
+	(*DeleteMachineInstanceRequest)(nil),        // 1: org.cudo.compute.v1.DeleteMachineInstanceRequest
+	(*GetMachineInstanceRequest)(nil),           // 2: org.cudo.compute.v1.GetMachineInstanceRequest
+	(*ListMachineInstancesRequest)(nil),         // 3: org.cudo.compute.v1.ListMachineInstancesRequest
+	(*ListMachineInstancesResponse)(nil),        // 4: org.cudo.compute.v1.ListMachineInstancesResponse
+	(*UpdateMachineInstanceRequest)(nil),        // 5: org.cudo.compute.v1.UpdateMachineInstanceRequest
+	(*DeployMachineInstanceRequest)(nil),        // 6: org.cudo.compute.v1.DeployMachineInstanceRequest
+	(*UndeployMachineInstanceRequest)(nil),      // 7: org.cudo.compute.v1.UndeployMachineInstanceRequest
+	(*EraseMachineInstanceRequest)(nil),         // 8: org.cudo.compute.v1.EraseMachineInstanceRequest
+	(*PowerOnMachineInstanceRequest)(nil),       // 9: org.cudo.compute.v1.PowerOnMachineInstanceRequest
+	(*PowerOffMachineInstanceRequest)(nil),      // 10: org.cudo.compute.v1.PowerOffMachineInstanceRequest
+	(*ListMachineTypesRequest)(nil),             // 11: org.cudo.compute.v1.ListMachineTypesRequest
+	(*ListMachineTypesResponse)(nil),            // 12: org.cudo.compute.v1.ListMachineTypesResponse
+	(*ListMachineOperatingSystemsRequest)(nil),  // 13: org.cudo.compute.v1.ListMachineOperatingSystemsRequest
+	(*ListMachineOperatingSystemsResponse)(nil), // 14: org.cudo.compute.v1.ListMachineOperatingSystemsResponse
+	(*CreateClusterRequest)(nil),                // 15: org.cudo.compute.v1.CreateClusterRequest
+	(*DeleteClusterRequest)(nil),                // 16: org.cudo.compute.v1.DeleteClusterRequest
+	(*GetClusterMachineTypeRequest)(nil),        // 17: org.cudo.compute.v1.GetClusterMachineTypeRequest
+	(*GetClusterMachineTypeResponse)(nil),       // 18: org.cudo.compute.v1.GetClusterMachineTypeResponse
+	(*GetClusterRequest)(nil),                   // 19: org.cudo.compute.v1.GetClusterRequest
+	(*ListClusterMachineTypesRequest)(nil),      // 20: org.cudo.compute.v1.ListClusterMachineTypesRequest
+	(*ListClusterMachineTypesResponse)(nil),     // 21: org.cudo.compute.v1.ListClusterMachineTypesResponse
+	(*ListClustersRequest)(nil),                 // 22: org.cudo.compute.v1.ListClustersRequest
+	(*ListClustersResponse)(nil),                // 23: org.cudo.compute.v1.ListClustersResponse
+	(*UpdateClusterRequest)(nil),                // 24: org.cudo.compute.v1.UpdateClusterRequest
+	(*UpdateClusterMachineRequest)(nil),         // 25: org.cudo.compute.v1.UpdateClusterMachineRequest
+	(*RebootClusterMachineRequest)(nil),         // 26: org.cudo.compute.v1.RebootClusterMachineRequest
+	(*RenameClusterMachineRequest)(nil),         // 27: org.cudo.compute.v1.RenameClusterMachineRequest
+	(*DeleteClusterMachineRequest)(nil),         // 28: org.cudo.compute.v1.DeleteClusterMachineRequest
+	(*MachineInstance)(nil),                     // 29: org.cudo.compute.v1.MachineInstance
+	(*fieldmaskpb.FieldMask)(nil),               // 30: google.protobuf.FieldMask
+	(*MachineType)(nil),                         // 31: org.cudo.compute.v1.MachineType
+	(*compute.Image)(nil),                       // 32: org.cudo.compute.v1.Image
+	(*Cluster)(nil),                             // 33: org.cudo.compute.v1.Cluster
+	(*ClusterMachine)(nil),                      // 34: org.cudo.compute.v1.ClusterMachine
+	(*emptypb.Empty)(nil),                       // 35: google.protobuf.Empty
 }
 var file_svc_compute_baremetal_baremetal_svc_proto_depIdxs = []int32{
-	27, // 0: org.cudo.compute.v1.CreateMachineInstanceRequest.machine_instance:type_name -> org.cudo.compute.v1.MachineInstance
-	27, // 1: org.cudo.compute.v1.ListMachineInstancesResponse.machine_instances:type_name -> org.cudo.compute.v1.MachineInstance
-	27, // 2: org.cudo.compute.v1.UpdateMachineInstanceRequest.machine_instance:type_name -> org.cudo.compute.v1.MachineInstance
-	28, // 3: org.cudo.compute.v1.UpdateMachineInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	29, // 4: org.cudo.compute.v1.ListMachineTypesResponse.machine_types:type_name -> org.cudo.compute.v1.MachineType
-	25, // 5: org.cudo.compute.v1.ListMachineOperatingSystemsResponse.images:type_name -> org.cudo.compute.v1.ListMachineOperatingSystemsResponse.Image
-	30, // 6: org.cudo.compute.v1.CreateClusterRequest.cluster:type_name -> org.cudo.compute.v1.Cluster
-	30, // 7: org.cudo.compute.v1.ListClustersResponse.clusters:type_name -> org.cudo.compute.v1.Cluster
-	30, // 8: org.cudo.compute.v1.UpdateClusterRequest.cluster:type_name -> org.cudo.compute.v1.Cluster
-	28, // 9: org.cudo.compute.v1.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
-	31, // 10: org.cudo.compute.v1.UpdateClusterMachineRequest.cluster_machine:type_name -> org.cudo.compute.v1.ClusterMachine
-	28, // 11: org.cudo.compute.v1.UpdateClusterMachineRequest.update_mask:type_name -> google.protobuf.FieldMask
-	26, // 12: org.cudo.compute.v1.ListMachineOperatingSystemsResponse.Image.installed_packages:type_name -> org.cudo.compute.v1.ListMachineOperatingSystemsResponse.Image.Package
-	0,  // 13: org.cudo.compute.v1.BareMetalService.CreateMachineInstance:input_type -> org.cudo.compute.v1.CreateMachineInstanceRequest
-	1,  // 14: org.cudo.compute.v1.BareMetalService.DeleteMachineInstance:input_type -> org.cudo.compute.v1.DeleteMachineInstanceRequest
-	2,  // 15: org.cudo.compute.v1.BareMetalService.GetMachineInstance:input_type -> org.cudo.compute.v1.GetMachineInstanceRequest
-	3,  // 16: org.cudo.compute.v1.BareMetalService.ListMachineInstances:input_type -> org.cudo.compute.v1.ListMachineInstancesRequest
-	5,  // 17: org.cudo.compute.v1.BareMetalService.UpdateMachineInstance:input_type -> org.cudo.compute.v1.UpdateMachineInstanceRequest
-	10, // 18: org.cudo.compute.v1.BareMetalService.PowerOffMachineInstance:input_type -> org.cudo.compute.v1.PowerOffMachineInstanceRequest
-	9,  // 19: org.cudo.compute.v1.BareMetalService.PowerOnMachineInstance:input_type -> org.cudo.compute.v1.PowerOnMachineInstanceRequest
-	6,  // 20: org.cudo.compute.v1.BareMetalService.DeployMachineInstance:input_type -> org.cudo.compute.v1.DeployMachineInstanceRequest
-	7,  // 21: org.cudo.compute.v1.BareMetalService.UndeployMachineInstance:input_type -> org.cudo.compute.v1.UndeployMachineInstanceRequest
-	8,  // 22: org.cudo.compute.v1.BareMetalService.EraseMachineInstance:input_type -> org.cudo.compute.v1.EraseMachineInstanceRequest
-	13, // 23: org.cudo.compute.v1.BareMetalService.ListMachineOperatingSystems:input_type -> org.cudo.compute.v1.ListMachineOperatingSystemsRequest
-	11, // 24: org.cudo.compute.v1.BareMetalService.ListMachineTypes:input_type -> org.cudo.compute.v1.ListMachineTypesRequest
-	32, // 25: org.cudo.compute.v1.BareMetalService.ListClusterMachineTypes:input_type -> org.cudo.compute.v1.ListClusterMachineTypesRequest
-	33, // 26: org.cudo.compute.v1.BareMetalService.GetClusterMachineType:input_type -> org.cudo.compute.v1.GetClusterMachineTypeRequest
-	15, // 27: org.cudo.compute.v1.BareMetalService.CreateCluster:input_type -> org.cudo.compute.v1.CreateClusterRequest
-	16, // 28: org.cudo.compute.v1.BareMetalService.DeleteCluster:input_type -> org.cudo.compute.v1.DeleteClusterRequest
-	17, // 29: org.cudo.compute.v1.BareMetalService.GetCluster:input_type -> org.cudo.compute.v1.GetClusterRequest
-	18, // 30: org.cudo.compute.v1.BareMetalService.ListClusters:input_type -> org.cudo.compute.v1.ListClustersRequest
-	20, // 31: org.cudo.compute.v1.BareMetalService.UpdateCluster:input_type -> org.cudo.compute.v1.UpdateClusterRequest
-	24, // 32: org.cudo.compute.v1.BareMetalService.DeleteClusterMachine:input_type -> org.cudo.compute.v1.DeleteClusterMachineRequest
-	22, // 33: org.cudo.compute.v1.BareMetalService.RebootClusterMachine:input_type -> org.cudo.compute.v1.RebootClusterMachineRequest
-	23, // 34: org.cudo.compute.v1.BareMetalService.RenameClusterMachine:input_type -> org.cudo.compute.v1.RenameClusterMachineRequest
-	21, // 35: org.cudo.compute.v1.BareMetalService.UpdateClusterMachine:input_type -> org.cudo.compute.v1.UpdateClusterMachineRequest
-	27, // 36: org.cudo.compute.v1.BareMetalService.CreateMachineInstance:output_type -> org.cudo.compute.v1.MachineInstance
-	34, // 37: org.cudo.compute.v1.BareMetalService.DeleteMachineInstance:output_type -> google.protobuf.Empty
-	27, // 38: org.cudo.compute.v1.BareMetalService.GetMachineInstance:output_type -> org.cudo.compute.v1.MachineInstance
-	4,  // 39: org.cudo.compute.v1.BareMetalService.ListMachineInstances:output_type -> org.cudo.compute.v1.ListMachineInstancesResponse
-	27, // 40: org.cudo.compute.v1.BareMetalService.UpdateMachineInstance:output_type -> org.cudo.compute.v1.MachineInstance
-	34, // 41: org.cudo.compute.v1.BareMetalService.PowerOffMachineInstance:output_type -> google.protobuf.Empty
-	34, // 42: org.cudo.compute.v1.BareMetalService.PowerOnMachineInstance:output_type -> google.protobuf.Empty
-	34, // 43: org.cudo.compute.v1.BareMetalService.DeployMachineInstance:output_type -> google.protobuf.Empty
-	34, // 44: org.cudo.compute.v1.BareMetalService.UndeployMachineInstance:output_type -> google.protobuf.Empty
-	34, // 45: org.cudo.compute.v1.BareMetalService.EraseMachineInstance:output_type -> google.protobuf.Empty
-	14, // 46: org.cudo.compute.v1.BareMetalService.ListMachineOperatingSystems:output_type -> org.cudo.compute.v1.ListMachineOperatingSystemsResponse
-	12, // 47: org.cudo.compute.v1.BareMetalService.ListMachineTypes:output_type -> org.cudo.compute.v1.ListMachineTypesResponse
-	35, // 48: org.cudo.compute.v1.BareMetalService.ListClusterMachineTypes:output_type -> org.cudo.compute.v1.ListClusterMachineTypesResponse
-	36, // 49: org.cudo.compute.v1.BareMetalService.GetClusterMachineType:output_type -> org.cudo.compute.v1.GetClusterMachineTypeResponse
-	30, // 50: org.cudo.compute.v1.BareMetalService.CreateCluster:output_type -> org.cudo.compute.v1.Cluster
-	34, // 51: org.cudo.compute.v1.BareMetalService.DeleteCluster:output_type -> google.protobuf.Empty
-	30, // 52: org.cudo.compute.v1.BareMetalService.GetCluster:output_type -> org.cudo.compute.v1.Cluster
-	19, // 53: org.cudo.compute.v1.BareMetalService.ListClusters:output_type -> org.cudo.compute.v1.ListClustersResponse
-	30, // 54: org.cudo.compute.v1.BareMetalService.UpdateCluster:output_type -> org.cudo.compute.v1.Cluster
-	34, // 55: org.cudo.compute.v1.BareMetalService.DeleteClusterMachine:output_type -> google.protobuf.Empty
-	34, // 56: org.cudo.compute.v1.BareMetalService.RebootClusterMachine:output_type -> google.protobuf.Empty
-	34, // 57: org.cudo.compute.v1.BareMetalService.RenameClusterMachine:output_type -> google.protobuf.Empty
-	31, // 58: org.cudo.compute.v1.BareMetalService.UpdateClusterMachine:output_type -> org.cudo.compute.v1.ClusterMachine
-	36, // [36:59] is the sub-list for method output_type
-	13, // [13:36] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	29, // 0: org.cudo.compute.v1.CreateMachineInstanceRequest.machine_instance:type_name -> org.cudo.compute.v1.MachineInstance
+	29, // 1: org.cudo.compute.v1.ListMachineInstancesResponse.machine_instances:type_name -> org.cudo.compute.v1.MachineInstance
+	29, // 2: org.cudo.compute.v1.UpdateMachineInstanceRequest.machine_instance:type_name -> org.cudo.compute.v1.MachineInstance
+	30, // 3: org.cudo.compute.v1.UpdateMachineInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	31, // 4: org.cudo.compute.v1.ListMachineTypesResponse.machine_types:type_name -> org.cudo.compute.v1.MachineType
+	32, // 5: org.cudo.compute.v1.ListMachineOperatingSystemsResponse.images:type_name -> org.cudo.compute.v1.Image
+	33, // 6: org.cudo.compute.v1.CreateClusterRequest.cluster:type_name -> org.cudo.compute.v1.Cluster
+	31, // 7: org.cudo.compute.v1.GetClusterMachineTypeResponse.machine_type:type_name -> org.cudo.compute.v1.MachineType
+	31, // 8: org.cudo.compute.v1.ListClusterMachineTypesResponse.machine_types:type_name -> org.cudo.compute.v1.MachineType
+	33, // 9: org.cudo.compute.v1.ListClustersResponse.clusters:type_name -> org.cudo.compute.v1.Cluster
+	33, // 10: org.cudo.compute.v1.UpdateClusterRequest.cluster:type_name -> org.cudo.compute.v1.Cluster
+	30, // 11: org.cudo.compute.v1.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
+	34, // 12: org.cudo.compute.v1.UpdateClusterMachineRequest.cluster_machine:type_name -> org.cudo.compute.v1.ClusterMachine
+	30, // 13: org.cudo.compute.v1.UpdateClusterMachineRequest.update_mask:type_name -> google.protobuf.FieldMask
+	0,  // 14: org.cudo.compute.v1.BareMetalService.CreateMachineInstance:input_type -> org.cudo.compute.v1.CreateMachineInstanceRequest
+	1,  // 15: org.cudo.compute.v1.BareMetalService.DeleteMachineInstance:input_type -> org.cudo.compute.v1.DeleteMachineInstanceRequest
+	2,  // 16: org.cudo.compute.v1.BareMetalService.GetMachineInstance:input_type -> org.cudo.compute.v1.GetMachineInstanceRequest
+	3,  // 17: org.cudo.compute.v1.BareMetalService.ListMachineInstances:input_type -> org.cudo.compute.v1.ListMachineInstancesRequest
+	5,  // 18: org.cudo.compute.v1.BareMetalService.UpdateMachineInstance:input_type -> org.cudo.compute.v1.UpdateMachineInstanceRequest
+	10, // 19: org.cudo.compute.v1.BareMetalService.PowerOffMachineInstance:input_type -> org.cudo.compute.v1.PowerOffMachineInstanceRequest
+	9,  // 20: org.cudo.compute.v1.BareMetalService.PowerOnMachineInstance:input_type -> org.cudo.compute.v1.PowerOnMachineInstanceRequest
+	6,  // 21: org.cudo.compute.v1.BareMetalService.DeployMachineInstance:input_type -> org.cudo.compute.v1.DeployMachineInstanceRequest
+	7,  // 22: org.cudo.compute.v1.BareMetalService.UndeployMachineInstance:input_type -> org.cudo.compute.v1.UndeployMachineInstanceRequest
+	8,  // 23: org.cudo.compute.v1.BareMetalService.EraseMachineInstance:input_type -> org.cudo.compute.v1.EraseMachineInstanceRequest
+	13, // 24: org.cudo.compute.v1.BareMetalService.ListMachineOperatingSystems:input_type -> org.cudo.compute.v1.ListMachineOperatingSystemsRequest
+	11, // 25: org.cudo.compute.v1.BareMetalService.ListMachineTypes:input_type -> org.cudo.compute.v1.ListMachineTypesRequest
+	20, // 26: org.cudo.compute.v1.BareMetalService.ListClusterMachineTypes:input_type -> org.cudo.compute.v1.ListClusterMachineTypesRequest
+	17, // 27: org.cudo.compute.v1.BareMetalService.GetClusterMachineType:input_type -> org.cudo.compute.v1.GetClusterMachineTypeRequest
+	15, // 28: org.cudo.compute.v1.BareMetalService.CreateCluster:input_type -> org.cudo.compute.v1.CreateClusterRequest
+	16, // 29: org.cudo.compute.v1.BareMetalService.DeleteCluster:input_type -> org.cudo.compute.v1.DeleteClusterRequest
+	19, // 30: org.cudo.compute.v1.BareMetalService.GetCluster:input_type -> org.cudo.compute.v1.GetClusterRequest
+	22, // 31: org.cudo.compute.v1.BareMetalService.ListClusters:input_type -> org.cudo.compute.v1.ListClustersRequest
+	24, // 32: org.cudo.compute.v1.BareMetalService.UpdateCluster:input_type -> org.cudo.compute.v1.UpdateClusterRequest
+	28, // 33: org.cudo.compute.v1.BareMetalService.DeleteClusterMachine:input_type -> org.cudo.compute.v1.DeleteClusterMachineRequest
+	26, // 34: org.cudo.compute.v1.BareMetalService.RebootClusterMachine:input_type -> org.cudo.compute.v1.RebootClusterMachineRequest
+	27, // 35: org.cudo.compute.v1.BareMetalService.RenameClusterMachine:input_type -> org.cudo.compute.v1.RenameClusterMachineRequest
+	25, // 36: org.cudo.compute.v1.BareMetalService.UpdateClusterMachine:input_type -> org.cudo.compute.v1.UpdateClusterMachineRequest
+	29, // 37: org.cudo.compute.v1.BareMetalService.CreateMachineInstance:output_type -> org.cudo.compute.v1.MachineInstance
+	35, // 38: org.cudo.compute.v1.BareMetalService.DeleteMachineInstance:output_type -> google.protobuf.Empty
+	29, // 39: org.cudo.compute.v1.BareMetalService.GetMachineInstance:output_type -> org.cudo.compute.v1.MachineInstance
+	4,  // 40: org.cudo.compute.v1.BareMetalService.ListMachineInstances:output_type -> org.cudo.compute.v1.ListMachineInstancesResponse
+	29, // 41: org.cudo.compute.v1.BareMetalService.UpdateMachineInstance:output_type -> org.cudo.compute.v1.MachineInstance
+	35, // 42: org.cudo.compute.v1.BareMetalService.PowerOffMachineInstance:output_type -> google.protobuf.Empty
+	35, // 43: org.cudo.compute.v1.BareMetalService.PowerOnMachineInstance:output_type -> google.protobuf.Empty
+	35, // 44: org.cudo.compute.v1.BareMetalService.DeployMachineInstance:output_type -> google.protobuf.Empty
+	35, // 45: org.cudo.compute.v1.BareMetalService.UndeployMachineInstance:output_type -> google.protobuf.Empty
+	35, // 46: org.cudo.compute.v1.BareMetalService.EraseMachineInstance:output_type -> google.protobuf.Empty
+	14, // 47: org.cudo.compute.v1.BareMetalService.ListMachineOperatingSystems:output_type -> org.cudo.compute.v1.ListMachineOperatingSystemsResponse
+	12, // 48: org.cudo.compute.v1.BareMetalService.ListMachineTypes:output_type -> org.cudo.compute.v1.ListMachineTypesResponse
+	21, // 49: org.cudo.compute.v1.BareMetalService.ListClusterMachineTypes:output_type -> org.cudo.compute.v1.ListClusterMachineTypesResponse
+	18, // 50: org.cudo.compute.v1.BareMetalService.GetClusterMachineType:output_type -> org.cudo.compute.v1.GetClusterMachineTypeResponse
+	33, // 51: org.cudo.compute.v1.BareMetalService.CreateCluster:output_type -> org.cudo.compute.v1.Cluster
+	35, // 52: org.cudo.compute.v1.BareMetalService.DeleteCluster:output_type -> google.protobuf.Empty
+	33, // 53: org.cudo.compute.v1.BareMetalService.GetCluster:output_type -> org.cudo.compute.v1.Cluster
+	23, // 54: org.cudo.compute.v1.BareMetalService.ListClusters:output_type -> org.cudo.compute.v1.ListClustersResponse
+	33, // 55: org.cudo.compute.v1.BareMetalService.UpdateCluster:output_type -> org.cudo.compute.v1.Cluster
+	35, // 56: org.cudo.compute.v1.BareMetalService.DeleteClusterMachine:output_type -> google.protobuf.Empty
+	35, // 57: org.cudo.compute.v1.BareMetalService.RebootClusterMachine:output_type -> google.protobuf.Empty
+	35, // 58: org.cudo.compute.v1.BareMetalService.RenameClusterMachine:output_type -> google.protobuf.Empty
+	34, // 59: org.cudo.compute.v1.BareMetalService.UpdateClusterMachine:output_type -> org.cudo.compute.v1.ClusterMachine
+	37, // [37:60] is the sub-list for method output_type
+	14, // [14:37] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_svc_compute_baremetal_baremetal_svc_proto_init() }
@@ -1884,7 +1986,7 @@ func file_svc_compute_baremetal_baremetal_svc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_svc_compute_baremetal_baremetal_svc_proto_rawDesc), len(file_svc_compute_baremetal_baremetal_svc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   27,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
