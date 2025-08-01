@@ -6,8 +6,10 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"google.golang.org/grpc/codes"
 )
 
 func TestAcc_VMInstanceDataSource(t *testing.T) {
@@ -18,7 +20,7 @@ func TestAcc_VMInstanceDataSource(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "tf-ds-test-" + testRunID
+	vmID := "tf-ds-test-" + testRunID
 
 	resourcesConfig := fmt.Sprintf(`
 resource "cudo_vm" "my-vm" {
@@ -40,31 +42,43 @@ resource "cudo_vm" "my-vm" {
       network_id         = "tf-test"
     }
   ]
- }`, name)
+ }`, vmID)
 
 	testAccVMInstanceDataSourceConfig := fmt.Sprintf(`
 data "cudo_vm" "test" {
 	id = "%s"
-}`, name)
+}`, vmID)
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { testAccPreCheck(t) },
 		CheckDestroy: func(state *terraform.State) error {
 			cl, _ := getClients(t)
 
-			ins, err := cl.GetVM(ctx, &vm.GetVMRequest{
-				Id:        name,
+			getRes, err := cl.GetVM(ctx, &vm.GetVMRequest{
+				Id:        vmID,
 				ProjectId: projectID,
 			})
-			if err == nil && ins.VM.State != vm.VM_STOPPING {
-				res, err := cl.TerminateVM(ctx, &vm.TerminateVMRequest{
-					Id:        name,
+			if helper.IsErrCode(err, codes.NotFound) {
+				// successfully destroyed already
+				return nil
+			}
+			if err != nil {
+				return fmt.Errorf("could not get vm after resource create %s, %v", vmID, err)
+			}
+
+			if getRes.VM.State != vm.VM_DELETING {
+				_, err = cl.TerminateVM(ctx, &vm.TerminateVMRequest{
+					Id:        vmID,
 					ProjectId: projectID,
 				})
-				t.Log(res, err)
-
-				return fmt.Errorf("vm resource not destroyed %s, %s", ins.VM.Id, ins.VM.State.String())
+				if err != nil {
+					return fmt.Errorf("vm resource not destroyed %s, %s", getRes.VM.Id, getRes.VM.State.String())
+				}
 			}
+			if getRes, err := waitForVmDelete(ctx, cl, projectID, vmID); err != nil {
+				return fmt.Errorf("error waiting for vm delete %s, %s, %v", getRes.VM.Id, getRes.VM.State.String(), err)
+			}
+
 			return nil
 		},
 
@@ -76,7 +90,7 @@ data "cudo_vm" "test" {
 			{
 				Config: getProviderConfig() + resourcesConfig + testAccVMInstanceDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.cudo_vm.test", "id", name)),
+					resource.TestCheckResourceAttr("data.cudo_vm.test", "id", vmID)),
 			},
 		},
 	})

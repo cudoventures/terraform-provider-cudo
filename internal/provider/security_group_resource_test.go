@@ -6,8 +6,10 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"google.golang.org/grpc/codes"
 )
 
 func TestAcc_SecurityGroupResource(t *testing.T) {
@@ -18,7 +20,7 @@ func TestAcc_SecurityGroupResource(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "sg-resource-" + testRunID
+	securityGroupID := "sg-resource-" + testRunID
 
 	sgConfig := fmt.Sprintf(`
 	resource "cudo_security_group" "sg" {
@@ -38,28 +40,34 @@ func TestAcc_SecurityGroupResource(t *testing.T) {
 			protocol  = "tcp"
 		  }
 		]
-	  }`, name)
+	  }`, securityGroupID)
 
 	resource.ParallelTest(t, resource.TestCase{
 		CheckDestroy: func(state *terraform.State) error {
 			_, cl := getClients(t)
 
 			getParams := &network.GetSecurityGroupRequest{
-				Id:        name,
+				Id:        securityGroupID,
 				ProjectId: projectID,
 			}
 
 			getRes, err := cl.GetSecurityGroup(ctx, getParams)
-			if err == nil {
-				deleteParams := &network.DeleteSecurityGroupRequest{
-					Id:        name,
-					ProjectId: projectID,
-				}
-				res, err := cl.DeleteSecurityGroup(ctx, deleteParams)
-				t.Logf("%#v: %v", res, err)
-
-				return fmt.Errorf("security groupd not deleted %s", getRes.Id)
+			if helper.IsErrCode(err, codes.NotFound) {
+				// successfully destroyed already
+				return nil
 			}
+			if err != nil {
+				return fmt.Errorf("could not get security group after resource create %s, %v", securityGroupID, err)
+			}
+			deleteParams := &network.DeleteSecurityGroupRequest{
+				Id:        securityGroupID,
+				ProjectId: projectID,
+			}
+			_, err = cl.DeleteSecurityGroup(ctx, deleteParams)
+			if err != nil {
+				return fmt.Errorf("security group not deleted %s , %s", getRes.Id, err)
+			}
+
 			return nil
 		},
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -69,7 +77,7 @@ func TestAcc_SecurityGroupResource(t *testing.T) {
 			{
 				Config: getProviderConfig() + sgConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("cudo_security_group.sg", "id", name),
+					resource.TestCheckResourceAttr("cudo_security_group.sg", "id", securityGroupID),
 					resource.TestCheckResourceAttr("cudo_security_group.sg", "data_center_id", "black-mesa"),
 					resource.TestCheckResourceAttr("cudo_security_group.sg", "description", "security group for a web server"),
 					resource.TestCheckResourceAttr("cudo_security_group.sg", "rules.#", "2"),

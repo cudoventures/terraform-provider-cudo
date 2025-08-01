@@ -6,8 +6,10 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"google.golang.org/grpc/codes"
 )
 
 func TestAcc_NetworkResource(t *testing.T) {
@@ -18,48 +20,47 @@ func TestAcc_NetworkResource(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "network-resource-" + testRunID
+	networkID := "network-resource-" + testRunID
 
 	networkConfig := fmt.Sprintf(`
 resource "cudo_network" "network" {
 	data_center_id = "black-mesa"
 	id             = "%s"
 	ip_range       = "192.168.0.0/24"
- }`, name)
+ }`, networkID)
 
 	resource.ParallelTest(t, resource.TestCase{
 		CheckDestroy: func(state *terraform.State) error {
 			_, cl := getClients(t)
 
 			getParams := &network.GetNetworkRequest{
-				Id:        name,
+				Id:        networkID,
 				ProjectId: projectID,
 			}
 
 			getRes, err := cl.GetNetwork(ctx, getParams)
-			if err == nil && (getRes.State != network.Network_DELETING && getRes.State != network.Network_STOPPING) {
-				stopParams := &network.StopNetworkRequest{
-					Id:        name,
-					ProjectId: projectID,
-				}
-				stopRes, err := cl.StopNetwork(ctx, stopParams)
-				t.Logf("(%s) %#v: %v", getRes.State.String(), stopRes, err)
-				if err != nil {
-					return fmt.Errorf("network resource not stopped %s , %s , %s", getRes.Id, getRes.State.String(), err)
-				}
-
+			if helper.IsErrCode(err, codes.NotFound) {
+				// successfully destroyed already
+				return nil
+			}
+			if err != nil {
+				return fmt.Errorf("could not get network after resource create %s, %v", networkID, err)
+			}
+			if getRes.State != network.Network_DELETING {
 				terminateParams := &network.DeleteNetworkRequest{
-					Id:        name,
+					Id:        networkID,
 					ProjectId: projectID,
 				}
-				res, err := cl.DeleteNetwork(ctx, terminateParams)
-				t.Logf("(%s) %#v: %v", getRes.State.String(), res, err)
-
-				if _, err := waitForNetworkDelete(ctx, projectID, name, cl); err != nil {
-					return fmt.Errorf("error waiting for network stopped %s , %s , %s", getRes.Id, getRes.State.String(), err)
+				_, err := cl.DeleteNetwork(ctx, terminateParams)
+				if err != nil {
+					return fmt.Errorf("network resource not deleted %s , %s , %s", getRes.Id, getRes.State.String(), err)
 				}
 
-				return fmt.Errorf("network resource not deleted %s , %s", getRes.Id, getRes.State.String())
+				if _, err := waitForNetworkDelete(ctx, cl, projectID, networkID); err != nil {
+					return fmt.Errorf("error waiting for network delete %s , %s , %s", getRes.Id, getRes.State.String(), err)
+				}
+
+				return nil
 			}
 			return nil
 		},
@@ -70,7 +71,7 @@ resource "cudo_network" "network" {
 			{
 				Config: getProviderConfig() + networkConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("cudo_network.network", "id", name),
+					resource.TestCheckResourceAttr("cudo_network.network", "id", networkID),
 					resource.TestCheckResourceAttr("cudo_network.network", "data_center_id", "black-mesa"),
 					resource.TestCheckResourceAttr("cudo_network.network", "ip_range", "192.168.0.0/24"),
 					resource.TestCheckResourceAttrSet("cudo_network.network", "internal_ip_address"),

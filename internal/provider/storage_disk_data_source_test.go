@@ -6,8 +6,10 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"google.golang.org/grpc/codes"
 )
 
 func TestAcc_StorageDiskDataSource(t *testing.T) {
@@ -18,38 +20,51 @@ func TestAcc_StorageDiskDataSource(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "storage-disk-data-source" + testRunID
+	diskID := "storage-disk-data-source" + testRunID
 
 	resourcesConfig := fmt.Sprintf(`
 resource "cudo_storage_disk" "disk_ds" {
 	data_center_id = "black-mesa"
 	id = "%s"
 	size_gib = 15
-}`, name)
+}`, diskID)
 
 	testAccStorageDiskDataSourceConfig := fmt.Sprintf(`
 data "cudo_storage_disk" "storage_disk_datasource" {
 	id = "%s"
-}`, name)
+}`, diskID)
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { testAccPreCheck(t) },
 		CheckDestroy: func(state *terraform.State) error {
 			cl, _ := getClients(t)
 
-			ins, err := cl.GetDisk(ctx, &vm.GetDiskRequest{
-				Id:        name,
+			getRes, err := cl.GetDisk(ctx, &vm.GetDiskRequest{
+				Id:        diskID,
 				ProjectId: projectID,
 			})
+			if helper.IsErrCode(err, codes.NotFound) {
+				// successfully destroyed already
+				return nil
+			}
+			if err != nil {
+				return fmt.Errorf("could not get disk after resource create %s, %v", diskID, err)
+			}
 
-			if err == nil && ins.Disk.DiskState != vm.Disk_DELETING {
-				res, err := cl.DeleteStorageDisk(ctx, &vm.DeleteStorageDiskRequest{
-					Id:        name,
+			if getRes.Disk.DiskState != vm.Disk_DELETING {
+				_, err := cl.DeleteStorageDisk(ctx, &vm.DeleteStorageDiskRequest{
+					Id:        diskID,
 					ProjectId: projectID,
 				})
-				t.Logf("(%s) %#v: %v", ins.Disk.DiskState, res, err)
+				if err != nil {
+					return fmt.Errorf("disk resource not destroyed %s, %s, %v", getRes.Disk.Id, getRes.Disk.DiskState, err)
+				}
 
-				return fmt.Errorf("disk resource not destroyed %s , %s", ins.Disk.Id, ins.Disk.DiskState)
+				if err := waitForDiskDelete(ctx, cl, projectID, diskID); err != nil {
+					return fmt.Errorf("error waiting for disk delete %s, %s, %v", getRes.Disk.Id, getRes.Disk.DiskState.String(), err)
+				}
+
+				return nil
 			}
 			return nil
 		},
@@ -62,7 +77,7 @@ data "cudo_storage_disk" "storage_disk_datasource" {
 			{
 				Config: getProviderConfig() + resourcesConfig + testAccStorageDiskDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.cudo_storage_disk.storage_disk_datasource", "id", name),
+					resource.TestCheckResourceAttr("data.cudo_storage_disk.storage_disk_datasource", "id", diskID),
 					resource.TestCheckResourceAttr("data.cudo_storage_disk.storage_disk_datasource", "size_gib", "15"),
 				),
 			},

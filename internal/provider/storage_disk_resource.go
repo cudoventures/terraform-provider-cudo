@@ -106,9 +106,9 @@ func (r *StorageDiskResource) Configure(ctx context.Context, req resource.Config
 	r.client = client
 }
 
-func (r *StorageDiskResource) waitForDiskDelete(ctx context.Context, diskID, projectID string) error {
+func waitForDiskDelete(ctx context.Context, c vm.VMServiceClient, projectID, diskID string) error {
 	refreshFunc := func() (interface{}, string, error) {
-		res, err := r.client.VMClient.GetDisk(ctx, &vm.GetDiskRequest{
+		res, err := c.GetDisk(ctx, &vm.GetDiskRequest{
 			Id:        diskID,
 			ProjectId: projectID,
 		})
@@ -116,7 +116,7 @@ func (r *StorageDiskResource) waitForDiskDelete(ctx context.Context, diskID, pro
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
 				return res, "done", nil
 			}
-			return nil, "", err
+			return nil, vm.Disk_UNKNOWN.String(), err
 		}
 
 		return res, res.Disk.DiskState.String(), nil
@@ -126,13 +126,14 @@ func (r *StorageDiskResource) waitForDiskDelete(ctx context.Context, diskID, pro
 
 	stateConf := &helper.StateChangeConf{
 		Pending: []string{
-			vm.Disk_UNKNOWN.String(),
 			vm.Disk_ATTACHED.String(),
 			vm.Disk_CLONING.String(),
 			vm.Disk_CREATING.String(),
 			vm.Disk_DELETING.String(),
 			vm.Disk_DISABLED.String(),
 			vm.Disk_FAILED.String(),
+			vm.Disk_READY.String(),
+			vm.Disk_UNKNOWN.String(),
 			vm.Disk_UPDATING.String(),
 		},
 		Target:       []string{"done"},
@@ -151,9 +152,9 @@ func (r *StorageDiskResource) waitForDiskDelete(ctx context.Context, diskID, pro
 	return nil
 }
 
-func (r *StorageDiskResource) waitForDiskCreate(ctx context.Context, diskID, projectID string) error {
+func waitForDiskCreate(ctx context.Context, c vm.VMServiceClient, projectID, diskID string) error {
 	refreshFunc := func() (interface{}, string, error) {
-		res, err := r.client.VMClient.GetDisk(ctx, &vm.GetDiskRequest{
+		res, err := c.GetDisk(ctx, &vm.GetDiskRequest{
 			ProjectId: projectID,
 			Id:        diskID,
 		})
@@ -226,7 +227,7 @@ func (r *StorageDiskResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	if err := r.waitForDiskCreate(ctx, state.Id.ValueString(), projectID); err != nil {
+	if err := waitForDiskCreate(ctx, r.client.VMClient, projectID, state.Id.ValueString()); err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for Disk resource to be created",
 			err.Error(),
@@ -318,7 +319,7 @@ func (r *StorageDiskResource) Delete(ctx context.Context, req resource.DeleteReq
 		return
 	}
 
-	if err := r.waitForDiskDelete(ctx, state.Id.ValueString(), projectId); err != nil {
+	if err := waitForDiskDelete(ctx, r.client.VMClient, projectId, state.Id.ValueString()); err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for Disk resource to be deleted",
 			err.Error(),

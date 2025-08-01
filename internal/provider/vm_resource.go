@@ -448,7 +448,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		return
 	}
 
-	vm, err := waitForVmAvailable(ctx, params.ProjectId, state.ID.ValueString(), r.client.VMClient)
+	vm, err := waitForVmAvailable(ctx, r.client.VMClient, params.ProjectId, state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating VM resource",
@@ -524,7 +524,7 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 	projectId := r.client.DefaultProjectID
 	vmId := state.ID.ValueString()
 
-	if _, err := waitForVmAvailable(ctx, projectId, vmId, r.client.VMClient); err != nil {
+	if _, err := waitForVmAvailable(ctx, r.client.VMClient, projectId, vmId); err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for VM resource to be available",
 			err.Error(),
@@ -544,7 +544,7 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 		return
 	}
 
-	_, err = waitForVmDelete(ctx, projectId, vmId, r.client.VMClient)
+	_, err = waitForVmDelete(ctx, r.client.VMClient, projectId, vmId)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for VM resource to be deleted",
@@ -558,7 +558,7 @@ func (r *VMResource) ImportState(ctx context.Context, req resource.ImportStateRe
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func waitForVmAvailable(ctx context.Context, projectId string, vmID string, c vm.VMServiceClient) (*vm.GetVMResponse, error) {
+func waitForVmAvailable(ctx context.Context, c vm.VMServiceClient, projectId string, vmID string) (*vm.GetVMResponse, error) {
 	refreshFunc := func() (interface{}, string, error) {
 		params := &vm.GetVMRequest{
 			Id:        vmID,
@@ -624,7 +624,7 @@ func waitForVmAvailable(ctx context.Context, projectId string, vmID string, c vm
 	}
 }
 
-func waitForVmDelete(ctx context.Context, projectId string, vmID string, c vm.VMServiceClient) (*vm.GetVMResponse, error) {
+func waitForVmDelete(ctx context.Context, c vm.VMServiceClient, projectId string, vmID string) (*vm.GetVMResponse, error) {
 	refreshFunc := func() (interface{}, string, error) {
 		res, err := c.GetVM(ctx, &vm.GetVMRequest{
 			Id:        vmID,

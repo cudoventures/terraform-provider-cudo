@@ -135,7 +135,7 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	network, err := waitForNetworkAvailable(ctx, r.client.DefaultProjectID, state.ID.ValueString(), r.client.NetworkClient)
+	network, err := waitForNetworkAvailable(ctx, r.client.NetworkClient, r.client.DefaultProjectID, state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create network resource",
@@ -229,7 +229,7 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	_, err = waitForNetworkDelete(ctx, projectId, networkId, r.client.NetworkClient)
+	_, err = waitForNetworkDelete(ctx, r.client.NetworkClient, projectId, networkId)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for network resource to be deleted",
@@ -243,7 +243,7 @@ func (r *NetworkResource) ImportState(ctx context.Context, req resource.ImportSt
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func waitForNetworkAvailable(ctx context.Context, projectID string, networkID string, c network.NetworkServiceClient) (*network.Network, error) {
+func waitForNetworkAvailable(ctx context.Context, c network.NetworkServiceClient, projectID string, networkID string) (*network.Network, error) {
 	refreshFunc := func() (interface{}, string, error) {
 		res, err := c.GetNetwork(ctx, &network.GetNetworkRequest{
 			Id:        networkID,
@@ -298,7 +298,7 @@ func waitForNetworkAvailable(ctx context.Context, projectID string, networkID st
 	return nil, nil
 }
 
-func waitForNetworkDelete(ctx context.Context, projectID string, networkID string, c network.NetworkServiceClient) (*network.Network, error) {
+func waitForNetworkDelete(ctx context.Context, c network.NetworkServiceClient, projectID string, networkID string) (*network.Network, error) {
 	refreshFunc := func() (interface{}, string, error) {
 		res, err := c.GetNetwork(ctx, &network.GetNetworkRequest{
 			Id:        networkID,

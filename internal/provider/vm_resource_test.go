@@ -6,8 +6,10 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"google.golang.org/grpc/codes"
 )
 
 func TestAcc_VMResource(t *testing.T) {
@@ -271,10 +273,10 @@ func TestAcc_VMStorageDiskResource(t *testing.T) {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 		defer cancel()
 	}
-	name := "vm-storage-disk-resource-" + testRunID
+	vmID := "vm-storage-disk-resource-" + testRunID
 	// important that the disks are in ascending order as that is how the api returns them
-	diskName1 := "vm-resource-disk1" + testRunID
-	diskName2 := "vm-resource-disk2" + testRunID
+	diskID1 := "vm-resource-disk1" + testRunID
+	diskID2 := "vm-resource-disk2" + testRunID
 
 	diskConfig := fmt.Sprintf(`
 resource "cudo_storage_disk" "vm_resource_disk1" {
@@ -287,7 +289,7 @@ resource "cudo_storage_disk" "vm_resource_disk2" {
 	data_center_id = "black-mesa"
 	id = "%s"
 	size_gib = 20
-}`, diskName1, diskName2)
+}`, diskID1, diskID2)
 
 	vmConfig := fmt.Sprintf(`
 resource "cudo_vm" "vm_disk_resource" {
@@ -314,27 +316,66 @@ resource "cudo_vm" "vm_disk_resource" {
             disk_id = "%s"
         }
     ]
- }`, name, diskName1, diskName2)
+ }`, vmID, diskID1, diskID2)
 
 	resource.ParallelTest(t, resource.TestCase{
 		CheckDestroy: func(state *terraform.State) error {
 			cl, _ := getClients(t)
 
 			getParams := &vm.GetVMRequest{
-				Id:        name,
+				Id:        vmID,
 				ProjectId: projectID,
 			}
 
 			getRes, err := cl.GetVM(ctx, getParams)
-			if err == nil && getRes.VM.State != vm.VM_DELETING {
-				terminateParams := &vm.TerminateVMRequest{
-					Id:        name,
-					ProjectId: projectID,
-				}
-				res, err := cl.TerminateVM(ctx, terminateParams)
-				t.Logf("(%s) %#v: %v", getRes.VM.State.String(), res, err)
+			if err == nil || !helper.IsErrCode(err, codes.NotFound) {
+				// successfully destroyed already
+				if getRes.VM.State != vm.VM_DELETING {
+					terminateParams := &vm.TerminateVMRequest{
+						Id:        vmID,
+						ProjectId: projectID,
+					}
+					_, err = cl.TerminateVM(ctx, terminateParams)
+					if err != nil {
+						return fmt.Errorf("vm resource not destroyed %s, %s", getRes.VM.Id, getRes.VM.State.String())
+					}
 
-				return fmt.Errorf("vm resource not destroyed %s , %s", getRes.VM.Id, getRes.VM.State.String())
+					if getRes, err := waitForVmDelete(ctx, cl, projectID, vmID); err != nil {
+						return fmt.Errorf("error waiting for vm delete %s, %s, %v", getRes.VM.Id, getRes.VM.State.String(), err)
+					}
+				}
+			}
+
+			_, err = cl.GetDisk(ctx, &vm.GetDiskRequest{
+				ProjectId: projectID,
+				Id:        diskID1,
+			})
+			if !helper.IsErrCode(err, codes.NotFound) {
+				if _, err := cl.DeleteStorageDisk(ctx, &vm.DeleteStorageDiskRequest{
+					ProjectId: projectID,
+					Id:        diskID1,
+				}); err != nil {
+					return fmt.Errorf("error deleting storage disk %s, %s, %v", projectID, diskID1, err)
+				}
+				if err := waitForDiskDelete(ctx, cl, projectID, diskID1); err != nil {
+					return fmt.Errorf("error waiting for disk delete %s, %s, %v", projectID, diskID1, err)
+				}
+			}
+
+			_, err = cl.GetDisk(ctx, &vm.GetDiskRequest{
+				ProjectId: projectID,
+				Id:        diskID2,
+			})
+			if !helper.IsErrCode(err, codes.NotFound) {
+				if _, err := cl.DeleteStorageDisk(ctx, &vm.DeleteStorageDiskRequest{
+					ProjectId: projectID,
+					Id:        diskID2,
+				}); err != nil {
+					return fmt.Errorf("error deleting storage disk %s, %s, %v", projectID, diskID2, err)
+				}
+				if err := waitForDiskDelete(ctx, cl, projectID, diskID2); err != nil {
+					return fmt.Errorf("error waiting for disk delete %s, %s, %v", projectID, diskID2, err)
+				}
 			}
 			return nil
 		},
@@ -352,12 +393,12 @@ resource "cudo_vm" "vm_disk_resource" {
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "data_center_id", "black-mesa"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "gpu_model", ""),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "memory_gib", "2"),
-					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "storage_disks.0.disk_id", diskName1),
-					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "storage_disks.1.disk_id", diskName2),
+					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "storage_disks.0.disk_id", diskID1),
+					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "storage_disks.1.disk_id", diskID2),
 					resource.TestCheckResourceAttrSet("cudo_vm.vm_disk_resource", "internal_ip_address"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "renewable_energy", "true"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "vcpus", "1"),
-					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "id", name),
+					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "id", vmID),
 				),
 			},
 		},
