@@ -27,27 +27,27 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type CreateMachineInstanceRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	MachineInstance *MachineInstance       `protobuf:"bytes,1,opt,name=machine_instance,json=machineInstance,proto3" json:"machine_instance,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+type CreateMachineRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Machine       *Machine               `protobuf:"bytes,1,opt,name=machine,proto3" json:"machine,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateMachineInstanceRequest) Reset() {
-	*x = CreateMachineInstanceRequest{}
+func (x *CreateMachineRequest) Reset() {
+	*x = CreateMachineRequest{}
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateMachineInstanceRequest) String() string {
+func (x *CreateMachineRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateMachineInstanceRequest) ProtoMessage() {}
+func (*CreateMachineRequest) ProtoMessage() {}
 
-func (x *CreateMachineInstanceRequest) ProtoReflect() protoreflect.Message {
+func (x *CreateMachineRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -59,19 +59,19 @@ func (x *CreateMachineInstanceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateMachineInstanceRequest.ProtoReflect.Descriptor instead.
-func (*CreateMachineInstanceRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateMachineRequest.ProtoReflect.Descriptor instead.
+func (*CreateMachineRequest) Descriptor() ([]byte, []int) {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateMachineInstanceRequest) GetMachineInstance() *MachineInstance {
+func (x *CreateMachineRequest) GetMachine() *Machine {
 	if x != nil {
-		return x.MachineInstance
+		return x.Machine
 	}
 	return nil
 }
 
-type DeleteMachineInstanceRequest struct {
+type DeleteMachineRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -79,20 +79,20 @@ type DeleteMachineInstanceRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DeleteMachineInstanceRequest) Reset() {
-	*x = DeleteMachineInstanceRequest{}
+func (x *DeleteMachineRequest) Reset() {
+	*x = DeleteMachineRequest{}
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DeleteMachineInstanceRequest) String() string {
+func (x *DeleteMachineRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeleteMachineInstanceRequest) ProtoMessage() {}
+func (*DeleteMachineRequest) ProtoMessage() {}
 
-func (x *DeleteMachineInstanceRequest) ProtoReflect() protoreflect.Message {
+func (x *DeleteMachineRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -104,26 +104,26 @@ func (x *DeleteMachineInstanceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteMachineInstanceRequest.ProtoReflect.Descriptor instead.
-func (*DeleteMachineInstanceRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use DeleteMachineRequest.ProtoReflect.Descriptor instead.
+func (*DeleteMachineRequest) Descriptor() ([]byte, []int) {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *DeleteMachineInstanceRequest) GetProjectId() string {
+func (x *DeleteMachineRequest) GetProjectId() string {
 	if x != nil {
 		return x.ProjectId
 	}
 	return ""
 }
 
-func (x *DeleteMachineInstanceRequest) GetId() string {
+func (x *DeleteMachineRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-type GetMachineInstanceRequest struct {
+type GetMachineRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -131,20 +131,20 @@ type GetMachineInstanceRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetMachineInstanceRequest) Reset() {
-	*x = GetMachineInstanceRequest{}
+func (x *GetMachineRequest) Reset() {
+	*x = GetMachineRequest{}
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetMachineInstanceRequest) String() string {
+func (x *GetMachineRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetMachineInstanceRequest) ProtoMessage() {}
+func (*GetMachineRequest) ProtoMessage() {}
 
-func (x *GetMachineInstanceRequest) ProtoReflect() protoreflect.Message {
+func (x *GetMachineRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -156,26 +156,26 @@ func (x *GetMachineInstanceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetMachineInstanceRequest.ProtoReflect.Descriptor instead.
-func (*GetMachineInstanceRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetMachineRequest.ProtoReflect.Descriptor instead.
+func (*GetMachineRequest) Descriptor() ([]byte, []int) {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetMachineInstanceRequest) GetProjectId() string {
+func (x *GetMachineRequest) GetProjectId() string {
 	if x != nil {
 		return x.ProjectId
 	}
 	return ""
 }
 
-func (x *GetMachineInstanceRequest) GetId() string {
+func (x *GetMachineRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-type ListMachineInstancesRequest struct {
+type ListMachinesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	PageNumber    int32                  `protobuf:"varint,2,opt,name=page_number,json=pageNumber,proto3" json:"page_number,omitempty"`
@@ -184,20 +184,20 @@ type ListMachineInstancesRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ListMachineInstancesRequest) Reset() {
-	*x = ListMachineInstancesRequest{}
+func (x *ListMachinesRequest) Reset() {
+	*x = ListMachinesRequest{}
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ListMachineInstancesRequest) String() string {
+func (x *ListMachinesRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListMachineInstancesRequest) ProtoMessage() {}
+func (*ListMachinesRequest) ProtoMessage() {}
 
-func (x *ListMachineInstancesRequest) ProtoReflect() protoreflect.Message {
+func (x *ListMachinesRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -209,56 +209,56 @@ func (x *ListMachineInstancesRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListMachineInstancesRequest.ProtoReflect.Descriptor instead.
-func (*ListMachineInstancesRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListMachinesRequest.ProtoReflect.Descriptor instead.
+func (*ListMachinesRequest) Descriptor() ([]byte, []int) {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *ListMachineInstancesRequest) GetProjectId() string {
+func (x *ListMachinesRequest) GetProjectId() string {
 	if x != nil {
 		return x.ProjectId
 	}
 	return ""
 }
 
-func (x *ListMachineInstancesRequest) GetPageNumber() int32 {
+func (x *ListMachinesRequest) GetPageNumber() int32 {
 	if x != nil {
 		return x.PageNumber
 	}
 	return 0
 }
 
-func (x *ListMachineInstancesRequest) GetPageSize() int32 {
+func (x *ListMachinesRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
 }
 
-type ListMachineInstancesResponse struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	MachineInstances []*MachineInstance     `protobuf:"bytes,1,rep,name=machine_instances,json=machineInstances,proto3" json:"machine_instances,omitempty"`
-	TotalCount       int32                  `protobuf:"varint,2,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
-	PageNumber       int32                  `protobuf:"varint,3,opt,name=page_number,json=pageNumber,proto3" json:"page_number,omitempty"`
-	PageSize         int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+type ListMachinesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Machines      []*Machine             `protobuf:"bytes,1,rep,name=machines,proto3" json:"machines,omitempty"`
+	TotalCount    int32                  `protobuf:"varint,2,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	PageNumber    int32                  `protobuf:"varint,3,opt,name=page_number,json=pageNumber,proto3" json:"page_number,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ListMachineInstancesResponse) Reset() {
-	*x = ListMachineInstancesResponse{}
+func (x *ListMachinesResponse) Reset() {
+	*x = ListMachinesResponse{}
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ListMachineInstancesResponse) String() string {
+func (x *ListMachinesResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListMachineInstancesResponse) ProtoMessage() {}
+func (*ListMachinesResponse) ProtoMessage() {}
 
-func (x *ListMachineInstancesResponse) ProtoReflect() protoreflect.Message {
+func (x *ListMachinesResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -270,65 +270,65 @@ func (x *ListMachineInstancesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListMachineInstancesResponse.ProtoReflect.Descriptor instead.
-func (*ListMachineInstancesResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListMachinesResponse.ProtoReflect.Descriptor instead.
+func (*ListMachinesResponse) Descriptor() ([]byte, []int) {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *ListMachineInstancesResponse) GetMachineInstances() []*MachineInstance {
+func (x *ListMachinesResponse) GetMachines() []*Machine {
 	if x != nil {
-		return x.MachineInstances
+		return x.Machines
 	}
 	return nil
 }
 
-func (x *ListMachineInstancesResponse) GetTotalCount() int32 {
+func (x *ListMachinesResponse) GetTotalCount() int32 {
 	if x != nil {
 		return x.TotalCount
 	}
 	return 0
 }
 
-func (x *ListMachineInstancesResponse) GetPageNumber() int32 {
+func (x *ListMachinesResponse) GetPageNumber() int32 {
 	if x != nil {
 		return x.PageNumber
 	}
 	return 0
 }
 
-func (x *ListMachineInstancesResponse) GetPageSize() int32 {
+func (x *ListMachinesResponse) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
 }
 
-type UpdateMachineInstanceRequest struct {
+type UpdateMachineRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The machine instance to update.
 	//
 	// The machine instance's `project_id` and `id` fields are used to identify the machine instance to update.
-	MachineInstance *MachineInstance `protobuf:"bytes,1,opt,name=machine_instance,json=machineInstance,proto3" json:"machine_instance,omitempty"`
+	Machine *Machine `protobuf:"bytes,1,opt,name=machine,proto3" json:"machine,omitempty"`
 	// The list of fields to update.
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UpdateMachineInstanceRequest) Reset() {
-	*x = UpdateMachineInstanceRequest{}
+func (x *UpdateMachineRequest) Reset() {
+	*x = UpdateMachineRequest{}
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UpdateMachineInstanceRequest) String() string {
+func (x *UpdateMachineRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UpdateMachineInstanceRequest) ProtoMessage() {}
+func (*UpdateMachineRequest) ProtoMessage() {}
 
-func (x *UpdateMachineInstanceRequest) ProtoReflect() protoreflect.Message {
+func (x *UpdateMachineRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -340,26 +340,26 @@ func (x *UpdateMachineInstanceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateMachineInstanceRequest.ProtoReflect.Descriptor instead.
-func (*UpdateMachineInstanceRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use UpdateMachineRequest.ProtoReflect.Descriptor instead.
+func (*UpdateMachineRequest) Descriptor() ([]byte, []int) {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *UpdateMachineInstanceRequest) GetMachineInstance() *MachineInstance {
+func (x *UpdateMachineRequest) GetMachine() *Machine {
 	if x != nil {
-		return x.MachineInstance
+		return x.Machine
 	}
 	return nil
 }
 
-func (x *UpdateMachineInstanceRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+func (x *UpdateMachineRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	if x != nil {
 		return x.UpdateMask
 	}
 	return nil
 }
 
-type DeployMachineInstanceRequest struct {
+type DeployMachineOSRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -369,20 +369,20 @@ type DeployMachineInstanceRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DeployMachineInstanceRequest) Reset() {
-	*x = DeployMachineInstanceRequest{}
+func (x *DeployMachineOSRequest) Reset() {
+	*x = DeployMachineOSRequest{}
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DeployMachineInstanceRequest) String() string {
+func (x *DeployMachineOSRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeployMachineInstanceRequest) ProtoMessage() {}
+func (*DeployMachineOSRequest) ProtoMessage() {}
 
-func (x *DeployMachineInstanceRequest) ProtoReflect() protoreflect.Message {
+func (x *DeployMachineOSRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -394,40 +394,40 @@ func (x *DeployMachineInstanceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeployMachineInstanceRequest.ProtoReflect.Descriptor instead.
-func (*DeployMachineInstanceRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use DeployMachineOSRequest.ProtoReflect.Descriptor instead.
+func (*DeployMachineOSRequest) Descriptor() ([]byte, []int) {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *DeployMachineInstanceRequest) GetProjectId() string {
+func (x *DeployMachineOSRequest) GetProjectId() string {
 	if x != nil {
 		return x.ProjectId
 	}
 	return ""
 }
 
-func (x *DeployMachineInstanceRequest) GetId() string {
+func (x *DeployMachineOSRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *DeployMachineInstanceRequest) GetOs() string {
+func (x *DeployMachineOSRequest) GetOs() string {
 	if x != nil {
 		return x.Os
 	}
 	return ""
 }
 
-func (x *DeployMachineInstanceRequest) GetUserData() string {
+func (x *DeployMachineOSRequest) GetUserData() string {
 	if x != nil {
 		return x.UserData
 	}
 	return ""
 }
 
-type UndeployMachineInstanceRequest struct {
+type UndeployMachineOSRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -435,20 +435,20 @@ type UndeployMachineInstanceRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UndeployMachineInstanceRequest) Reset() {
-	*x = UndeployMachineInstanceRequest{}
+func (x *UndeployMachineOSRequest) Reset() {
+	*x = UndeployMachineOSRequest{}
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UndeployMachineInstanceRequest) String() string {
+func (x *UndeployMachineOSRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UndeployMachineInstanceRequest) ProtoMessage() {}
+func (*UndeployMachineOSRequest) ProtoMessage() {}
 
-func (x *UndeployMachineInstanceRequest) ProtoReflect() protoreflect.Message {
+func (x *UndeployMachineOSRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -460,78 +460,26 @@ func (x *UndeployMachineInstanceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UndeployMachineInstanceRequest.ProtoReflect.Descriptor instead.
-func (*UndeployMachineInstanceRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use UndeployMachineOSRequest.ProtoReflect.Descriptor instead.
+func (*UndeployMachineOSRequest) Descriptor() ([]byte, []int) {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *UndeployMachineInstanceRequest) GetProjectId() string {
+func (x *UndeployMachineOSRequest) GetProjectId() string {
 	if x != nil {
 		return x.ProjectId
 	}
 	return ""
 }
 
-func (x *UndeployMachineInstanceRequest) GetId() string {
+func (x *UndeployMachineOSRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-type EraseMachineInstanceRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *EraseMachineInstanceRequest) Reset() {
-	*x = EraseMachineInstanceRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *EraseMachineInstanceRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EraseMachineInstanceRequest) ProtoMessage() {}
-
-func (x *EraseMachineInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use EraseMachineInstanceRequest.ProtoReflect.Descriptor instead.
-func (*EraseMachineInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *EraseMachineInstanceRequest) GetProjectId() string {
-	if x != nil {
-		return x.ProjectId
-	}
-	return ""
-}
-
-func (x *EraseMachineInstanceRequest) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-type PowerOnMachineInstanceRequest struct {
+type PowerOnMachineRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -540,21 +488,21 @@ type PowerOnMachineInstanceRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *PowerOnMachineInstanceRequest) Reset() {
-	*x = PowerOnMachineInstanceRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[9]
+func (x *PowerOnMachineRequest) Reset() {
+	*x = PowerOnMachineRequest{}
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PowerOnMachineInstanceRequest) String() string {
+func (x *PowerOnMachineRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PowerOnMachineInstanceRequest) ProtoMessage() {}
+func (*PowerOnMachineRequest) ProtoMessage() {}
 
-func (x *PowerOnMachineInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[9]
+func (x *PowerOnMachineRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -565,33 +513,33 @@ func (x *PowerOnMachineInstanceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PowerOnMachineInstanceRequest.ProtoReflect.Descriptor instead.
-func (*PowerOnMachineInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{9}
+// Deprecated: Use PowerOnMachineRequest.ProtoReflect.Descriptor instead.
+func (*PowerOnMachineRequest) Descriptor() ([]byte, []int) {
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *PowerOnMachineInstanceRequest) GetProjectId() string {
+func (x *PowerOnMachineRequest) GetProjectId() string {
 	if x != nil {
 		return x.ProjectId
 	}
 	return ""
 }
 
-func (x *PowerOnMachineInstanceRequest) GetId() string {
+func (x *PowerOnMachineRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *PowerOnMachineInstanceRequest) GetUserData() string {
+func (x *PowerOnMachineRequest) GetUserData() string {
 	if x != nil {
 		return x.UserData
 	}
 	return ""
 }
 
-type PowerOffMachineInstanceRequest struct {
+type PowerOffMachineRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -600,21 +548,21 @@ type PowerOffMachineInstanceRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *PowerOffMachineInstanceRequest) Reset() {
-	*x = PowerOffMachineInstanceRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[10]
+func (x *PowerOffMachineRequest) Reset() {
+	*x = PowerOffMachineRequest{}
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PowerOffMachineInstanceRequest) String() string {
+func (x *PowerOffMachineRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PowerOffMachineInstanceRequest) ProtoMessage() {}
+func (*PowerOffMachineRequest) ProtoMessage() {}
 
-func (x *PowerOffMachineInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[10]
+func (x *PowerOffMachineRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -625,26 +573,26 @@ func (x *PowerOffMachineInstanceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PowerOffMachineInstanceRequest.ProtoReflect.Descriptor instead.
-func (*PowerOffMachineInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{10}
+// Deprecated: Use PowerOffMachineRequest.ProtoReflect.Descriptor instead.
+func (*PowerOffMachineRequest) Descriptor() ([]byte, []int) {
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *PowerOffMachineInstanceRequest) GetProjectId() string {
+func (x *PowerOffMachineRequest) GetProjectId() string {
 	if x != nil {
 		return x.ProjectId
 	}
 	return ""
 }
 
-func (x *PowerOffMachineInstanceRequest) GetId() string {
+func (x *PowerOffMachineRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *PowerOffMachineInstanceRequest) GetForce() bool {
+func (x *PowerOffMachineRequest) GetForce() bool {
 	if x != nil {
 		return x.Force
 	}
@@ -663,7 +611,7 @@ type ListMachineTypesRequest struct {
 
 func (x *ListMachineTypesRequest) Reset() {
 	*x = ListMachineTypesRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[11]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -675,7 +623,7 @@ func (x *ListMachineTypesRequest) String() string {
 func (*ListMachineTypesRequest) ProtoMessage() {}
 
 func (x *ListMachineTypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[11]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -688,7 +636,7 @@ func (x *ListMachineTypesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMachineTypesRequest.ProtoReflect.Descriptor instead.
 func (*ListMachineTypesRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{11}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListMachineTypesRequest) GetPageNumber() int32 {
@@ -724,7 +672,7 @@ type ListMachineTypesResponse struct {
 
 func (x *ListMachineTypesResponse) Reset() {
 	*x = ListMachineTypesResponse{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[12]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -736,7 +684,7 @@ func (x *ListMachineTypesResponse) String() string {
 func (*ListMachineTypesResponse) ProtoMessage() {}
 
 func (x *ListMachineTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[12]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -749,7 +697,7 @@ func (x *ListMachineTypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMachineTypesResponse.ProtoReflect.Descriptor instead.
 func (*ListMachineTypesResponse) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{12}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListMachineTypesResponse) GetMachineTypes() []*MachineType {
@@ -788,7 +736,7 @@ type ListMachineOperatingSystemsRequest struct {
 
 func (x *ListMachineOperatingSystemsRequest) Reset() {
 	*x = ListMachineOperatingSystemsRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[13]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -800,7 +748,7 @@ func (x *ListMachineOperatingSystemsRequest) String() string {
 func (*ListMachineOperatingSystemsRequest) ProtoMessage() {}
 
 func (x *ListMachineOperatingSystemsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[13]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -813,7 +761,7 @@ func (x *ListMachineOperatingSystemsRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ListMachineOperatingSystemsRequest.ProtoReflect.Descriptor instead.
 func (*ListMachineOperatingSystemsRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{13}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{12}
 }
 
 type ListMachineOperatingSystemsResponse struct {
@@ -825,7 +773,7 @@ type ListMachineOperatingSystemsResponse struct {
 
 func (x *ListMachineOperatingSystemsResponse) Reset() {
 	*x = ListMachineOperatingSystemsResponse{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[14]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -837,7 +785,7 @@ func (x *ListMachineOperatingSystemsResponse) String() string {
 func (*ListMachineOperatingSystemsResponse) ProtoMessage() {}
 
 func (x *ListMachineOperatingSystemsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[14]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -850,7 +798,7 @@ func (x *ListMachineOperatingSystemsResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ListMachineOperatingSystemsResponse.ProtoReflect.Descriptor instead.
 func (*ListMachineOperatingSystemsResponse) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{14}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListMachineOperatingSystemsResponse) GetImages() []*compute.Image {
@@ -869,7 +817,7 @@ type CreateClusterRequest struct {
 
 func (x *CreateClusterRequest) Reset() {
 	*x = CreateClusterRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[15]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -881,7 +829,7 @@ func (x *CreateClusterRequest) String() string {
 func (*CreateClusterRequest) ProtoMessage() {}
 
 func (x *CreateClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[15]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -894,7 +842,7 @@ func (x *CreateClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateClusterRequest.ProtoReflect.Descriptor instead.
 func (*CreateClusterRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{15}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CreateClusterRequest) GetCluster() *Cluster {
@@ -914,7 +862,7 @@ type DeleteClusterRequest struct {
 
 func (x *DeleteClusterRequest) Reset() {
 	*x = DeleteClusterRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[16]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -926,7 +874,7 @@ func (x *DeleteClusterRequest) String() string {
 func (*DeleteClusterRequest) ProtoMessage() {}
 
 func (x *DeleteClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[16]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -939,7 +887,7 @@ func (x *DeleteClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteClusterRequest.ProtoReflect.Descriptor instead.
 func (*DeleteClusterRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{16}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *DeleteClusterRequest) GetProjectId() string {
@@ -968,7 +916,7 @@ type GetClusterMachineTypeRequest struct {
 
 func (x *GetClusterMachineTypeRequest) Reset() {
 	*x = GetClusterMachineTypeRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[17]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -980,7 +928,7 @@ func (x *GetClusterMachineTypeRequest) String() string {
 func (*GetClusterMachineTypeRequest) ProtoMessage() {}
 
 func (x *GetClusterMachineTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[17]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -993,7 +941,7 @@ func (x *GetClusterMachineTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetClusterMachineTypeRequest.ProtoReflect.Descriptor instead.
 func (*GetClusterMachineTypeRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{17}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetClusterMachineTypeRequest) GetDataCenterId() string {
@@ -1026,7 +974,7 @@ type GetClusterMachineTypeResponse struct {
 
 func (x *GetClusterMachineTypeResponse) Reset() {
 	*x = GetClusterMachineTypeResponse{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[18]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1038,7 +986,7 @@ func (x *GetClusterMachineTypeResponse) String() string {
 func (*GetClusterMachineTypeResponse) ProtoMessage() {}
 
 func (x *GetClusterMachineTypeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[18]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1051,7 +999,7 @@ func (x *GetClusterMachineTypeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetClusterMachineTypeResponse.ProtoReflect.Descriptor instead.
 func (*GetClusterMachineTypeResponse) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{18}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GetClusterMachineTypeResponse) GetMachineType() *MachineType {
@@ -1071,7 +1019,7 @@ type GetClusterRequest struct {
 
 func (x *GetClusterRequest) Reset() {
 	*x = GetClusterRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[19]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1083,7 +1031,7 @@ func (x *GetClusterRequest) String() string {
 func (*GetClusterRequest) ProtoMessage() {}
 
 func (x *GetClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[19]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1096,7 +1044,7 @@ func (x *GetClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetClusterRequest.ProtoReflect.Descriptor instead.
 func (*GetClusterRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{19}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GetClusterRequest) GetProjectId() string {
@@ -1125,7 +1073,7 @@ type ListClusterMachineTypesRequest struct {
 
 func (x *ListClusterMachineTypesRequest) Reset() {
 	*x = ListClusterMachineTypesRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[20]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1137,7 +1085,7 @@ func (x *ListClusterMachineTypesRequest) String() string {
 func (*ListClusterMachineTypesRequest) ProtoMessage() {}
 
 func (x *ListClusterMachineTypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[20]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1150,7 +1098,7 @@ func (x *ListClusterMachineTypesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClusterMachineTypesRequest.ProtoReflect.Descriptor instead.
 func (*ListClusterMachineTypesRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{20}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListClusterMachineTypesRequest) GetPageNumber() int32 {
@@ -1186,7 +1134,7 @@ type ListClusterMachineTypesResponse struct {
 
 func (x *ListClusterMachineTypesResponse) Reset() {
 	*x = ListClusterMachineTypesResponse{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[21]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1198,7 +1146,7 @@ func (x *ListClusterMachineTypesResponse) String() string {
 func (*ListClusterMachineTypesResponse) ProtoMessage() {}
 
 func (x *ListClusterMachineTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[21]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1211,7 +1159,7 @@ func (x *ListClusterMachineTypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClusterMachineTypesResponse.ProtoReflect.Descriptor instead.
 func (*ListClusterMachineTypesResponse) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{21}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListClusterMachineTypesResponse) GetMachineTypes() []*MachineType {
@@ -1253,7 +1201,7 @@ type ListClustersRequest struct {
 
 func (x *ListClustersRequest) Reset() {
 	*x = ListClustersRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[22]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1265,7 +1213,7 @@ func (x *ListClustersRequest) String() string {
 func (*ListClustersRequest) ProtoMessage() {}
 
 func (x *ListClustersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[22]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1278,7 +1226,7 @@ func (x *ListClustersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClustersRequest.ProtoReflect.Descriptor instead.
 func (*ListClustersRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{22}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ListClustersRequest) GetProjectId() string {
@@ -1314,7 +1262,7 @@ type ListClustersResponse struct {
 
 func (x *ListClustersResponse) Reset() {
 	*x = ListClustersResponse{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[23]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1326,7 +1274,7 @@ func (x *ListClustersResponse) String() string {
 func (*ListClustersResponse) ProtoMessage() {}
 
 func (x *ListClustersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[23]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1339,7 +1287,7 @@ func (x *ListClustersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClustersResponse.ProtoReflect.Descriptor instead.
 func (*ListClustersResponse) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{23}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ListClustersResponse) GetClusters() []*Cluster {
@@ -1384,7 +1332,7 @@ type UpdateClusterRequest struct {
 
 func (x *UpdateClusterRequest) Reset() {
 	*x = UpdateClusterRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[24]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1396,7 +1344,7 @@ func (x *UpdateClusterRequest) String() string {
 func (*UpdateClusterRequest) ProtoMessage() {}
 
 func (x *UpdateClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[24]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1409,7 +1357,7 @@ func (x *UpdateClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateClusterRequest.ProtoReflect.Descriptor instead.
 func (*UpdateClusterRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{24}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *UpdateClusterRequest) GetCluster() *Cluster {
@@ -1440,7 +1388,7 @@ type UpdateClusterMachineRequest struct {
 
 func (x *UpdateClusterMachineRequest) Reset() {
 	*x = UpdateClusterMachineRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[25]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1452,7 +1400,7 @@ func (x *UpdateClusterMachineRequest) String() string {
 func (*UpdateClusterMachineRequest) ProtoMessage() {}
 
 func (x *UpdateClusterMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[25]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1465,7 +1413,7 @@ func (x *UpdateClusterMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateClusterMachineRequest.ProtoReflect.Descriptor instead.
 func (*UpdateClusterMachineRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{25}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *UpdateClusterMachineRequest) GetClusterMachine() *ClusterMachine {
@@ -1492,7 +1440,7 @@ type RebootClusterMachineRequest struct {
 
 func (x *RebootClusterMachineRequest) Reset() {
 	*x = RebootClusterMachineRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[26]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1504,7 +1452,7 @@ func (x *RebootClusterMachineRequest) String() string {
 func (*RebootClusterMachineRequest) ProtoMessage() {}
 
 func (x *RebootClusterMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[26]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1517,7 +1465,7 @@ func (x *RebootClusterMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RebootClusterMachineRequest.ProtoReflect.Descriptor instead.
 func (*RebootClusterMachineRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{26}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *RebootClusterMachineRequest) GetProjectId() string {
@@ -1545,7 +1493,7 @@ type RenameClusterMachineRequest struct {
 
 func (x *RenameClusterMachineRequest) Reset() {
 	*x = RenameClusterMachineRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[27]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1557,7 +1505,7 @@ func (x *RenameClusterMachineRequest) String() string {
 func (*RenameClusterMachineRequest) ProtoMessage() {}
 
 func (x *RenameClusterMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[27]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1570,7 +1518,7 @@ func (x *RenameClusterMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameClusterMachineRequest.ProtoReflect.Descriptor instead.
 func (*RenameClusterMachineRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{27}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *RenameClusterMachineRequest) GetProjectId() string {
@@ -1604,7 +1552,7 @@ type DeleteClusterMachineRequest struct {
 
 func (x *DeleteClusterMachineRequest) Reset() {
 	*x = DeleteClusterMachineRequest{}
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[28]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1616,7 +1564,7 @@ func (x *DeleteClusterMachineRequest) String() string {
 func (*DeleteClusterMachineRequest) ProtoMessage() {}
 
 func (x *DeleteClusterMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[28]
+	mi := &file_svc_compute_baremetal_baremetal_svc_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1629,7 +1577,7 @@ func (x *DeleteClusterMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteClusterMachineRequest.ProtoReflect.Descriptor instead.
 func (*DeleteClusterMachineRequest) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{28}
+	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *DeleteClusterMachineRequest) GetProjectId() string {
@@ -1650,54 +1598,50 @@ var File_svc_compute_baremetal_baremetal_svc_proto protoreflect.FileDescriptor
 
 const file_svc_compute_baremetal_baremetal_svc_proto_rawDesc = "" +
 	"\n" +
-	")svc/compute/baremetal/baremetal_svc.proto\x12\x13org.cudo.compute.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x19google/type/decimal.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a\x17svc/compute/types.proto\x1a%svc/compute/baremetal/baremetal.proto\"t\n" +
-	"\x1cCreateMachineInstanceRequest\x12T\n" +
-	"\x10machine_instance\x18\x01 \x01(\v2$.org.cudo.compute.v1.MachineInstanceB\x03\xe0A\x02R\x0fmachineInstance\"W\n" +
-	"\x1cDeleteMachineInstanceRequest\x12\"\n" +
+	")svc/compute/baremetal/baremetal_svc.proto\x12\x13org.cudo.compute.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x19google/type/decimal.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a\x17svc/compute/types.proto\x1a%svc/compute/baremetal/baremetal.proto\"S\n" +
+	"\x14CreateMachineRequest\x12;\n" +
+	"\amachine\x18\x01 \x01(\v2\x1c.org.cudo.compute.v1.MachineB\x03\xe0A\x02R\amachine\"O\n" +
+	"\x14DeleteMachineRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"T\n" +
-	"\x19GetMachineInstanceRequest\x12\"\n" +
+	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"L\n" +
+	"\x11GetMachineRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"\x7f\n" +
-	"\x1bListMachineInstancesRequest\x12\"\n" +
+	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"w\n" +
+	"\x13ListMachinesRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x1f\n" +
 	"\vpage_number\x18\x02 \x01(\x05R\n" +
 	"pageNumber\x12\x1b\n" +
-	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\"\xdf\x01\n" +
-	"\x1cListMachineInstancesResponse\x12Q\n" +
-	"\x11machine_instances\x18\x01 \x03(\v2$.org.cudo.compute.v1.MachineInstanceR\x10machineInstances\x12$\n" +
+	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\"\xbe\x01\n" +
+	"\x14ListMachinesResponse\x128\n" +
+	"\bmachines\x18\x01 \x03(\v2\x1c.org.cudo.compute.v1.MachineR\bmachines\x12$\n" +
 	"\vtotal_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\n" +
 	"totalCount\x12$\n" +
 	"\vpage_number\x18\x03 \x01(\x05B\x03\xe0A\x02R\n" +
 	"pageNumber\x12 \n" +
-	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x02R\bpageSize\"\xb1\x01\n" +
-	"\x1cUpdateMachineInstanceRequest\x12T\n" +
-	"\x10machine_instance\x18\x01 \x01(\v2$.org.cudo.compute.v1.MachineInstanceB\x03\xe0A\x02R\x0fmachineInstance\x12;\n" +
+	"\tpage_size\x18\x04 \x01(\x05B\x03\xe0A\x02R\bpageSize\"\x90\x01\n" +
+	"\x14UpdateMachineRequest\x12;\n" +
+	"\amachine\x18\x01 \x01(\v2\x1c.org.cudo.compute.v1.MachineB\x03\xe0A\x02R\amachine\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\x89\x01\n" +
-	"\x1cDeployMachineInstanceRequest\x12\"\n" +
+	"updateMask\"\x83\x01\n" +
+	"\x16DeployMachineOSRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
 	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\x12\x13\n" +
 	"\x02os\x18\x03 \x01(\tB\x03\xe0A\x02R\x02os\x12\x1b\n" +
-	"\tuser_data\x18\x04 \x01(\tR\buserData\"Y\n" +
-	"\x1eUndeployMachineInstanceRequest\x12\"\n" +
+	"\tuser_data\x18\x04 \x01(\tR\buserData\"S\n" +
+	"\x18UndeployMachineOSRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"V\n" +
-	"\x1bEraseMachineInstanceRequest\x12\"\n" +
-	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"u\n" +
-	"\x1dPowerOnMachineInstanceRequest\x12\"\n" +
+	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\"m\n" +
+	"\x15PowerOnMachineRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
 	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\x12\x1b\n" +
-	"\tuser_data\x18\x03 \x01(\tR\buserData\"o\n" +
-	"\x1ePowerOffMachineInstanceRequest\x12\"\n" +
+	"\tuser_data\x18\x03 \x01(\tR\buserData\"g\n" +
+	"\x16PowerOffMachineRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
 	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\x12\x14\n" +
@@ -1781,38 +1725,37 @@ const file_svc_compute_baremetal_baremetal_svc_proto_rawDesc = "" +
 	"\x1bDeleteClusterMachineRequest\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id2\xaf0\n" +
-	"\x10BareMetalService\x12\xa9\x02\n" +
-	"\x15CreateMachineInstance\x121.org.cudo.compute.v1.CreateMachineInstanceRequest\x1a$.org.cudo.compute.v1.MachineInstance\"\xb6\x01\xbaG]\n" +
+	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id2\xd3*\n" +
+	"\x10BareMetalService\x12\xe5\x01\n" +
+	"\rCreateMachine\x12).org.cudo.compute.v1.CreateMachineRequest\x1a\x1c.org.cudo.compute.v1.Machine\"\x8a\x01\xbaGL\n" +
 	"\n" +
-	"Bare metal\x12\x19Create a machine instance\x1a\x1dOrder a machine for a project*\x15CreateMachineInstance\x82\xd3\xe4\x93\x02P:\x10machine_instance\"</v1/projects/{machine_instance.project_id}/machine-instances\x12\xd7\x02\n" +
-	"\x15DeleteMachineInstance\x121.org.cudo.compute.v1.DeleteMachineInstanceRequest\x1a\x16.google.protobuf.Empty\"\xf2\x01\xbaG\xb6\x01\n" +
+	"Bare metal\x12\x10Create a machine\x1a\x1dOrder a machine for a project*\rCreateMachine\x82\xd3\xe4\x93\x025:\amachine\"*/v1/projects/{machine.project_id}/machines\x12\x9b\x02\n" +
+	"\rDeleteMachine\x12).org.cudo.compute.v1.DeleteMachineRequest\x1a\x16.google.protobuf.Empty\"\xc6\x01\xbaG\x93\x01\n" +
 	"\n" +
-	"Bare metal\x12\x19Delete a machine instance\x1avDelete a machine instance from a project. Machine instances that are still within a commitment term cannot be deleted.*\x15DeleteMachineInstance\x82\xd3\xe4\x93\x022*0/v1/projects/{project_id}/machine-instances/{id}\x12\x87\x02\n" +
-	"\x12GetMachineInstance\x12..org.cudo.compute.v1.GetMachineInstanceRequest\x1a$.org.cudo.compute.v1.MachineInstance\"\x9a\x01\xbaG_\n" +
+	"Bare metal\x12\x10Delete a machine\x1adDelete a machine from a project. Machines that are still within a commitment term cannot be deleted.*\rDeleteMachine\x82\xd3\xe4\x93\x02)*'/v1/projects/{project_id}/machines/{id}\x12\xcb\x01\n" +
 	"\n" +
-	"Bare metal\x12\x16Get a machine instance\x1a%Get the details of a machine instance*\x12GetMachineInstance\x82\xd3\xe4\x93\x022\x120/v1/projects/{project_id}/machine-instances/{id}\x12\x93\x02\n" +
-	"\x14ListMachineInstances\x120.org.cudo.compute.v1.ListMachineInstancesRequest\x1a1.org.cudo.compute.v1.ListMachineInstancesResponse\"\x95\x01\xbaG_\n" +
+	"GetMachine\x12&.org.cudo.compute.v1.GetMachineRequest\x1a\x1c.org.cudo.compute.v1.Machine\"w\xbaGE\n" +
 	"\n" +
-	"Bare metal\x12\x16List machine instances\x1a#List machine instances in a project*\x14ListMachineInstances\x82\xd3\xe4\x93\x02-\x12+/v1/projects/{project_id}/machine-instances\x12\xc8\x02\n" +
-	"\x15UpdateMachineInstance\x121.org.cudo.compute.v1.UpdateMachineInstanceRequest\x1a$.org.cudo.compute.v1.MachineInstance\"\xd5\x01\xbaGf\n" +
+	"Bare metal\x12\rGet a machine\x1a\x1cGet the details of a machine*\n" +
+	"GetMachine\x82\xd3\xe4\x93\x02)\x12'/v1/projects/{project_id}/machines/{id}\x12\xd7\x01\n" +
+	"\fListMachines\x12(.org.cudo.compute.v1.ListMachinesRequest\x1a).org.cudo.compute.v1.ListMachinesResponse\"r\xbaGE\n" +
 	"\n" +
-	"Bare metal\x12\x19Update a machine instance\x1a&Update a machine instance in a project*\x15UpdateMachineInstance\x82\xd3\xe4\x93\x02f:\x10machine_instance2R/v1/projects/{machine_instance.project_id}/machine-instances/{machine_instance.id}\x12\x93\x02\n" +
-	"\x17PowerOffMachineInstance\x123.org.cudo.compute.v1.PowerOffMachineInstanceRequest\x1a\x16.google.protobuf.Empty\"\xaa\x01\xbaGn\n" +
+	"Bare metal\x12\rList machines\x1a\x1aList machines in a project*\fListMachines\x82\xd3\xe4\x93\x02$\x12\"/v1/projects/{project_id}/machines\x12\xf2\x01\n" +
+	"\rUpdateMachine\x12).org.cudo.compute.v1.UpdateMachineRequest\x1a\x1c.org.cudo.compute.v1.Machine\"\x97\x01\xbaGL\n" +
 	"\n" +
-	"Bare metal\x12\x1cPower off a machine instance\x1a)Power off a machine instance in a project*\x17PowerOffMachineInstance\x82\xd3\xe4\x93\x023\"1/v1/projects/{project_id}/machines/{id}/power-off\x12\x8d\x02\n" +
-	"\x16PowerOnMachineInstance\x122.org.cudo.compute.v1.PowerOnMachineInstanceRequest\x1a\x16.google.protobuf.Empty\"\xa6\x01\xbaGk\n" +
+	"Bare metal\x12\x10Update a machine\x1a\x1dUpdate a machine in a project*\rUpdateMachine\x82\xd3\xe4\x93\x02B:\amachine27/v1/projects/{machine.project_id}/machines/{machine.id}\x12\xea\x01\n" +
+	"\x0fPowerOffMachine\x12+.org.cudo.compute.v1.PowerOffMachineRequest\x1a\x16.google.protobuf.Empty\"\x91\x01\xbaGU\n" +
 	"\n" +
-	"Bare metal\x12\x1bPower on a machine instance\x1a(Power on a machine instance in a project*\x16PowerOnMachineInstance\x82\xd3\xe4\x93\x022\"0/v1/projects/{project_id}/machines/{id}/power-on\x12\x8e\x02\n" +
-	"\x15DeployMachineInstance\x121.org.cudo.compute.v1.DeployMachineInstanceRequest\x1a\x16.google.protobuf.Empty\"\xa9\x01\xbaGp\n" +
+	"Bare metal\x12\x14Power off a machine \x1a Power off a machine in a project*\x0fPowerOffMachine\x82\xd3\xe4\x93\x023\"1/v1/projects/{project_id}/machines/{id}/power-off\x12\xe3\x01\n" +
+	"\x0ePowerOnMachine\x12*.org.cudo.compute.v1.PowerOnMachineRequest\x1a\x16.google.protobuf.Empty\"\x8c\x01\xbaGQ\n" +
 	"\n" +
-	"Bare metal\x12\x17Deploy operating system\x1a2Deploy an operating system onto a machine instance*\x15DeployMachineInstance\x82\xd3\xe4\x93\x020\"./v1/projects/{project_id}/machines/{id}/deploy\x12\xa2\x02\n" +
-	"\x17UndeployMachineInstance\x123.org.cudo.compute.v1.UndeployMachineInstanceRequest\x1a\x16.google.protobuf.Empty\"\xb9\x01\xbaG~\n" +
+	"Bare metal\x12\x12Power on a machine\x1a\x1fPower on a machine in a project*\x0ePowerOnMachine\x82\xd3\xe4\x93\x022\"0/v1/projects/{project_id}/machines/{id}/power-on\x12\xf3\x01\n" +
+	"\x0fDeployMachineOS\x12+.org.cudo.compute.v1.DeployMachineOSRequest\x1a\x16.google.protobuf.Empty\"\x9a\x01\xbaGa\n" +
 	"\n" +
-	"Bare metal\x12\x0fRelease machine\x1aFReleases a machine instance allowing subsequent deployment of a new OS*\x17UndeployMachineInstance\x82\xd3\xe4\x93\x022\"0/v1/projects/{project_id}/machines/{id}/undeploy\x12\x82\x02\n" +
-	"\x14EraseMachineInstance\x120.org.cudo.compute.v1.EraseMachineInstanceRequest\x1a\x16.google.protobuf.Empty\"\x9f\x01\xbaGg\n" +
+	"Bare metal\x12\x17Deploy operating system\x1a)Deploy an operating system onto a machine*\x0fDeployMachineOS\x82\xd3\xe4\x93\x020\"./v1/projects/{project_id}/machines/{id}/deploy\x12\x87\x02\n" +
+	"\x11UndeployMachineOS\x12-.org.cudo.compute.v1.UndeployMachineOSRequest\x1a\x16.google.protobuf.Empty\"\xaa\x01\xbaGo\n" +
 	"\n" +
-	"Bare metal\x12\x1cErase machine instance disks\x1a%Erase all disks in a machine instance*\x14EraseMachineInstance\x82\xd3\xe4\x93\x02/\"-/v1/projects/{project_id}/machines/{id}/erase\x12\xc0\x02\n" +
+	"Bare metal\x12\x0fRelease machine\x1a=Releases a machine allowing subsequent deployment of a new OS*\x11UndeployMachineOS\x82\xd3\xe4\x93\x022\"0/v1/projects/{project_id}/machines/{id}/undeploy\x12\xc0\x02\n" +
 	"\x1bListMachineOperatingSystems\x127.org.cudo.compute.v1.ListMachineOperatingSystemsRequest\x1a8.org.cudo.compute.v1.ListMachineOperatingSystemsResponse\"\xad\x01\xbaG\x83\x01\n" +
 	"\n" +
 	"Bare metal\x12\x16List operating systems\x1a@List operating systems that can be deployed to machine instances*\x1bListMachineOperatingSystems\x82\xd3\xe4\x93\x02 \x12\x1e/v1/machines/operating-systems\x12\xe8\x01\n" +
@@ -1867,108 +1810,105 @@ func file_svc_compute_baremetal_baremetal_svc_proto_rawDescGZIP() []byte {
 	return file_svc_compute_baremetal_baremetal_svc_proto_rawDescData
 }
 
-var file_svc_compute_baremetal_baremetal_svc_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_svc_compute_baremetal_baremetal_svc_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_svc_compute_baremetal_baremetal_svc_proto_goTypes = []any{
-	(*CreateMachineInstanceRequest)(nil),        // 0: org.cudo.compute.v1.CreateMachineInstanceRequest
-	(*DeleteMachineInstanceRequest)(nil),        // 1: org.cudo.compute.v1.DeleteMachineInstanceRequest
-	(*GetMachineInstanceRequest)(nil),           // 2: org.cudo.compute.v1.GetMachineInstanceRequest
-	(*ListMachineInstancesRequest)(nil),         // 3: org.cudo.compute.v1.ListMachineInstancesRequest
-	(*ListMachineInstancesResponse)(nil),        // 4: org.cudo.compute.v1.ListMachineInstancesResponse
-	(*UpdateMachineInstanceRequest)(nil),        // 5: org.cudo.compute.v1.UpdateMachineInstanceRequest
-	(*DeployMachineInstanceRequest)(nil),        // 6: org.cudo.compute.v1.DeployMachineInstanceRequest
-	(*UndeployMachineInstanceRequest)(nil),      // 7: org.cudo.compute.v1.UndeployMachineInstanceRequest
-	(*EraseMachineInstanceRequest)(nil),         // 8: org.cudo.compute.v1.EraseMachineInstanceRequest
-	(*PowerOnMachineInstanceRequest)(nil),       // 9: org.cudo.compute.v1.PowerOnMachineInstanceRequest
-	(*PowerOffMachineInstanceRequest)(nil),      // 10: org.cudo.compute.v1.PowerOffMachineInstanceRequest
-	(*ListMachineTypesRequest)(nil),             // 11: org.cudo.compute.v1.ListMachineTypesRequest
-	(*ListMachineTypesResponse)(nil),            // 12: org.cudo.compute.v1.ListMachineTypesResponse
-	(*ListMachineOperatingSystemsRequest)(nil),  // 13: org.cudo.compute.v1.ListMachineOperatingSystemsRequest
-	(*ListMachineOperatingSystemsResponse)(nil), // 14: org.cudo.compute.v1.ListMachineOperatingSystemsResponse
-	(*CreateClusterRequest)(nil),                // 15: org.cudo.compute.v1.CreateClusterRequest
-	(*DeleteClusterRequest)(nil),                // 16: org.cudo.compute.v1.DeleteClusterRequest
-	(*GetClusterMachineTypeRequest)(nil),        // 17: org.cudo.compute.v1.GetClusterMachineTypeRequest
-	(*GetClusterMachineTypeResponse)(nil),       // 18: org.cudo.compute.v1.GetClusterMachineTypeResponse
-	(*GetClusterRequest)(nil),                   // 19: org.cudo.compute.v1.GetClusterRequest
-	(*ListClusterMachineTypesRequest)(nil),      // 20: org.cudo.compute.v1.ListClusterMachineTypesRequest
-	(*ListClusterMachineTypesResponse)(nil),     // 21: org.cudo.compute.v1.ListClusterMachineTypesResponse
-	(*ListClustersRequest)(nil),                 // 22: org.cudo.compute.v1.ListClustersRequest
-	(*ListClustersResponse)(nil),                // 23: org.cudo.compute.v1.ListClustersResponse
-	(*UpdateClusterRequest)(nil),                // 24: org.cudo.compute.v1.UpdateClusterRequest
-	(*UpdateClusterMachineRequest)(nil),         // 25: org.cudo.compute.v1.UpdateClusterMachineRequest
-	(*RebootClusterMachineRequest)(nil),         // 26: org.cudo.compute.v1.RebootClusterMachineRequest
-	(*RenameClusterMachineRequest)(nil),         // 27: org.cudo.compute.v1.RenameClusterMachineRequest
-	(*DeleteClusterMachineRequest)(nil),         // 28: org.cudo.compute.v1.DeleteClusterMachineRequest
-	(*MachineInstance)(nil),                     // 29: org.cudo.compute.v1.MachineInstance
-	(*fieldmaskpb.FieldMask)(nil),               // 30: google.protobuf.FieldMask
-	(*MachineType)(nil),                         // 31: org.cudo.compute.v1.MachineType
-	(*compute.Image)(nil),                       // 32: org.cudo.compute.v1.Image
-	(*Cluster)(nil),                             // 33: org.cudo.compute.v1.Cluster
-	(*ClusterMachine)(nil),                      // 34: org.cudo.compute.v1.ClusterMachine
-	(*emptypb.Empty)(nil),                       // 35: google.protobuf.Empty
+	(*CreateMachineRequest)(nil),                // 0: org.cudo.compute.v1.CreateMachineRequest
+	(*DeleteMachineRequest)(nil),                // 1: org.cudo.compute.v1.DeleteMachineRequest
+	(*GetMachineRequest)(nil),                   // 2: org.cudo.compute.v1.GetMachineRequest
+	(*ListMachinesRequest)(nil),                 // 3: org.cudo.compute.v1.ListMachinesRequest
+	(*ListMachinesResponse)(nil),                // 4: org.cudo.compute.v1.ListMachinesResponse
+	(*UpdateMachineRequest)(nil),                // 5: org.cudo.compute.v1.UpdateMachineRequest
+	(*DeployMachineOSRequest)(nil),              // 6: org.cudo.compute.v1.DeployMachineOSRequest
+	(*UndeployMachineOSRequest)(nil),            // 7: org.cudo.compute.v1.UndeployMachineOSRequest
+	(*PowerOnMachineRequest)(nil),               // 8: org.cudo.compute.v1.PowerOnMachineRequest
+	(*PowerOffMachineRequest)(nil),              // 9: org.cudo.compute.v1.PowerOffMachineRequest
+	(*ListMachineTypesRequest)(nil),             // 10: org.cudo.compute.v1.ListMachineTypesRequest
+	(*ListMachineTypesResponse)(nil),            // 11: org.cudo.compute.v1.ListMachineTypesResponse
+	(*ListMachineOperatingSystemsRequest)(nil),  // 12: org.cudo.compute.v1.ListMachineOperatingSystemsRequest
+	(*ListMachineOperatingSystemsResponse)(nil), // 13: org.cudo.compute.v1.ListMachineOperatingSystemsResponse
+	(*CreateClusterRequest)(nil),                // 14: org.cudo.compute.v1.CreateClusterRequest
+	(*DeleteClusterRequest)(nil),                // 15: org.cudo.compute.v1.DeleteClusterRequest
+	(*GetClusterMachineTypeRequest)(nil),        // 16: org.cudo.compute.v1.GetClusterMachineTypeRequest
+	(*GetClusterMachineTypeResponse)(nil),       // 17: org.cudo.compute.v1.GetClusterMachineTypeResponse
+	(*GetClusterRequest)(nil),                   // 18: org.cudo.compute.v1.GetClusterRequest
+	(*ListClusterMachineTypesRequest)(nil),      // 19: org.cudo.compute.v1.ListClusterMachineTypesRequest
+	(*ListClusterMachineTypesResponse)(nil),     // 20: org.cudo.compute.v1.ListClusterMachineTypesResponse
+	(*ListClustersRequest)(nil),                 // 21: org.cudo.compute.v1.ListClustersRequest
+	(*ListClustersResponse)(nil),                // 22: org.cudo.compute.v1.ListClustersResponse
+	(*UpdateClusterRequest)(nil),                // 23: org.cudo.compute.v1.UpdateClusterRequest
+	(*UpdateClusterMachineRequest)(nil),         // 24: org.cudo.compute.v1.UpdateClusterMachineRequest
+	(*RebootClusterMachineRequest)(nil),         // 25: org.cudo.compute.v1.RebootClusterMachineRequest
+	(*RenameClusterMachineRequest)(nil),         // 26: org.cudo.compute.v1.RenameClusterMachineRequest
+	(*DeleteClusterMachineRequest)(nil),         // 27: org.cudo.compute.v1.DeleteClusterMachineRequest
+	(*Machine)(nil),                             // 28: org.cudo.compute.v1.Machine
+	(*fieldmaskpb.FieldMask)(nil),               // 29: google.protobuf.FieldMask
+	(*MachineType)(nil),                         // 30: org.cudo.compute.v1.MachineType
+	(*compute.Image)(nil),                       // 31: org.cudo.compute.v1.Image
+	(*Cluster)(nil),                             // 32: org.cudo.compute.v1.Cluster
+	(*ClusterMachine)(nil),                      // 33: org.cudo.compute.v1.ClusterMachine
+	(*emptypb.Empty)(nil),                       // 34: google.protobuf.Empty
 }
 var file_svc_compute_baremetal_baremetal_svc_proto_depIdxs = []int32{
-	29, // 0: org.cudo.compute.v1.CreateMachineInstanceRequest.machine_instance:type_name -> org.cudo.compute.v1.MachineInstance
-	29, // 1: org.cudo.compute.v1.ListMachineInstancesResponse.machine_instances:type_name -> org.cudo.compute.v1.MachineInstance
-	29, // 2: org.cudo.compute.v1.UpdateMachineInstanceRequest.machine_instance:type_name -> org.cudo.compute.v1.MachineInstance
-	30, // 3: org.cudo.compute.v1.UpdateMachineInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	31, // 4: org.cudo.compute.v1.ListMachineTypesResponse.machine_types:type_name -> org.cudo.compute.v1.MachineType
-	32, // 5: org.cudo.compute.v1.ListMachineOperatingSystemsResponse.images:type_name -> org.cudo.compute.v1.Image
-	33, // 6: org.cudo.compute.v1.CreateClusterRequest.cluster:type_name -> org.cudo.compute.v1.Cluster
-	31, // 7: org.cudo.compute.v1.GetClusterMachineTypeResponse.machine_type:type_name -> org.cudo.compute.v1.MachineType
-	31, // 8: org.cudo.compute.v1.ListClusterMachineTypesResponse.machine_types:type_name -> org.cudo.compute.v1.MachineType
-	33, // 9: org.cudo.compute.v1.ListClustersResponse.clusters:type_name -> org.cudo.compute.v1.Cluster
-	33, // 10: org.cudo.compute.v1.UpdateClusterRequest.cluster:type_name -> org.cudo.compute.v1.Cluster
-	30, // 11: org.cudo.compute.v1.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
-	34, // 12: org.cudo.compute.v1.UpdateClusterMachineRequest.cluster_machine:type_name -> org.cudo.compute.v1.ClusterMachine
-	30, // 13: org.cudo.compute.v1.UpdateClusterMachineRequest.update_mask:type_name -> google.protobuf.FieldMask
-	0,  // 14: org.cudo.compute.v1.BareMetalService.CreateMachineInstance:input_type -> org.cudo.compute.v1.CreateMachineInstanceRequest
-	1,  // 15: org.cudo.compute.v1.BareMetalService.DeleteMachineInstance:input_type -> org.cudo.compute.v1.DeleteMachineInstanceRequest
-	2,  // 16: org.cudo.compute.v1.BareMetalService.GetMachineInstance:input_type -> org.cudo.compute.v1.GetMachineInstanceRequest
-	3,  // 17: org.cudo.compute.v1.BareMetalService.ListMachineInstances:input_type -> org.cudo.compute.v1.ListMachineInstancesRequest
-	5,  // 18: org.cudo.compute.v1.BareMetalService.UpdateMachineInstance:input_type -> org.cudo.compute.v1.UpdateMachineInstanceRequest
-	10, // 19: org.cudo.compute.v1.BareMetalService.PowerOffMachineInstance:input_type -> org.cudo.compute.v1.PowerOffMachineInstanceRequest
-	9,  // 20: org.cudo.compute.v1.BareMetalService.PowerOnMachineInstance:input_type -> org.cudo.compute.v1.PowerOnMachineInstanceRequest
-	6,  // 21: org.cudo.compute.v1.BareMetalService.DeployMachineInstance:input_type -> org.cudo.compute.v1.DeployMachineInstanceRequest
-	7,  // 22: org.cudo.compute.v1.BareMetalService.UndeployMachineInstance:input_type -> org.cudo.compute.v1.UndeployMachineInstanceRequest
-	8,  // 23: org.cudo.compute.v1.BareMetalService.EraseMachineInstance:input_type -> org.cudo.compute.v1.EraseMachineInstanceRequest
-	13, // 24: org.cudo.compute.v1.BareMetalService.ListMachineOperatingSystems:input_type -> org.cudo.compute.v1.ListMachineOperatingSystemsRequest
-	11, // 25: org.cudo.compute.v1.BareMetalService.ListMachineTypes:input_type -> org.cudo.compute.v1.ListMachineTypesRequest
-	20, // 26: org.cudo.compute.v1.BareMetalService.ListClusterMachineTypes:input_type -> org.cudo.compute.v1.ListClusterMachineTypesRequest
-	17, // 27: org.cudo.compute.v1.BareMetalService.GetClusterMachineType:input_type -> org.cudo.compute.v1.GetClusterMachineTypeRequest
-	15, // 28: org.cudo.compute.v1.BareMetalService.CreateCluster:input_type -> org.cudo.compute.v1.CreateClusterRequest
-	16, // 29: org.cudo.compute.v1.BareMetalService.DeleteCluster:input_type -> org.cudo.compute.v1.DeleteClusterRequest
-	19, // 30: org.cudo.compute.v1.BareMetalService.GetCluster:input_type -> org.cudo.compute.v1.GetClusterRequest
-	22, // 31: org.cudo.compute.v1.BareMetalService.ListClusters:input_type -> org.cudo.compute.v1.ListClustersRequest
-	24, // 32: org.cudo.compute.v1.BareMetalService.UpdateCluster:input_type -> org.cudo.compute.v1.UpdateClusterRequest
-	28, // 33: org.cudo.compute.v1.BareMetalService.DeleteClusterMachine:input_type -> org.cudo.compute.v1.DeleteClusterMachineRequest
-	26, // 34: org.cudo.compute.v1.BareMetalService.RebootClusterMachine:input_type -> org.cudo.compute.v1.RebootClusterMachineRequest
-	27, // 35: org.cudo.compute.v1.BareMetalService.RenameClusterMachine:input_type -> org.cudo.compute.v1.RenameClusterMachineRequest
-	25, // 36: org.cudo.compute.v1.BareMetalService.UpdateClusterMachine:input_type -> org.cudo.compute.v1.UpdateClusterMachineRequest
-	29, // 37: org.cudo.compute.v1.BareMetalService.CreateMachineInstance:output_type -> org.cudo.compute.v1.MachineInstance
-	35, // 38: org.cudo.compute.v1.BareMetalService.DeleteMachineInstance:output_type -> google.protobuf.Empty
-	29, // 39: org.cudo.compute.v1.BareMetalService.GetMachineInstance:output_type -> org.cudo.compute.v1.MachineInstance
-	4,  // 40: org.cudo.compute.v1.BareMetalService.ListMachineInstances:output_type -> org.cudo.compute.v1.ListMachineInstancesResponse
-	29, // 41: org.cudo.compute.v1.BareMetalService.UpdateMachineInstance:output_type -> org.cudo.compute.v1.MachineInstance
-	35, // 42: org.cudo.compute.v1.BareMetalService.PowerOffMachineInstance:output_type -> google.protobuf.Empty
-	35, // 43: org.cudo.compute.v1.BareMetalService.PowerOnMachineInstance:output_type -> google.protobuf.Empty
-	35, // 44: org.cudo.compute.v1.BareMetalService.DeployMachineInstance:output_type -> google.protobuf.Empty
-	35, // 45: org.cudo.compute.v1.BareMetalService.UndeployMachineInstance:output_type -> google.protobuf.Empty
-	35, // 46: org.cudo.compute.v1.BareMetalService.EraseMachineInstance:output_type -> google.protobuf.Empty
-	14, // 47: org.cudo.compute.v1.BareMetalService.ListMachineOperatingSystems:output_type -> org.cudo.compute.v1.ListMachineOperatingSystemsResponse
-	12, // 48: org.cudo.compute.v1.BareMetalService.ListMachineTypes:output_type -> org.cudo.compute.v1.ListMachineTypesResponse
-	21, // 49: org.cudo.compute.v1.BareMetalService.ListClusterMachineTypes:output_type -> org.cudo.compute.v1.ListClusterMachineTypesResponse
-	18, // 50: org.cudo.compute.v1.BareMetalService.GetClusterMachineType:output_type -> org.cudo.compute.v1.GetClusterMachineTypeResponse
-	33, // 51: org.cudo.compute.v1.BareMetalService.CreateCluster:output_type -> org.cudo.compute.v1.Cluster
-	35, // 52: org.cudo.compute.v1.BareMetalService.DeleteCluster:output_type -> google.protobuf.Empty
-	33, // 53: org.cudo.compute.v1.BareMetalService.GetCluster:output_type -> org.cudo.compute.v1.Cluster
-	23, // 54: org.cudo.compute.v1.BareMetalService.ListClusters:output_type -> org.cudo.compute.v1.ListClustersResponse
-	33, // 55: org.cudo.compute.v1.BareMetalService.UpdateCluster:output_type -> org.cudo.compute.v1.Cluster
-	35, // 56: org.cudo.compute.v1.BareMetalService.DeleteClusterMachine:output_type -> google.protobuf.Empty
-	35, // 57: org.cudo.compute.v1.BareMetalService.RebootClusterMachine:output_type -> google.protobuf.Empty
-	35, // 58: org.cudo.compute.v1.BareMetalService.RenameClusterMachine:output_type -> google.protobuf.Empty
-	34, // 59: org.cudo.compute.v1.BareMetalService.UpdateClusterMachine:output_type -> org.cudo.compute.v1.ClusterMachine
-	37, // [37:60] is the sub-list for method output_type
-	14, // [14:37] is the sub-list for method input_type
+	28, // 0: org.cudo.compute.v1.CreateMachineRequest.machine:type_name -> org.cudo.compute.v1.Machine
+	28, // 1: org.cudo.compute.v1.ListMachinesResponse.machines:type_name -> org.cudo.compute.v1.Machine
+	28, // 2: org.cudo.compute.v1.UpdateMachineRequest.machine:type_name -> org.cudo.compute.v1.Machine
+	29, // 3: org.cudo.compute.v1.UpdateMachineRequest.update_mask:type_name -> google.protobuf.FieldMask
+	30, // 4: org.cudo.compute.v1.ListMachineTypesResponse.machine_types:type_name -> org.cudo.compute.v1.MachineType
+	31, // 5: org.cudo.compute.v1.ListMachineOperatingSystemsResponse.images:type_name -> org.cudo.compute.v1.Image
+	32, // 6: org.cudo.compute.v1.CreateClusterRequest.cluster:type_name -> org.cudo.compute.v1.Cluster
+	30, // 7: org.cudo.compute.v1.GetClusterMachineTypeResponse.machine_type:type_name -> org.cudo.compute.v1.MachineType
+	30, // 8: org.cudo.compute.v1.ListClusterMachineTypesResponse.machine_types:type_name -> org.cudo.compute.v1.MachineType
+	32, // 9: org.cudo.compute.v1.ListClustersResponse.clusters:type_name -> org.cudo.compute.v1.Cluster
+	32, // 10: org.cudo.compute.v1.UpdateClusterRequest.cluster:type_name -> org.cudo.compute.v1.Cluster
+	29, // 11: org.cudo.compute.v1.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
+	33, // 12: org.cudo.compute.v1.UpdateClusterMachineRequest.cluster_machine:type_name -> org.cudo.compute.v1.ClusterMachine
+	29, // 13: org.cudo.compute.v1.UpdateClusterMachineRequest.update_mask:type_name -> google.protobuf.FieldMask
+	0,  // 14: org.cudo.compute.v1.BareMetalService.CreateMachine:input_type -> org.cudo.compute.v1.CreateMachineRequest
+	1,  // 15: org.cudo.compute.v1.BareMetalService.DeleteMachine:input_type -> org.cudo.compute.v1.DeleteMachineRequest
+	2,  // 16: org.cudo.compute.v1.BareMetalService.GetMachine:input_type -> org.cudo.compute.v1.GetMachineRequest
+	3,  // 17: org.cudo.compute.v1.BareMetalService.ListMachines:input_type -> org.cudo.compute.v1.ListMachinesRequest
+	5,  // 18: org.cudo.compute.v1.BareMetalService.UpdateMachine:input_type -> org.cudo.compute.v1.UpdateMachineRequest
+	9,  // 19: org.cudo.compute.v1.BareMetalService.PowerOffMachine:input_type -> org.cudo.compute.v1.PowerOffMachineRequest
+	8,  // 20: org.cudo.compute.v1.BareMetalService.PowerOnMachine:input_type -> org.cudo.compute.v1.PowerOnMachineRequest
+	6,  // 21: org.cudo.compute.v1.BareMetalService.DeployMachineOS:input_type -> org.cudo.compute.v1.DeployMachineOSRequest
+	7,  // 22: org.cudo.compute.v1.BareMetalService.UndeployMachineOS:input_type -> org.cudo.compute.v1.UndeployMachineOSRequest
+	12, // 23: org.cudo.compute.v1.BareMetalService.ListMachineOperatingSystems:input_type -> org.cudo.compute.v1.ListMachineOperatingSystemsRequest
+	10, // 24: org.cudo.compute.v1.BareMetalService.ListMachineTypes:input_type -> org.cudo.compute.v1.ListMachineTypesRequest
+	19, // 25: org.cudo.compute.v1.BareMetalService.ListClusterMachineTypes:input_type -> org.cudo.compute.v1.ListClusterMachineTypesRequest
+	16, // 26: org.cudo.compute.v1.BareMetalService.GetClusterMachineType:input_type -> org.cudo.compute.v1.GetClusterMachineTypeRequest
+	14, // 27: org.cudo.compute.v1.BareMetalService.CreateCluster:input_type -> org.cudo.compute.v1.CreateClusterRequest
+	15, // 28: org.cudo.compute.v1.BareMetalService.DeleteCluster:input_type -> org.cudo.compute.v1.DeleteClusterRequest
+	18, // 29: org.cudo.compute.v1.BareMetalService.GetCluster:input_type -> org.cudo.compute.v1.GetClusterRequest
+	21, // 30: org.cudo.compute.v1.BareMetalService.ListClusters:input_type -> org.cudo.compute.v1.ListClustersRequest
+	23, // 31: org.cudo.compute.v1.BareMetalService.UpdateCluster:input_type -> org.cudo.compute.v1.UpdateClusterRequest
+	27, // 32: org.cudo.compute.v1.BareMetalService.DeleteClusterMachine:input_type -> org.cudo.compute.v1.DeleteClusterMachineRequest
+	25, // 33: org.cudo.compute.v1.BareMetalService.RebootClusterMachine:input_type -> org.cudo.compute.v1.RebootClusterMachineRequest
+	26, // 34: org.cudo.compute.v1.BareMetalService.RenameClusterMachine:input_type -> org.cudo.compute.v1.RenameClusterMachineRequest
+	24, // 35: org.cudo.compute.v1.BareMetalService.UpdateClusterMachine:input_type -> org.cudo.compute.v1.UpdateClusterMachineRequest
+	28, // 36: org.cudo.compute.v1.BareMetalService.CreateMachine:output_type -> org.cudo.compute.v1.Machine
+	34, // 37: org.cudo.compute.v1.BareMetalService.DeleteMachine:output_type -> google.protobuf.Empty
+	28, // 38: org.cudo.compute.v1.BareMetalService.GetMachine:output_type -> org.cudo.compute.v1.Machine
+	4,  // 39: org.cudo.compute.v1.BareMetalService.ListMachines:output_type -> org.cudo.compute.v1.ListMachinesResponse
+	28, // 40: org.cudo.compute.v1.BareMetalService.UpdateMachine:output_type -> org.cudo.compute.v1.Machine
+	34, // 41: org.cudo.compute.v1.BareMetalService.PowerOffMachine:output_type -> google.protobuf.Empty
+	34, // 42: org.cudo.compute.v1.BareMetalService.PowerOnMachine:output_type -> google.protobuf.Empty
+	34, // 43: org.cudo.compute.v1.BareMetalService.DeployMachineOS:output_type -> google.protobuf.Empty
+	34, // 44: org.cudo.compute.v1.BareMetalService.UndeployMachineOS:output_type -> google.protobuf.Empty
+	13, // 45: org.cudo.compute.v1.BareMetalService.ListMachineOperatingSystems:output_type -> org.cudo.compute.v1.ListMachineOperatingSystemsResponse
+	11, // 46: org.cudo.compute.v1.BareMetalService.ListMachineTypes:output_type -> org.cudo.compute.v1.ListMachineTypesResponse
+	20, // 47: org.cudo.compute.v1.BareMetalService.ListClusterMachineTypes:output_type -> org.cudo.compute.v1.ListClusterMachineTypesResponse
+	17, // 48: org.cudo.compute.v1.BareMetalService.GetClusterMachineType:output_type -> org.cudo.compute.v1.GetClusterMachineTypeResponse
+	32, // 49: org.cudo.compute.v1.BareMetalService.CreateCluster:output_type -> org.cudo.compute.v1.Cluster
+	34, // 50: org.cudo.compute.v1.BareMetalService.DeleteCluster:output_type -> google.protobuf.Empty
+	32, // 51: org.cudo.compute.v1.BareMetalService.GetCluster:output_type -> org.cudo.compute.v1.Cluster
+	22, // 52: org.cudo.compute.v1.BareMetalService.ListClusters:output_type -> org.cudo.compute.v1.ListClustersResponse
+	32, // 53: org.cudo.compute.v1.BareMetalService.UpdateCluster:output_type -> org.cudo.compute.v1.Cluster
+	34, // 54: org.cudo.compute.v1.BareMetalService.DeleteClusterMachine:output_type -> google.protobuf.Empty
+	34, // 55: org.cudo.compute.v1.BareMetalService.RebootClusterMachine:output_type -> google.protobuf.Empty
+	34, // 56: org.cudo.compute.v1.BareMetalService.RenameClusterMachine:output_type -> google.protobuf.Empty
+	33, // 57: org.cudo.compute.v1.BareMetalService.UpdateClusterMachine:output_type -> org.cudo.compute.v1.ClusterMachine
+	36, // [36:58] is the sub-list for method output_type
+	14, // [14:36] is the sub-list for method input_type
 	14, // [14:14] is the sub-list for extension type_name
 	14, // [14:14] is the sub-list for extension extendee
 	0,  // [0:14] is the sub-list for field type_name
@@ -1986,7 +1926,7 @@ func file_svc_compute_baremetal_baremetal_svc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_svc_compute_baremetal_baremetal_svc_proto_rawDesc), len(file_svc_compute_baremetal_baremetal_svc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   29,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -20,16 +20,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BareMetalService_CreateMachineInstance_FullMethodName       = "/org.cudo.compute.v1.BareMetalService/CreateMachineInstance"
-	BareMetalService_DeleteMachineInstance_FullMethodName       = "/org.cudo.compute.v1.BareMetalService/DeleteMachineInstance"
-	BareMetalService_GetMachineInstance_FullMethodName          = "/org.cudo.compute.v1.BareMetalService/GetMachineInstance"
-	BareMetalService_ListMachineInstances_FullMethodName        = "/org.cudo.compute.v1.BareMetalService/ListMachineInstances"
-	BareMetalService_UpdateMachineInstance_FullMethodName       = "/org.cudo.compute.v1.BareMetalService/UpdateMachineInstance"
-	BareMetalService_PowerOffMachineInstance_FullMethodName     = "/org.cudo.compute.v1.BareMetalService/PowerOffMachineInstance"
-	BareMetalService_PowerOnMachineInstance_FullMethodName      = "/org.cudo.compute.v1.BareMetalService/PowerOnMachineInstance"
-	BareMetalService_DeployMachineInstance_FullMethodName       = "/org.cudo.compute.v1.BareMetalService/DeployMachineInstance"
-	BareMetalService_UndeployMachineInstance_FullMethodName     = "/org.cudo.compute.v1.BareMetalService/UndeployMachineInstance"
-	BareMetalService_EraseMachineInstance_FullMethodName        = "/org.cudo.compute.v1.BareMetalService/EraseMachineInstance"
+	BareMetalService_CreateMachine_FullMethodName               = "/org.cudo.compute.v1.BareMetalService/CreateMachine"
+	BareMetalService_DeleteMachine_FullMethodName               = "/org.cudo.compute.v1.BareMetalService/DeleteMachine"
+	BareMetalService_GetMachine_FullMethodName                  = "/org.cudo.compute.v1.BareMetalService/GetMachine"
+	BareMetalService_ListMachines_FullMethodName                = "/org.cudo.compute.v1.BareMetalService/ListMachines"
+	BareMetalService_UpdateMachine_FullMethodName               = "/org.cudo.compute.v1.BareMetalService/UpdateMachine"
+	BareMetalService_PowerOffMachine_FullMethodName             = "/org.cudo.compute.v1.BareMetalService/PowerOffMachine"
+	BareMetalService_PowerOnMachine_FullMethodName              = "/org.cudo.compute.v1.BareMetalService/PowerOnMachine"
+	BareMetalService_DeployMachineOS_FullMethodName             = "/org.cudo.compute.v1.BareMetalService/DeployMachineOS"
+	BareMetalService_UndeployMachineOS_FullMethodName           = "/org.cudo.compute.v1.BareMetalService/UndeployMachineOS"
 	BareMetalService_ListMachineOperatingSystems_FullMethodName = "/org.cudo.compute.v1.BareMetalService/ListMachineOperatingSystems"
 	BareMetalService_ListMachineTypes_FullMethodName            = "/org.cudo.compute.v1.BareMetalService/ListMachineTypes"
 	BareMetalService_ListClusterMachineTypes_FullMethodName     = "/org.cudo.compute.v1.BareMetalService/ListClusterMachineTypes"
@@ -49,16 +48,15 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BareMetalServiceClient interface {
-	CreateMachineInstance(ctx context.Context, in *CreateMachineInstanceRequest, opts ...grpc.CallOption) (*MachineInstance, error)
-	DeleteMachineInstance(ctx context.Context, in *DeleteMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	GetMachineInstance(ctx context.Context, in *GetMachineInstanceRequest, opts ...grpc.CallOption) (*MachineInstance, error)
-	ListMachineInstances(ctx context.Context, in *ListMachineInstancesRequest, opts ...grpc.CallOption) (*ListMachineInstancesResponse, error)
-	UpdateMachineInstance(ctx context.Context, in *UpdateMachineInstanceRequest, opts ...grpc.CallOption) (*MachineInstance, error)
-	PowerOffMachineInstance(ctx context.Context, in *PowerOffMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	PowerOnMachineInstance(ctx context.Context, in *PowerOnMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	DeployMachineInstance(ctx context.Context, in *DeployMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	UndeployMachineInstance(ctx context.Context, in *UndeployMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	EraseMachineInstance(ctx context.Context, in *EraseMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateMachine(ctx context.Context, in *CreateMachineRequest, opts ...grpc.CallOption) (*Machine, error)
+	DeleteMachine(ctx context.Context, in *DeleteMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetMachine(ctx context.Context, in *GetMachineRequest, opts ...grpc.CallOption) (*Machine, error)
+	ListMachines(ctx context.Context, in *ListMachinesRequest, opts ...grpc.CallOption) (*ListMachinesResponse, error)
+	UpdateMachine(ctx context.Context, in *UpdateMachineRequest, opts ...grpc.CallOption) (*Machine, error)
+	PowerOffMachine(ctx context.Context, in *PowerOffMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	PowerOnMachine(ctx context.Context, in *PowerOnMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeployMachineOS(ctx context.Context, in *DeployMachineOSRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UndeployMachineOS(ctx context.Context, in *UndeployMachineOSRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ListMachineOperatingSystems(ctx context.Context, in *ListMachineOperatingSystemsRequest, opts ...grpc.CallOption) (*ListMachineOperatingSystemsResponse, error)
 	ListMachineTypes(ctx context.Context, in *ListMachineTypesRequest, opts ...grpc.CallOption) (*ListMachineTypesResponse, error)
 	ListClusterMachineTypes(ctx context.Context, in *ListClusterMachineTypesRequest, opts ...grpc.CallOption) (*ListClusterMachineTypesResponse, error)
@@ -82,100 +80,90 @@ func NewBareMetalServiceClient(cc grpc.ClientConnInterface) BareMetalServiceClie
 	return &bareMetalServiceClient{cc}
 }
 
-func (c *bareMetalServiceClient) CreateMachineInstance(ctx context.Context, in *CreateMachineInstanceRequest, opts ...grpc.CallOption) (*MachineInstance, error) {
+func (c *bareMetalServiceClient) CreateMachine(ctx context.Context, in *CreateMachineRequest, opts ...grpc.CallOption) (*Machine, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MachineInstance)
-	err := c.cc.Invoke(ctx, BareMetalService_CreateMachineInstance_FullMethodName, in, out, cOpts...)
+	out := new(Machine)
+	err := c.cc.Invoke(ctx, BareMetalService_CreateMachine_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bareMetalServiceClient) DeleteMachineInstance(ctx context.Context, in *DeleteMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *bareMetalServiceClient) DeleteMachine(ctx context.Context, in *DeleteMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, BareMetalService_DeleteMachineInstance_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, BareMetalService_DeleteMachine_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bareMetalServiceClient) GetMachineInstance(ctx context.Context, in *GetMachineInstanceRequest, opts ...grpc.CallOption) (*MachineInstance, error) {
+func (c *bareMetalServiceClient) GetMachine(ctx context.Context, in *GetMachineRequest, opts ...grpc.CallOption) (*Machine, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MachineInstance)
-	err := c.cc.Invoke(ctx, BareMetalService_GetMachineInstance_FullMethodName, in, out, cOpts...)
+	out := new(Machine)
+	err := c.cc.Invoke(ctx, BareMetalService_GetMachine_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bareMetalServiceClient) ListMachineInstances(ctx context.Context, in *ListMachineInstancesRequest, opts ...grpc.CallOption) (*ListMachineInstancesResponse, error) {
+func (c *bareMetalServiceClient) ListMachines(ctx context.Context, in *ListMachinesRequest, opts ...grpc.CallOption) (*ListMachinesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListMachineInstancesResponse)
-	err := c.cc.Invoke(ctx, BareMetalService_ListMachineInstances_FullMethodName, in, out, cOpts...)
+	out := new(ListMachinesResponse)
+	err := c.cc.Invoke(ctx, BareMetalService_ListMachines_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bareMetalServiceClient) UpdateMachineInstance(ctx context.Context, in *UpdateMachineInstanceRequest, opts ...grpc.CallOption) (*MachineInstance, error) {
+func (c *bareMetalServiceClient) UpdateMachine(ctx context.Context, in *UpdateMachineRequest, opts ...grpc.CallOption) (*Machine, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MachineInstance)
-	err := c.cc.Invoke(ctx, BareMetalService_UpdateMachineInstance_FullMethodName, in, out, cOpts...)
+	out := new(Machine)
+	err := c.cc.Invoke(ctx, BareMetalService_UpdateMachine_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bareMetalServiceClient) PowerOffMachineInstance(ctx context.Context, in *PowerOffMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, BareMetalService_PowerOffMachineInstance_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *bareMetalServiceClient) PowerOnMachineInstance(ctx context.Context, in *PowerOnMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *bareMetalServiceClient) PowerOffMachine(ctx context.Context, in *PowerOffMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, BareMetalService_PowerOnMachineInstance_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, BareMetalService_PowerOffMachine_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bareMetalServiceClient) DeployMachineInstance(ctx context.Context, in *DeployMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *bareMetalServiceClient) PowerOnMachine(ctx context.Context, in *PowerOnMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, BareMetalService_DeployMachineInstance_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, BareMetalService_PowerOnMachine_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bareMetalServiceClient) UndeployMachineInstance(ctx context.Context, in *UndeployMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *bareMetalServiceClient) DeployMachineOS(ctx context.Context, in *DeployMachineOSRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, BareMetalService_UndeployMachineInstance_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, BareMetalService_DeployMachineOS_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bareMetalServiceClient) EraseMachineInstance(ctx context.Context, in *EraseMachineInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *bareMetalServiceClient) UndeployMachineOS(ctx context.Context, in *UndeployMachineOSRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, BareMetalService_EraseMachineInstance_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, BareMetalService_UndeployMachineOS_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -316,16 +304,15 @@ func (c *bareMetalServiceClient) UpdateClusterMachine(ctx context.Context, in *U
 // All implementations must embed UnimplementedBareMetalServiceServer
 // for forward compatibility.
 type BareMetalServiceServer interface {
-	CreateMachineInstance(context.Context, *CreateMachineInstanceRequest) (*MachineInstance, error)
-	DeleteMachineInstance(context.Context, *DeleteMachineInstanceRequest) (*emptypb.Empty, error)
-	GetMachineInstance(context.Context, *GetMachineInstanceRequest) (*MachineInstance, error)
-	ListMachineInstances(context.Context, *ListMachineInstancesRequest) (*ListMachineInstancesResponse, error)
-	UpdateMachineInstance(context.Context, *UpdateMachineInstanceRequest) (*MachineInstance, error)
-	PowerOffMachineInstance(context.Context, *PowerOffMachineInstanceRequest) (*emptypb.Empty, error)
-	PowerOnMachineInstance(context.Context, *PowerOnMachineInstanceRequest) (*emptypb.Empty, error)
-	DeployMachineInstance(context.Context, *DeployMachineInstanceRequest) (*emptypb.Empty, error)
-	UndeployMachineInstance(context.Context, *UndeployMachineInstanceRequest) (*emptypb.Empty, error)
-	EraseMachineInstance(context.Context, *EraseMachineInstanceRequest) (*emptypb.Empty, error)
+	CreateMachine(context.Context, *CreateMachineRequest) (*Machine, error)
+	DeleteMachine(context.Context, *DeleteMachineRequest) (*emptypb.Empty, error)
+	GetMachine(context.Context, *GetMachineRequest) (*Machine, error)
+	ListMachines(context.Context, *ListMachinesRequest) (*ListMachinesResponse, error)
+	UpdateMachine(context.Context, *UpdateMachineRequest) (*Machine, error)
+	PowerOffMachine(context.Context, *PowerOffMachineRequest) (*emptypb.Empty, error)
+	PowerOnMachine(context.Context, *PowerOnMachineRequest) (*emptypb.Empty, error)
+	DeployMachineOS(context.Context, *DeployMachineOSRequest) (*emptypb.Empty, error)
+	UndeployMachineOS(context.Context, *UndeployMachineOSRequest) (*emptypb.Empty, error)
 	ListMachineOperatingSystems(context.Context, *ListMachineOperatingSystemsRequest) (*ListMachineOperatingSystemsResponse, error)
 	ListMachineTypes(context.Context, *ListMachineTypesRequest) (*ListMachineTypesResponse, error)
 	ListClusterMachineTypes(context.Context, *ListClusterMachineTypesRequest) (*ListClusterMachineTypesResponse, error)
@@ -349,35 +336,32 @@ type BareMetalServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedBareMetalServiceServer struct{}
 
-func (UnimplementedBareMetalServiceServer) CreateMachineInstance(context.Context, *CreateMachineInstanceRequest) (*MachineInstance, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateMachineInstance not implemented")
+func (UnimplementedBareMetalServiceServer) CreateMachine(context.Context, *CreateMachineRequest) (*Machine, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMachine not implemented")
 }
-func (UnimplementedBareMetalServiceServer) DeleteMachineInstance(context.Context, *DeleteMachineInstanceRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteMachineInstance not implemented")
+func (UnimplementedBareMetalServiceServer) DeleteMachine(context.Context, *DeleteMachineRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMachine not implemented")
 }
-func (UnimplementedBareMetalServiceServer) GetMachineInstance(context.Context, *GetMachineInstanceRequest) (*MachineInstance, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMachineInstance not implemented")
+func (UnimplementedBareMetalServiceServer) GetMachine(context.Context, *GetMachineRequest) (*Machine, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMachine not implemented")
 }
-func (UnimplementedBareMetalServiceServer) ListMachineInstances(context.Context, *ListMachineInstancesRequest) (*ListMachineInstancesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListMachineInstances not implemented")
+func (UnimplementedBareMetalServiceServer) ListMachines(context.Context, *ListMachinesRequest) (*ListMachinesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMachines not implemented")
 }
-func (UnimplementedBareMetalServiceServer) UpdateMachineInstance(context.Context, *UpdateMachineInstanceRequest) (*MachineInstance, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateMachineInstance not implemented")
+func (UnimplementedBareMetalServiceServer) UpdateMachine(context.Context, *UpdateMachineRequest) (*Machine, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMachine not implemented")
 }
-func (UnimplementedBareMetalServiceServer) PowerOffMachineInstance(context.Context, *PowerOffMachineInstanceRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PowerOffMachineInstance not implemented")
+func (UnimplementedBareMetalServiceServer) PowerOffMachine(context.Context, *PowerOffMachineRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PowerOffMachine not implemented")
 }
-func (UnimplementedBareMetalServiceServer) PowerOnMachineInstance(context.Context, *PowerOnMachineInstanceRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PowerOnMachineInstance not implemented")
+func (UnimplementedBareMetalServiceServer) PowerOnMachine(context.Context, *PowerOnMachineRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PowerOnMachine not implemented")
 }
-func (UnimplementedBareMetalServiceServer) DeployMachineInstance(context.Context, *DeployMachineInstanceRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeployMachineInstance not implemented")
+func (UnimplementedBareMetalServiceServer) DeployMachineOS(context.Context, *DeployMachineOSRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeployMachineOS not implemented")
 }
-func (UnimplementedBareMetalServiceServer) UndeployMachineInstance(context.Context, *UndeployMachineInstanceRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UndeployMachineInstance not implemented")
-}
-func (UnimplementedBareMetalServiceServer) EraseMachineInstance(context.Context, *EraseMachineInstanceRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EraseMachineInstance not implemented")
+func (UnimplementedBareMetalServiceServer) UndeployMachineOS(context.Context, *UndeployMachineOSRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UndeployMachineOS not implemented")
 }
 func (UnimplementedBareMetalServiceServer) ListMachineOperatingSystems(context.Context, *ListMachineOperatingSystemsRequest) (*ListMachineOperatingSystemsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMachineOperatingSystems not implemented")
@@ -439,182 +423,164 @@ func RegisterBareMetalServiceServer(s grpc.ServiceRegistrar, srv BareMetalServic
 	s.RegisterService(&BareMetalService_ServiceDesc, srv)
 }
 
-func _BareMetalService_CreateMachineInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateMachineInstanceRequest)
+func _BareMetalService_CreateMachine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMachineRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BareMetalServiceServer).CreateMachineInstance(ctx, in)
+		return srv.(BareMetalServiceServer).CreateMachine(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BareMetalService_CreateMachineInstance_FullMethodName,
+		FullMethod: BareMetalService_CreateMachine_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).CreateMachineInstance(ctx, req.(*CreateMachineInstanceRequest))
+		return srv.(BareMetalServiceServer).CreateMachine(ctx, req.(*CreateMachineRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BareMetalService_DeleteMachineInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteMachineInstanceRequest)
+func _BareMetalService_DeleteMachine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMachineRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BareMetalServiceServer).DeleteMachineInstance(ctx, in)
+		return srv.(BareMetalServiceServer).DeleteMachine(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BareMetalService_DeleteMachineInstance_FullMethodName,
+		FullMethod: BareMetalService_DeleteMachine_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).DeleteMachineInstance(ctx, req.(*DeleteMachineInstanceRequest))
+		return srv.(BareMetalServiceServer).DeleteMachine(ctx, req.(*DeleteMachineRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BareMetalService_GetMachineInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMachineInstanceRequest)
+func _BareMetalService_GetMachine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMachineRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BareMetalServiceServer).GetMachineInstance(ctx, in)
+		return srv.(BareMetalServiceServer).GetMachine(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BareMetalService_GetMachineInstance_FullMethodName,
+		FullMethod: BareMetalService_GetMachine_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).GetMachineInstance(ctx, req.(*GetMachineInstanceRequest))
+		return srv.(BareMetalServiceServer).GetMachine(ctx, req.(*GetMachineRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BareMetalService_ListMachineInstances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListMachineInstancesRequest)
+func _BareMetalService_ListMachines_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMachinesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BareMetalServiceServer).ListMachineInstances(ctx, in)
+		return srv.(BareMetalServiceServer).ListMachines(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BareMetalService_ListMachineInstances_FullMethodName,
+		FullMethod: BareMetalService_ListMachines_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).ListMachineInstances(ctx, req.(*ListMachineInstancesRequest))
+		return srv.(BareMetalServiceServer).ListMachines(ctx, req.(*ListMachinesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BareMetalService_UpdateMachineInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateMachineInstanceRequest)
+func _BareMetalService_UpdateMachine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMachineRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BareMetalServiceServer).UpdateMachineInstance(ctx, in)
+		return srv.(BareMetalServiceServer).UpdateMachine(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BareMetalService_UpdateMachineInstance_FullMethodName,
+		FullMethod: BareMetalService_UpdateMachine_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).UpdateMachineInstance(ctx, req.(*UpdateMachineInstanceRequest))
+		return srv.(BareMetalServiceServer).UpdateMachine(ctx, req.(*UpdateMachineRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BareMetalService_PowerOffMachineInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PowerOffMachineInstanceRequest)
+func _BareMetalService_PowerOffMachine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PowerOffMachineRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BareMetalServiceServer).PowerOffMachineInstance(ctx, in)
+		return srv.(BareMetalServiceServer).PowerOffMachine(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BareMetalService_PowerOffMachineInstance_FullMethodName,
+		FullMethod: BareMetalService_PowerOffMachine_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).PowerOffMachineInstance(ctx, req.(*PowerOffMachineInstanceRequest))
+		return srv.(BareMetalServiceServer).PowerOffMachine(ctx, req.(*PowerOffMachineRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BareMetalService_PowerOnMachineInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PowerOnMachineInstanceRequest)
+func _BareMetalService_PowerOnMachine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PowerOnMachineRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BareMetalServiceServer).PowerOnMachineInstance(ctx, in)
+		return srv.(BareMetalServiceServer).PowerOnMachine(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BareMetalService_PowerOnMachineInstance_FullMethodName,
+		FullMethod: BareMetalService_PowerOnMachine_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).PowerOnMachineInstance(ctx, req.(*PowerOnMachineInstanceRequest))
+		return srv.(BareMetalServiceServer).PowerOnMachine(ctx, req.(*PowerOnMachineRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BareMetalService_DeployMachineInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeployMachineInstanceRequest)
+func _BareMetalService_DeployMachineOS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeployMachineOSRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BareMetalServiceServer).DeployMachineInstance(ctx, in)
+		return srv.(BareMetalServiceServer).DeployMachineOS(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BareMetalService_DeployMachineInstance_FullMethodName,
+		FullMethod: BareMetalService_DeployMachineOS_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).DeployMachineInstance(ctx, req.(*DeployMachineInstanceRequest))
+		return srv.(BareMetalServiceServer).DeployMachineOS(ctx, req.(*DeployMachineOSRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BareMetalService_UndeployMachineInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UndeployMachineInstanceRequest)
+func _BareMetalService_UndeployMachineOS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UndeployMachineOSRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BareMetalServiceServer).UndeployMachineInstance(ctx, in)
+		return srv.(BareMetalServiceServer).UndeployMachineOS(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BareMetalService_UndeployMachineInstance_FullMethodName,
+		FullMethod: BareMetalService_UndeployMachineOS_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).UndeployMachineInstance(ctx, req.(*UndeployMachineInstanceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _BareMetalService_EraseMachineInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EraseMachineInstanceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BareMetalServiceServer).EraseMachineInstance(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: BareMetalService_EraseMachineInstance_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).EraseMachineInstance(ctx, req.(*EraseMachineInstanceRequest))
+		return srv.(BareMetalServiceServer).UndeployMachineOS(ctx, req.(*UndeployMachineOSRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -861,44 +827,40 @@ var BareMetalService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*BareMetalServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateMachineInstance",
-			Handler:    _BareMetalService_CreateMachineInstance_Handler,
+			MethodName: "CreateMachine",
+			Handler:    _BareMetalService_CreateMachine_Handler,
 		},
 		{
-			MethodName: "DeleteMachineInstance",
-			Handler:    _BareMetalService_DeleteMachineInstance_Handler,
+			MethodName: "DeleteMachine",
+			Handler:    _BareMetalService_DeleteMachine_Handler,
 		},
 		{
-			MethodName: "GetMachineInstance",
-			Handler:    _BareMetalService_GetMachineInstance_Handler,
+			MethodName: "GetMachine",
+			Handler:    _BareMetalService_GetMachine_Handler,
 		},
 		{
-			MethodName: "ListMachineInstances",
-			Handler:    _BareMetalService_ListMachineInstances_Handler,
+			MethodName: "ListMachines",
+			Handler:    _BareMetalService_ListMachines_Handler,
 		},
 		{
-			MethodName: "UpdateMachineInstance",
-			Handler:    _BareMetalService_UpdateMachineInstance_Handler,
+			MethodName: "UpdateMachine",
+			Handler:    _BareMetalService_UpdateMachine_Handler,
 		},
 		{
-			MethodName: "PowerOffMachineInstance",
-			Handler:    _BareMetalService_PowerOffMachineInstance_Handler,
+			MethodName: "PowerOffMachine",
+			Handler:    _BareMetalService_PowerOffMachine_Handler,
 		},
 		{
-			MethodName: "PowerOnMachineInstance",
-			Handler:    _BareMetalService_PowerOnMachineInstance_Handler,
+			MethodName: "PowerOnMachine",
+			Handler:    _BareMetalService_PowerOnMachine_Handler,
 		},
 		{
-			MethodName: "DeployMachineInstance",
-			Handler:    _BareMetalService_DeployMachineInstance_Handler,
+			MethodName: "DeployMachineOS",
+			Handler:    _BareMetalService_DeployMachineOS_Handler,
 		},
 		{
-			MethodName: "UndeployMachineInstance",
-			Handler:    _BareMetalService_UndeployMachineInstance_Handler,
-		},
-		{
-			MethodName: "EraseMachineInstance",
-			Handler:    _BareMetalService_EraseMachineInstance_Handler,
+			MethodName: "UndeployMachineOS",
+			Handler:    _BareMetalService_UndeployMachineOS_Handler,
 		},
 		{
 			MethodName: "ListMachineOperatingSystems",

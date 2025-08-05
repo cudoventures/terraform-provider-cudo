@@ -690,6 +690,7 @@ type VM struct {
 	SshKeySource      SshKeySource                   `protobuf:"varint,36,opt,name=ssh_key_source,json=sshKeySource,proto3,enum=org.cudo.compute.v1.SshKeySource" json:"ssh_key_source,omitempty"`
 	AuthorizedSshKeys string                         `protobuf:"bytes,37,opt,name=authorized_ssh_keys,json=authorizedSshKeys,proto3" json:"authorized_ssh_keys,omitempty"`
 	SecurityGroups    []*securitygroup.SecurityGroup `protobuf:"bytes,38,rep,name=security_groups,json=securityGroups,proto3" json:"security_groups,omitempty"`
+	ProjectId         string                         `protobuf:"bytes,39,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -974,6 +975,13 @@ func (x *VM) GetSecurityGroups() []*securitygroup.SecurityGroup {
 		return x.SecurityGroups
 	}
 	return nil
+}
+
+func (x *VM) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
 }
 
 type VMMonitoringItem struct {
@@ -1589,7 +1597,7 @@ var File_svc_compute_vm_vm_proto protoreflect.FileDescriptor
 
 const file_svc_compute_vm_vm_proto_rawDesc = "" +
 	"\n" +
-	"\x17svc/compute/vm/vm.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a-svc/compute/securitygroup/securitygroup.proto\x1a\x17svc/compute/types.proto\"\xf3\x1b\n" +
+	"\x17svc/compute/vm/vm.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a-svc/compute/securitygroup/securitygroup.proto\x1a\x17svc/compute/types.proto\"\x97\x1c\n" +
 	"\x02VM\x12(\n" +
 	"\rdatacenter_id\x18\x01 \x01(\tB\x03\xe0A\x03R\fdatacenterId\x12!\n" +
 	"\fmachine_type\x18\x02 \x01(\tR\vmachineType\x12\x0e\n" +
@@ -1632,7 +1640,9 @@ const file_svc_compute_vm_vm_proto_rawDesc = "" +
 	"\x13commitment_end_time\x18# \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x03\xe0A\x02R\x11commitmentEndTime\x12G\n" +
 	"\x0essh_key_source\x18$ \x01(\x0e2!.org.cudo.compute.v1.SshKeySourceR\fsshKeySource\x12.\n" +
 	"\x13authorized_ssh_keys\x18% \x01(\tR\x11authorizedSshKeys\x12K\n" +
-	"\x0fsecurity_groups\x18& \x03(\v2\".org.cudo.compute.v1.SecurityGroupR\x0esecurityGroups\x1a\xdb\x01\n" +
+	"\x0fsecurity_groups\x18& \x03(\v2\".org.cudo.compute.v1.SecurityGroupR\x0esecurityGroups\x12\"\n" +
+	"\n" +
+	"project_id\x18' \x01(\tB\x03\xe0A\x02R\tprojectId\x1a\xdb\x01\n" +
 	"\x03NIC\x12\x1d\n" +
 	"\n" +
 	"network_id\x18\x01 \x01(\tR\tnetworkId\x12.\n" +

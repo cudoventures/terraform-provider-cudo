@@ -4445,6 +4445,7 @@ type ListVMDataCentersResponse_VMDataCenter struct {
 	RenewableEnergy         bool                                                         `protobuf:"varint,5,opt,name=renewable_energy,json=renewableEnergy,proto3" json:"renewable_energy,omitempty"`
 	DiskPoolPricing         []*ListVMDataCentersResponse_VMDataCenter_DiskStoragePriceHr `protobuf:"bytes,6,rep,name=disk_pool_pricing,json=diskPoolPricing,proto3" json:"disk_pool_pricing,omitempty"`
 	NetworkPricing          []*ListVMDataCentersResponse_VMDataCenter_NetworkPriceHr     `protobuf:"bytes,7,rep,name=network_pricing,json=networkPricing,proto3" json:"network_pricing,omitempty"`
+	NetworkPriceHr          *decimal.Decimal                                             `protobuf:"bytes,13,opt,name=network_price_hr,json=networkPriceHr,proto3" json:"network_price_hr,omitempty"`
 	Ipv4PriceHr             *decimal.Decimal                                             `protobuf:"bytes,8,opt,name=ipv4_price_hr,json=ipv4PriceHr,proto3" json:"ipv4_price_hr,omitempty"`
 	Ipv4Free                int32                                                        `protobuf:"varint,9,opt,name=ipv4_free,json=ipv4Free,proto3" json:"ipv4_free,omitempty"`
 	S3Endpoint              string                                                       `protobuf:"bytes,10,opt,name=s3_endpoint,json=s3Endpoint,proto3" json:"s3_endpoint,omitempty"`
@@ -4515,6 +4516,13 @@ func (x *ListVMDataCentersResponse_VMDataCenter) GetDiskPoolPricing() []*ListVMD
 func (x *ListVMDataCentersResponse_VMDataCenter) GetNetworkPricing() []*ListVMDataCentersResponse_VMDataCenter_NetworkPriceHr {
 	if x != nil {
 		return x.NetworkPricing
+	}
+	return nil
+}
+
+func (x *ListVMDataCentersResponse_VMDataCenter) GetNetworkPriceHr() *decimal.Decimal {
+	if x != nil {
+		return x.NetworkPriceHr
 	}
 	return nil
 }
@@ -4973,15 +4981,16 @@ const file_svc_compute_vm_vm_svc_proto_rawDesc = "" +
 	"\x19ListPublicVMImagesRequest\"U\n" +
 	"\x1aListPublicVMImagesResponse\x127\n" +
 	"\x06images\x18\x01 \x03(\v2\x1a.org.cudo.compute.v1.ImageB\x03\xe0A\x02R\x06images\"\x1a\n" +
-	"\x18ListVMDataCentersRequest\"\xeb\b\n" +
+	"\x18ListVMDataCentersRequest\"\xab\t\n" +
 	"\x19ListVMDataCentersResponse\x12c\n" +
-	"\fdata_centers\x18\x01 \x03(\v2;.org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenterB\x03\xe0A\x02R\vdataCenters\x1a\xe8\a\n" +
+	"\fdata_centers\x18\x01 \x03(\v2;.org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenterB\x03\xe0A\x02R\vdataCenters\x1a\xa8\b\n" +
 	"\fVMDataCenter\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12(\n" +
 	"\rsupplier_name\x18\x04 \x01(\tB\x03\xe0A\x02R\fsupplierName\x12.\n" +
 	"\x10renewable_energy\x18\x05 \x01(\bB\x03\xe0A\x02R\x0frenewableEnergy\x12z\n" +
 	"\x11disk_pool_pricing\x18\x06 \x03(\v2N.org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.DiskStoragePriceHrR\x0fdiskPoolPricing\x12s\n" +
-	"\x0fnetwork_pricing\x18\a \x03(\v2J.org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.NetworkPriceHrR\x0enetworkPricing\x128\n" +
+	"\x0fnetwork_pricing\x18\a \x03(\v2J.org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.NetworkPriceHrR\x0enetworkPricing\x12>\n" +
+	"\x10network_price_hr\x18\r \x01(\v2\x14.google.type.DecimalR\x0enetworkPriceHr\x128\n" +
 	"\ripv4_price_hr\x18\b \x01(\v2\x14.google.type.DecimalR\vipv4PriceHr\x12 \n" +
 	"\tipv4_free\x18\t \x01(\x05B\x03\xe0A\x02R\bipv4Free\x12$\n" +
 	"\vs3_endpoint\x18\n" +
@@ -5423,93 +5432,94 @@ var file_svc_compute_vm_vm_svc_proto_depIdxs = []int32{
 	87,  // 55: org.cudo.compute.v1.ListVMMachineTypesResponse.VMMachineType.MachineTypePrice.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
 	77,  // 56: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.disk_pool_pricing:type_name -> org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.DiskStoragePriceHr
 	78,  // 57: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.network_pricing:type_name -> org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.NetworkPriceHr
-	89,  // 58: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.ipv4_price_hr:type_name -> google.type.Decimal
-	93,  // 59: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.location:type_name -> google.type.LatLng
-	89,  // 60: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.object_storage_gib_price_hr:type_name -> google.type.Decimal
-	0,   // 61: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.DiskStoragePriceHr.storage_class:type_name -> org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.StorageClass
-	89,  // 62: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.DiskStoragePriceHr.disk_gib_price_hr:type_name -> google.type.Decimal
-	89,  // 63: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.NetworkPriceHr.price_hr:type_name -> google.type.Decimal
-	89,  // 64: org.cudo.compute.v1.GetVMMachineTypeResponse.MachineTypePrice.vcpu_price_hr:type_name -> google.type.Decimal
-	89,  // 65: org.cudo.compute.v1.GetVMMachineTypeResponse.MachineTypePrice.memory_gib_price_hr:type_name -> google.type.Decimal
-	89,  // 66: org.cudo.compute.v1.GetVMMachineTypeResponse.MachineTypePrice.gpu_price_hr:type_name -> google.type.Decimal
-	87,  // 67: org.cudo.compute.v1.GetVMMachineTypeResponse.MachineTypePrice.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
-	23,  // 68: org.cudo.compute.v1.VMService.CountVMs:input_type -> org.cudo.compute.v1.CountVMsRequest
-	1,   // 69: org.cudo.compute.v1.VMService.CreateVM:input_type -> org.cudo.compute.v1.CreateVMRequest
-	21,  // 70: org.cudo.compute.v1.VMService.GetVM:input_type -> org.cudo.compute.v1.GetVMRequest
-	3,   // 71: org.cudo.compute.v1.VMService.ListVMs:input_type -> org.cudo.compute.v1.ListVMsRequest
-	25,  // 72: org.cudo.compute.v1.VMService.MonitorVM:input_type -> org.cudo.compute.v1.MonitorVMRequest
-	19,  // 73: org.cudo.compute.v1.VMService.RebootVM:input_type -> org.cudo.compute.v1.RebootVMRequest
-	13,  // 74: org.cudo.compute.v1.VMService.StartVM:input_type -> org.cudo.compute.v1.StartVMRequest
-	15,  // 75: org.cudo.compute.v1.VMService.StopVM:input_type -> org.cudo.compute.v1.StopVMRequest
-	17,  // 76: org.cudo.compute.v1.VMService.TerminateVM:input_type -> org.cudo.compute.v1.TerminateVMRequest
-	27,  // 77: org.cudo.compute.v1.VMService.ConnectVM:input_type -> org.cudo.compute.v1.ConnectVMRequest
-	7,   // 78: org.cudo.compute.v1.VMService.ResizeVM:input_type -> org.cudo.compute.v1.ResizeVMRequest
-	31,  // 79: org.cudo.compute.v1.VMService.ListPublicVMImages:input_type -> org.cudo.compute.v1.ListPublicVMImagesRequest
-	29,  // 80: org.cudo.compute.v1.VMService.ListVMMachineTypes:input_type -> org.cudo.compute.v1.ListVMMachineTypesRequest
-	29,  // 81: org.cudo.compute.v1.VMService.ListVMMachineTypes2:input_type -> org.cudo.compute.v1.ListVMMachineTypesRequest
-	33,  // 82: org.cudo.compute.v1.VMService.ListVMDataCenters:input_type -> org.cudo.compute.v1.ListVMDataCentersRequest
-	35,  // 83: org.cudo.compute.v1.VMService.ListVMGpuModels:input_type -> org.cudo.compute.v1.ListVMGpuModelsRequest
-	37,  // 84: org.cudo.compute.v1.VMService.CreatePrivateVMImage:input_type -> org.cudo.compute.v1.CreatePrivateVMImageRequest
-	39,  // 85: org.cudo.compute.v1.VMService.DeletePrivateVMImage:input_type -> org.cudo.compute.v1.DeletePrivateVMImageRequest
-	42,  // 86: org.cudo.compute.v1.VMService.GetPrivateVMImage:input_type -> org.cudo.compute.v1.GetPrivateVMImageRequest
-	41,  // 87: org.cudo.compute.v1.VMService.ListPrivateVMImages:input_type -> org.cudo.compute.v1.ListPrivateVMImagesRequest
-	45,  // 88: org.cudo.compute.v1.VMService.UpdatePrivateVMImage:input_type -> org.cudo.compute.v1.UpdatePrivateVMImageRequest
-	51,  // 89: org.cudo.compute.v1.VMService.CreateStorageDisk:input_type -> org.cudo.compute.v1.CreateStorageDiskRequest
-	5,   // 90: org.cudo.compute.v1.VMService.ResizeVMDisk:input_type -> org.cudo.compute.v1.ResizeVMDiskRequest
-	47,  // 91: org.cudo.compute.v1.VMService.ListDisks:input_type -> org.cudo.compute.v1.ListDisksRequest
-	49,  // 92: org.cudo.compute.v1.VMService.GetDisk:input_type -> org.cudo.compute.v1.GetDiskRequest
-	53,  // 93: org.cudo.compute.v1.VMService.DeleteStorageDisk:input_type -> org.cudo.compute.v1.DeleteStorageDiskRequest
-	9,   // 94: org.cudo.compute.v1.VMService.AttachStorageDisk:input_type -> org.cudo.compute.v1.AttachStorageDiskRequest
-	11,  // 95: org.cudo.compute.v1.VMService.DetachStorageDisk:input_type -> org.cudo.compute.v1.DetachStorageDiskRequest
-	55,  // 96: org.cudo.compute.v1.VMService.AttachSecurityGroup:input_type -> org.cudo.compute.v1.AttachSecurityGroupRequest
-	57,  // 97: org.cudo.compute.v1.VMService.DetachSecurityGroup:input_type -> org.cudo.compute.v1.DetachSecurityGroupRequest
-	59,  // 98: org.cudo.compute.v1.VMService.UpdateVMMetadata:input_type -> org.cudo.compute.v1.UpdateVMMetadataRequest
-	61,  // 99: org.cudo.compute.v1.VMService.UpdateVMExpireTime:input_type -> org.cudo.compute.v1.UpdateVMExpireTimeRequest
-	63,  // 100: org.cudo.compute.v1.VMService.UpdateVMPassword:input_type -> org.cudo.compute.v1.UpdateVMPasswordRequest
-	65,  // 101: org.cudo.compute.v1.VMService.UpdateVMAuthorizedSSHKeys:input_type -> org.cudo.compute.v1.UpdateVMAuthorizedSSHKeysRequest
-	67,  // 102: org.cudo.compute.v1.VMService.CommitVM:input_type -> org.cudo.compute.v1.CommitVMRequest
-	69,  // 103: org.cudo.compute.v1.VMService.GetVMMachineType:input_type -> org.cudo.compute.v1.GetVMMachineTypeRequest
-	24,  // 104: org.cudo.compute.v1.VMService.CountVMs:output_type -> org.cudo.compute.v1.CountVMsResponse
-	2,   // 105: org.cudo.compute.v1.VMService.CreateVM:output_type -> org.cudo.compute.v1.CreateVMResponse
-	22,  // 106: org.cudo.compute.v1.VMService.GetVM:output_type -> org.cudo.compute.v1.GetVMResponse
-	4,   // 107: org.cudo.compute.v1.VMService.ListVMs:output_type -> org.cudo.compute.v1.ListVMsResponse
-	26,  // 108: org.cudo.compute.v1.VMService.MonitorVM:output_type -> org.cudo.compute.v1.MonitorVMResponse
-	20,  // 109: org.cudo.compute.v1.VMService.RebootVM:output_type -> org.cudo.compute.v1.RebootVMResponse
-	14,  // 110: org.cudo.compute.v1.VMService.StartVM:output_type -> org.cudo.compute.v1.StartVMResponse
-	16,  // 111: org.cudo.compute.v1.VMService.StopVM:output_type -> org.cudo.compute.v1.StopVMResponse
-	18,  // 112: org.cudo.compute.v1.VMService.TerminateVM:output_type -> org.cudo.compute.v1.TerminateVMResponse
-	28,  // 113: org.cudo.compute.v1.VMService.ConnectVM:output_type -> org.cudo.compute.v1.ConnectVMResponse
-	8,   // 114: org.cudo.compute.v1.VMService.ResizeVM:output_type -> org.cudo.compute.v1.ResizeVMResponse
-	32,  // 115: org.cudo.compute.v1.VMService.ListPublicVMImages:output_type -> org.cudo.compute.v1.ListPublicVMImagesResponse
-	30,  // 116: org.cudo.compute.v1.VMService.ListVMMachineTypes:output_type -> org.cudo.compute.v1.ListVMMachineTypesResponse
-	30,  // 117: org.cudo.compute.v1.VMService.ListVMMachineTypes2:output_type -> org.cudo.compute.v1.ListVMMachineTypesResponse
-	34,  // 118: org.cudo.compute.v1.VMService.ListVMDataCenters:output_type -> org.cudo.compute.v1.ListVMDataCentersResponse
-	36,  // 119: org.cudo.compute.v1.VMService.ListVMGpuModels:output_type -> org.cudo.compute.v1.ListVMGpuModelsResponse
-	38,  // 120: org.cudo.compute.v1.VMService.CreatePrivateVMImage:output_type -> org.cudo.compute.v1.CreatePrivateVMImageResponse
-	40,  // 121: org.cudo.compute.v1.VMService.DeletePrivateVMImage:output_type -> org.cudo.compute.v1.DeletePrivateVMImageResponse
-	43,  // 122: org.cudo.compute.v1.VMService.GetPrivateVMImage:output_type -> org.cudo.compute.v1.GetPrivateVMImageResponse
-	44,  // 123: org.cudo.compute.v1.VMService.ListPrivateVMImages:output_type -> org.cudo.compute.v1.ListPrivateVMImagesResponse
-	46,  // 124: org.cudo.compute.v1.VMService.UpdatePrivateVMImage:output_type -> org.cudo.compute.v1.UpdatePrivateVMImageResponse
-	52,  // 125: org.cudo.compute.v1.VMService.CreateStorageDisk:output_type -> org.cudo.compute.v1.CreateStorageDiskResponse
-	6,   // 126: org.cudo.compute.v1.VMService.ResizeVMDisk:output_type -> org.cudo.compute.v1.ResizeVMDiskResponse
-	48,  // 127: org.cudo.compute.v1.VMService.ListDisks:output_type -> org.cudo.compute.v1.ListDisksResponse
-	50,  // 128: org.cudo.compute.v1.VMService.GetDisk:output_type -> org.cudo.compute.v1.GetDiskResponse
-	54,  // 129: org.cudo.compute.v1.VMService.DeleteStorageDisk:output_type -> org.cudo.compute.v1.DeleteStorageDiskResponse
-	10,  // 130: org.cudo.compute.v1.VMService.AttachStorageDisk:output_type -> org.cudo.compute.v1.AttachStorageDiskResponse
-	12,  // 131: org.cudo.compute.v1.VMService.DetachStorageDisk:output_type -> org.cudo.compute.v1.DetachStorageDiskResponse
-	56,  // 132: org.cudo.compute.v1.VMService.AttachSecurityGroup:output_type -> org.cudo.compute.v1.AttachSecurityGroupResponse
-	58,  // 133: org.cudo.compute.v1.VMService.DetachSecurityGroup:output_type -> org.cudo.compute.v1.DetachSecurityGroupResponse
-	60,  // 134: org.cudo.compute.v1.VMService.UpdateVMMetadata:output_type -> org.cudo.compute.v1.UpdateVMMetadataResponse
-	62,  // 135: org.cudo.compute.v1.VMService.UpdateVMExpireTime:output_type -> org.cudo.compute.v1.UpdateVMExpireTimeResponse
-	64,  // 136: org.cudo.compute.v1.VMService.UpdateVMPassword:output_type -> org.cudo.compute.v1.UpdateVMPasswordResponse
-	66,  // 137: org.cudo.compute.v1.VMService.UpdateVMAuthorizedSSHKeys:output_type -> org.cudo.compute.v1.UpdateVMAuthorizedSSHKeysResponse
-	68,  // 138: org.cudo.compute.v1.VMService.CommitVM:output_type -> org.cudo.compute.v1.CommitVMResponse
-	70,  // 139: org.cudo.compute.v1.VMService.GetVMMachineType:output_type -> org.cudo.compute.v1.GetVMMachineTypeResponse
-	104, // [104:140] is the sub-list for method output_type
-	68,  // [68:104] is the sub-list for method input_type
-	68,  // [68:68] is the sub-list for extension type_name
-	68,  // [68:68] is the sub-list for extension extendee
-	0,   // [0:68] is the sub-list for field type_name
+	89,  // 58: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.network_price_hr:type_name -> google.type.Decimal
+	89,  // 59: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.ipv4_price_hr:type_name -> google.type.Decimal
+	93,  // 60: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.location:type_name -> google.type.LatLng
+	89,  // 61: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.object_storage_gib_price_hr:type_name -> google.type.Decimal
+	0,   // 62: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.DiskStoragePriceHr.storage_class:type_name -> org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.StorageClass
+	89,  // 63: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.DiskStoragePriceHr.disk_gib_price_hr:type_name -> google.type.Decimal
+	89,  // 64: org.cudo.compute.v1.ListVMDataCentersResponse.VMDataCenter.NetworkPriceHr.price_hr:type_name -> google.type.Decimal
+	89,  // 65: org.cudo.compute.v1.GetVMMachineTypeResponse.MachineTypePrice.vcpu_price_hr:type_name -> google.type.Decimal
+	89,  // 66: org.cudo.compute.v1.GetVMMachineTypeResponse.MachineTypePrice.memory_gib_price_hr:type_name -> google.type.Decimal
+	89,  // 67: org.cudo.compute.v1.GetVMMachineTypeResponse.MachineTypePrice.gpu_price_hr:type_name -> google.type.Decimal
+	87,  // 68: org.cudo.compute.v1.GetVMMachineTypeResponse.MachineTypePrice.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
+	23,  // 69: org.cudo.compute.v1.VMService.CountVMs:input_type -> org.cudo.compute.v1.CountVMsRequest
+	1,   // 70: org.cudo.compute.v1.VMService.CreateVM:input_type -> org.cudo.compute.v1.CreateVMRequest
+	21,  // 71: org.cudo.compute.v1.VMService.GetVM:input_type -> org.cudo.compute.v1.GetVMRequest
+	3,   // 72: org.cudo.compute.v1.VMService.ListVMs:input_type -> org.cudo.compute.v1.ListVMsRequest
+	25,  // 73: org.cudo.compute.v1.VMService.MonitorVM:input_type -> org.cudo.compute.v1.MonitorVMRequest
+	19,  // 74: org.cudo.compute.v1.VMService.RebootVM:input_type -> org.cudo.compute.v1.RebootVMRequest
+	13,  // 75: org.cudo.compute.v1.VMService.StartVM:input_type -> org.cudo.compute.v1.StartVMRequest
+	15,  // 76: org.cudo.compute.v1.VMService.StopVM:input_type -> org.cudo.compute.v1.StopVMRequest
+	17,  // 77: org.cudo.compute.v1.VMService.TerminateVM:input_type -> org.cudo.compute.v1.TerminateVMRequest
+	27,  // 78: org.cudo.compute.v1.VMService.ConnectVM:input_type -> org.cudo.compute.v1.ConnectVMRequest
+	7,   // 79: org.cudo.compute.v1.VMService.ResizeVM:input_type -> org.cudo.compute.v1.ResizeVMRequest
+	31,  // 80: org.cudo.compute.v1.VMService.ListPublicVMImages:input_type -> org.cudo.compute.v1.ListPublicVMImagesRequest
+	29,  // 81: org.cudo.compute.v1.VMService.ListVMMachineTypes:input_type -> org.cudo.compute.v1.ListVMMachineTypesRequest
+	29,  // 82: org.cudo.compute.v1.VMService.ListVMMachineTypes2:input_type -> org.cudo.compute.v1.ListVMMachineTypesRequest
+	33,  // 83: org.cudo.compute.v1.VMService.ListVMDataCenters:input_type -> org.cudo.compute.v1.ListVMDataCentersRequest
+	35,  // 84: org.cudo.compute.v1.VMService.ListVMGpuModels:input_type -> org.cudo.compute.v1.ListVMGpuModelsRequest
+	37,  // 85: org.cudo.compute.v1.VMService.CreatePrivateVMImage:input_type -> org.cudo.compute.v1.CreatePrivateVMImageRequest
+	39,  // 86: org.cudo.compute.v1.VMService.DeletePrivateVMImage:input_type -> org.cudo.compute.v1.DeletePrivateVMImageRequest
+	42,  // 87: org.cudo.compute.v1.VMService.GetPrivateVMImage:input_type -> org.cudo.compute.v1.GetPrivateVMImageRequest
+	41,  // 88: org.cudo.compute.v1.VMService.ListPrivateVMImages:input_type -> org.cudo.compute.v1.ListPrivateVMImagesRequest
+	45,  // 89: org.cudo.compute.v1.VMService.UpdatePrivateVMImage:input_type -> org.cudo.compute.v1.UpdatePrivateVMImageRequest
+	51,  // 90: org.cudo.compute.v1.VMService.CreateStorageDisk:input_type -> org.cudo.compute.v1.CreateStorageDiskRequest
+	5,   // 91: org.cudo.compute.v1.VMService.ResizeVMDisk:input_type -> org.cudo.compute.v1.ResizeVMDiskRequest
+	47,  // 92: org.cudo.compute.v1.VMService.ListDisks:input_type -> org.cudo.compute.v1.ListDisksRequest
+	49,  // 93: org.cudo.compute.v1.VMService.GetDisk:input_type -> org.cudo.compute.v1.GetDiskRequest
+	53,  // 94: org.cudo.compute.v1.VMService.DeleteStorageDisk:input_type -> org.cudo.compute.v1.DeleteStorageDiskRequest
+	9,   // 95: org.cudo.compute.v1.VMService.AttachStorageDisk:input_type -> org.cudo.compute.v1.AttachStorageDiskRequest
+	11,  // 96: org.cudo.compute.v1.VMService.DetachStorageDisk:input_type -> org.cudo.compute.v1.DetachStorageDiskRequest
+	55,  // 97: org.cudo.compute.v1.VMService.AttachSecurityGroup:input_type -> org.cudo.compute.v1.AttachSecurityGroupRequest
+	57,  // 98: org.cudo.compute.v1.VMService.DetachSecurityGroup:input_type -> org.cudo.compute.v1.DetachSecurityGroupRequest
+	59,  // 99: org.cudo.compute.v1.VMService.UpdateVMMetadata:input_type -> org.cudo.compute.v1.UpdateVMMetadataRequest
+	61,  // 100: org.cudo.compute.v1.VMService.UpdateVMExpireTime:input_type -> org.cudo.compute.v1.UpdateVMExpireTimeRequest
+	63,  // 101: org.cudo.compute.v1.VMService.UpdateVMPassword:input_type -> org.cudo.compute.v1.UpdateVMPasswordRequest
+	65,  // 102: org.cudo.compute.v1.VMService.UpdateVMAuthorizedSSHKeys:input_type -> org.cudo.compute.v1.UpdateVMAuthorizedSSHKeysRequest
+	67,  // 103: org.cudo.compute.v1.VMService.CommitVM:input_type -> org.cudo.compute.v1.CommitVMRequest
+	69,  // 104: org.cudo.compute.v1.VMService.GetVMMachineType:input_type -> org.cudo.compute.v1.GetVMMachineTypeRequest
+	24,  // 105: org.cudo.compute.v1.VMService.CountVMs:output_type -> org.cudo.compute.v1.CountVMsResponse
+	2,   // 106: org.cudo.compute.v1.VMService.CreateVM:output_type -> org.cudo.compute.v1.CreateVMResponse
+	22,  // 107: org.cudo.compute.v1.VMService.GetVM:output_type -> org.cudo.compute.v1.GetVMResponse
+	4,   // 108: org.cudo.compute.v1.VMService.ListVMs:output_type -> org.cudo.compute.v1.ListVMsResponse
+	26,  // 109: org.cudo.compute.v1.VMService.MonitorVM:output_type -> org.cudo.compute.v1.MonitorVMResponse
+	20,  // 110: org.cudo.compute.v1.VMService.RebootVM:output_type -> org.cudo.compute.v1.RebootVMResponse
+	14,  // 111: org.cudo.compute.v1.VMService.StartVM:output_type -> org.cudo.compute.v1.StartVMResponse
+	16,  // 112: org.cudo.compute.v1.VMService.StopVM:output_type -> org.cudo.compute.v1.StopVMResponse
+	18,  // 113: org.cudo.compute.v1.VMService.TerminateVM:output_type -> org.cudo.compute.v1.TerminateVMResponse
+	28,  // 114: org.cudo.compute.v1.VMService.ConnectVM:output_type -> org.cudo.compute.v1.ConnectVMResponse
+	8,   // 115: org.cudo.compute.v1.VMService.ResizeVM:output_type -> org.cudo.compute.v1.ResizeVMResponse
+	32,  // 116: org.cudo.compute.v1.VMService.ListPublicVMImages:output_type -> org.cudo.compute.v1.ListPublicVMImagesResponse
+	30,  // 117: org.cudo.compute.v1.VMService.ListVMMachineTypes:output_type -> org.cudo.compute.v1.ListVMMachineTypesResponse
+	30,  // 118: org.cudo.compute.v1.VMService.ListVMMachineTypes2:output_type -> org.cudo.compute.v1.ListVMMachineTypesResponse
+	34,  // 119: org.cudo.compute.v1.VMService.ListVMDataCenters:output_type -> org.cudo.compute.v1.ListVMDataCentersResponse
+	36,  // 120: org.cudo.compute.v1.VMService.ListVMGpuModels:output_type -> org.cudo.compute.v1.ListVMGpuModelsResponse
+	38,  // 121: org.cudo.compute.v1.VMService.CreatePrivateVMImage:output_type -> org.cudo.compute.v1.CreatePrivateVMImageResponse
+	40,  // 122: org.cudo.compute.v1.VMService.DeletePrivateVMImage:output_type -> org.cudo.compute.v1.DeletePrivateVMImageResponse
+	43,  // 123: org.cudo.compute.v1.VMService.GetPrivateVMImage:output_type -> org.cudo.compute.v1.GetPrivateVMImageResponse
+	44,  // 124: org.cudo.compute.v1.VMService.ListPrivateVMImages:output_type -> org.cudo.compute.v1.ListPrivateVMImagesResponse
+	46,  // 125: org.cudo.compute.v1.VMService.UpdatePrivateVMImage:output_type -> org.cudo.compute.v1.UpdatePrivateVMImageResponse
+	52,  // 126: org.cudo.compute.v1.VMService.CreateStorageDisk:output_type -> org.cudo.compute.v1.CreateStorageDiskResponse
+	6,   // 127: org.cudo.compute.v1.VMService.ResizeVMDisk:output_type -> org.cudo.compute.v1.ResizeVMDiskResponse
+	48,  // 128: org.cudo.compute.v1.VMService.ListDisks:output_type -> org.cudo.compute.v1.ListDisksResponse
+	50,  // 129: org.cudo.compute.v1.VMService.GetDisk:output_type -> org.cudo.compute.v1.GetDiskResponse
+	54,  // 130: org.cudo.compute.v1.VMService.DeleteStorageDisk:output_type -> org.cudo.compute.v1.DeleteStorageDiskResponse
+	10,  // 131: org.cudo.compute.v1.VMService.AttachStorageDisk:output_type -> org.cudo.compute.v1.AttachStorageDiskResponse
+	12,  // 132: org.cudo.compute.v1.VMService.DetachStorageDisk:output_type -> org.cudo.compute.v1.DetachStorageDiskResponse
+	56,  // 133: org.cudo.compute.v1.VMService.AttachSecurityGroup:output_type -> org.cudo.compute.v1.AttachSecurityGroupResponse
+	58,  // 134: org.cudo.compute.v1.VMService.DetachSecurityGroup:output_type -> org.cudo.compute.v1.DetachSecurityGroupResponse
+	60,  // 135: org.cudo.compute.v1.VMService.UpdateVMMetadata:output_type -> org.cudo.compute.v1.UpdateVMMetadataResponse
+	62,  // 136: org.cudo.compute.v1.VMService.UpdateVMExpireTime:output_type -> org.cudo.compute.v1.UpdateVMExpireTimeResponse
+	64,  // 137: org.cudo.compute.v1.VMService.UpdateVMPassword:output_type -> org.cudo.compute.v1.UpdateVMPasswordResponse
+	66,  // 138: org.cudo.compute.v1.VMService.UpdateVMAuthorizedSSHKeys:output_type -> org.cudo.compute.v1.UpdateVMAuthorizedSSHKeysResponse
+	68,  // 139: org.cudo.compute.v1.VMService.CommitVM:output_type -> org.cudo.compute.v1.CommitVMResponse
+	70,  // 140: org.cudo.compute.v1.VMService.GetVMMachineType:output_type -> org.cudo.compute.v1.GetVMMachineTypeResponse
+	105, // [105:141] is the sub-list for method output_type
+	69,  // [69:105] is the sub-list for method input_type
+	69,  // [69:69] is the sub-list for extension type_name
+	69,  // [69:69] is the sub-list for extension extendee
+	0,   // [0:69] is the sub-list for field type_name
 }
 
 func init() { file_svc_compute_vm_vm_svc_proto_init() }

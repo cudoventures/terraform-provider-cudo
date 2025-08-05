@@ -75,92 +75,6 @@ func (NetworkType) EnumDescriptor() ([]byte, []int) {
 	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{0}
 }
 
-// TODO: Not all of these states are necessary; remove any that aren't relevant to customers.
-type MachineState int32
-
-const (
-	MachineState_MACHINE_STATE_UNSPECIFIED MachineState = 0
-	MachineState_NEW                       MachineState = 1
-	MachineState_COMMISSIONING             MachineState = 2
-	MachineState_FAILED                    MachineState = 3
-	MachineState_MISSING                   MachineState = 4
-	MachineState_READY                     MachineState = 5
-	MachineState_RESERVED                  MachineState = 6
-	MachineState_DEPLOYED                  MachineState = 7
-	MachineState_RETIRED                   MachineState = 8
-	MachineState_DEPLOYING                 MachineState = 9
-	MachineState_ALLOCATED                 MachineState = 10
-	MachineState_RELEASING                 MachineState = 11
-	MachineState_ERASING                   MachineState = 12
-	MachineState_RESCUE_MODE               MachineState = 13
-	MachineState_TESTING                   MachineState = 14
-)
-
-// Enum value maps for MachineState.
-var (
-	MachineState_name = map[int32]string{
-		0:  "MACHINE_STATE_UNSPECIFIED",
-		1:  "NEW",
-		2:  "COMMISSIONING",
-		3:  "FAILED",
-		4:  "MISSING",
-		5:  "READY",
-		6:  "RESERVED",
-		7:  "DEPLOYED",
-		8:  "RETIRED",
-		9:  "DEPLOYING",
-		10: "ALLOCATED",
-		11: "RELEASING",
-		12: "ERASING",
-		13: "RESCUE_MODE",
-		14: "TESTING",
-	}
-	MachineState_value = map[string]int32{
-		"MACHINE_STATE_UNSPECIFIED": 0,
-		"NEW":                       1,
-		"COMMISSIONING":             2,
-		"FAILED":                    3,
-		"MISSING":                   4,
-		"READY":                     5,
-		"RESERVED":                  6,
-		"DEPLOYED":                  7,
-		"RETIRED":                   8,
-		"DEPLOYING":                 9,
-		"ALLOCATED":                 10,
-		"RELEASING":                 11,
-		"ERASING":                   12,
-		"RESCUE_MODE":               13,
-		"TESTING":                   14,
-	}
-)
-
-func (x MachineState) Enum() *MachineState {
-	p := new(MachineState)
-	*p = x
-	return p
-}
-
-func (x MachineState) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (MachineState) Descriptor() protoreflect.EnumDescriptor {
-	return file_svc_compute_baremetal_baremetal_proto_enumTypes[1].Descriptor()
-}
-
-func (MachineState) Type() protoreflect.EnumType {
-	return &file_svc_compute_baremetal_baremetal_proto_enumTypes[1]
-}
-
-func (x MachineState) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use MachineState.Descriptor instead.
-func (MachineState) EnumDescriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{1}
-}
-
 type MachinePowerState int32
 
 const (
@@ -203,11 +117,11 @@ func (x MachinePowerState) String() string {
 }
 
 func (MachinePowerState) Descriptor() protoreflect.EnumDescriptor {
-	return file_svc_compute_baremetal_baremetal_proto_enumTypes[2].Descriptor()
+	return file_svc_compute_baremetal_baremetal_proto_enumTypes[1].Descriptor()
 }
 
 func (MachinePowerState) Type() protoreflect.EnumType {
-	return &file_svc_compute_baremetal_baremetal_proto_enumTypes[2]
+	return &file_svc_compute_baremetal_baremetal_proto_enumTypes[1]
 }
 
 func (x MachinePowerState) Number() protoreflect.EnumNumber {
@@ -216,7 +130,65 @@ func (x MachinePowerState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MachinePowerState.Descriptor instead.
 func (MachinePowerState) EnumDescriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{2}
+	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{1}
+}
+
+type Machine_State int32
+
+const (
+	Machine_STATE_UNSPECIFIED Machine_State = 0
+	Machine_CREATING          Machine_State = 1
+	Machine_ACTIVE            Machine_State = 2
+	Machine_DEPLOYING         Machine_State = 3
+	Machine_DELETING          Machine_State = 4
+	Machine_FAILED            Machine_State = 5
+)
+
+// Enum value maps for Machine_State.
+var (
+	Machine_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "CREATING",
+		2: "ACTIVE",
+		3: "DEPLOYING",
+		4: "DELETING",
+		5: "FAILED",
+	}
+	Machine_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"CREATING":          1,
+		"ACTIVE":            2,
+		"DEPLOYING":         3,
+		"DELETING":          4,
+		"FAILED":            5,
+	}
+)
+
+func (x Machine_State) Enum() *Machine_State {
+	p := new(Machine_State)
+	*p = x
+	return p
+}
+
+func (x Machine_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Machine_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_svc_compute_baremetal_baremetal_proto_enumTypes[2].Descriptor()
+}
+
+func (Machine_State) Type() protoreflect.EnumType {
+	return &file_svc_compute_baremetal_baremetal_proto_enumTypes[2]
+}
+
+func (x Machine_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Machine_State.Descriptor instead.
+func (Machine_State) EnumDescriptor() ([]byte, []int) {
+	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{2, 0}
 }
 
 type Cluster_State int32
@@ -274,7 +246,7 @@ func (x Cluster_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Cluster_State.Descriptor instead.
 func (Cluster_State) EnumDescriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{4, 0}
+	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{3, 0}
 }
 
 type ClusterMachine_State int32
@@ -329,7 +301,7 @@ func (x ClusterMachine_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ClusterMachine_State.Descriptor instead.
 func (ClusterMachine_State) EnumDescriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{5, 0}
+	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{4, 0}
 }
 
 type MachineType struct {
@@ -574,11 +546,17 @@ type Machine struct {
 	DiskSizeGib         int32                  `protobuf:"varint,10,opt,name=disk_size_gib,json=diskSizeGib,proto3" json:"disk_size_gib,omitempty"`
 	Gpus                int32                  `protobuf:"varint,11,opt,name=gpus,proto3" json:"gpus,omitempty"`
 	GpuModelId          string                 `protobuf:"bytes,12,opt,name=gpu_model_id,json=gpuModelId,proto3" json:"gpu_model_id,omitempty"`
-	State               MachineState           `protobuf:"varint,13,opt,name=state,proto3,enum=org.cudo.compute.v1.MachineState" json:"state,omitempty"`
+	State               Machine_State          `protobuf:"varint,13,opt,name=state,proto3,enum=org.cudo.compute.v1.Machine_State" json:"state,omitempty"`
 	PowerState          MachinePowerState      `protobuf:"varint,14,opt,name=power_state,json=powerState,proto3,enum=org.cudo.compute.v1.MachinePowerState" json:"power_state,omitempty"`
 	Os                  string                 `protobuf:"bytes,15,opt,name=os,proto3" json:"os,omitempty"`
 	Hostname            string                 `protobuf:"bytes,16,opt,name=hostname,proto3" json:"hostname,omitempty"`
 	ExternalIpAddresses []string               `protobuf:"bytes,17,rep,name=external_ip_addresses,json=externalIpAddresses,proto3" json:"external_ip_addresses,omitempty"`
+	ProjectId           string                 `protobuf:"bytes,18,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	CreateTime          *timestamppb.Timestamp `protobuf:"bytes,19,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	CreateBy            string                 `protobuf:"bytes,20,opt,name=create_by,json=createBy,proto3" json:"create_by,omitempty"`
+	CommitmentTerm      compute.CommitmentTerm `protobuf:"varint,21,opt,name=commitment_term,json=commitmentTerm,proto3,enum=org.cudo.compute.v1.CommitmentTerm" json:"commitment_term,omitempty"`
+	PriceHr             *decimal.Decimal       `protobuf:"bytes,22,opt,name=price_hr,json=priceHr,proto3" json:"price_hr,omitempty"`
+	UserData            string                 `protobuf:"bytes,23,opt,name=user_data,json=userData,proto3" json:"user_data,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -697,11 +675,11 @@ func (x *Machine) GetGpuModelId() string {
 	return ""
 }
 
-func (x *Machine) GetState() MachineState {
+func (x *Machine) GetState() Machine_State {
 	if x != nil {
 		return x.State
 	}
-	return MachineState_MACHINE_STATE_UNSPECIFIED
+	return Machine_STATE_UNSPECIFIED
 }
 
 func (x *Machine) GetPowerState() MachinePowerState {
@@ -732,156 +710,42 @@ func (x *Machine) GetExternalIpAddresses() []string {
 	return nil
 }
 
-type MachineInstance struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	ProjectId      string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	Id             string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
-	DataCenterId   string                 `protobuf:"bytes,3,opt,name=data_center_id,json=dataCenterId,proto3" json:"data_center_id,omitempty"`
-	MachineTypeId  string                 `protobuf:"bytes,4,opt,name=machine_type_id,json=machineTypeId,proto3" json:"machine_type_id,omitempty"`
-	Machine        *Machine               `protobuf:"bytes,5,opt,name=machine,proto3" json:"machine,omitempty"`
-	CreateTime     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	CreateBy       string                 `protobuf:"bytes,7,opt,name=create_by,json=createBy,proto3" json:"create_by,omitempty"`
-	PowerState     MachinePowerState      `protobuf:"varint,8,opt,name=power_state,json=powerState,proto3,enum=org.cudo.compute.v1.MachinePowerState" json:"power_state,omitempty"`
-	CommitmentTerm compute.CommitmentTerm `protobuf:"varint,9,opt,name=commitment_term,json=commitmentTerm,proto3,enum=org.cudo.compute.v1.CommitmentTerm" json:"commitment_term,omitempty"`
-	PriceHr        *decimal.Decimal       `protobuf:"bytes,10,opt,name=price_hr,json=priceHr,proto3" json:"price_hr,omitempty"`
-	Ipv4Addresses  int32                  `protobuf:"varint,11,opt,name=ipv4_addresses,json=ipv4Addresses,proto3" json:"ipv4_addresses,omitempty"`
-	Ipv4PriceHr    *decimal.Decimal       `protobuf:"bytes,12,opt,name=ipv4_price_hr,json=ipv4PriceHr,proto3" json:"ipv4_price_hr,omitempty"`
-	TotalPriceHr   *decimal.Decimal       `protobuf:"bytes,13,opt,name=total_price_hr,json=totalPriceHr,proto3" json:"total_price_hr,omitempty"`
-	Os             string                 `protobuf:"bytes,14,opt,name=os,proto3" json:"os,omitempty"`
-	UserData       string                 `protobuf:"bytes,15,opt,name=user_data,json=userData,proto3" json:"user_data,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
-}
-
-func (x *MachineInstance) Reset() {
-	*x = MachineInstance{}
-	mi := &file_svc_compute_baremetal_baremetal_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *MachineInstance) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MachineInstance) ProtoMessage() {}
-
-func (x *MachineInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MachineInstance.ProtoReflect.Descriptor instead.
-func (*MachineInstance) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *MachineInstance) GetProjectId() string {
+func (x *Machine) GetProjectId() string {
 	if x != nil {
 		return x.ProjectId
 	}
 	return ""
 }
 
-func (x *MachineInstance) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *MachineInstance) GetDataCenterId() string {
-	if x != nil {
-		return x.DataCenterId
-	}
-	return ""
-}
-
-func (x *MachineInstance) GetMachineTypeId() string {
-	if x != nil {
-		return x.MachineTypeId
-	}
-	return ""
-}
-
-func (x *MachineInstance) GetMachine() *Machine {
-	if x != nil {
-		return x.Machine
-	}
-	return nil
-}
-
-func (x *MachineInstance) GetCreateTime() *timestamppb.Timestamp {
+func (x *Machine) GetCreateTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreateTime
 	}
 	return nil
 }
 
-func (x *MachineInstance) GetCreateBy() string {
+func (x *Machine) GetCreateBy() string {
 	if x != nil {
 		return x.CreateBy
 	}
 	return ""
 }
 
-func (x *MachineInstance) GetPowerState() MachinePowerState {
-	if x != nil {
-		return x.PowerState
-	}
-	return MachinePowerState_MACHINE_POWER_STATE_UNSPECIFIED
-}
-
-func (x *MachineInstance) GetCommitmentTerm() compute.CommitmentTerm {
+func (x *Machine) GetCommitmentTerm() compute.CommitmentTerm {
 	if x != nil {
 		return x.CommitmentTerm
 	}
 	return compute.CommitmentTerm(0)
 }
 
-func (x *MachineInstance) GetPriceHr() *decimal.Decimal {
+func (x *Machine) GetPriceHr() *decimal.Decimal {
 	if x != nil {
 		return x.PriceHr
 	}
 	return nil
 }
 
-func (x *MachineInstance) GetIpv4Addresses() int32 {
-	if x != nil {
-		return x.Ipv4Addresses
-	}
-	return 0
-}
-
-func (x *MachineInstance) GetIpv4PriceHr() *decimal.Decimal {
-	if x != nil {
-		return x.Ipv4PriceHr
-	}
-	return nil
-}
-
-func (x *MachineInstance) GetTotalPriceHr() *decimal.Decimal {
-	if x != nil {
-		return x.TotalPriceHr
-	}
-	return nil
-}
-
-func (x *MachineInstance) GetOs() string {
-	if x != nil {
-		return x.Os
-	}
-	return ""
-}
-
-func (x *MachineInstance) GetUserData() string {
+func (x *Machine) GetUserData() string {
 	if x != nil {
 		return x.UserData
 	}
@@ -922,7 +786,7 @@ type Cluster struct {
 
 func (x *Cluster) Reset() {
 	*x = Cluster{}
-	mi := &file_svc_compute_baremetal_baremetal_proto_msgTypes[4]
+	mi := &file_svc_compute_baremetal_baremetal_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -934,7 +798,7 @@ func (x *Cluster) String() string {
 func (*Cluster) ProtoMessage() {}
 
 func (x *Cluster) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_proto_msgTypes[4]
+	mi := &file_svc_compute_baremetal_baremetal_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -947,7 +811,7 @@ func (x *Cluster) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cluster.ProtoReflect.Descriptor instead.
 func (*Cluster) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{4}
+	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Cluster) GetProjectId() string {
@@ -1161,7 +1025,7 @@ type ClusterMachine struct {
 
 func (x *ClusterMachine) Reset() {
 	*x = ClusterMachine{}
-	mi := &file_svc_compute_baremetal_baremetal_proto_msgTypes[5]
+	mi := &file_svc_compute_baremetal_baremetal_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1173,7 +1037,7 @@ func (x *ClusterMachine) String() string {
 func (*ClusterMachine) ProtoMessage() {}
 
 func (x *ClusterMachine) ProtoReflect() protoreflect.Message {
-	mi := &file_svc_compute_baremetal_baremetal_proto_msgTypes[5]
+	mi := &file_svc_compute_baremetal_baremetal_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1186,7 +1050,7 @@ func (x *ClusterMachine) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterMachine.ProtoReflect.Descriptor instead.
 func (*ClusterMachine) Descriptor() ([]byte, []int) {
-	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{5}
+	return file_svc_compute_baremetal_baremetal_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ClusterMachine) GetProjectId() string {
@@ -1364,7 +1228,7 @@ const file_svc_compute_baremetal_baremetal_proto_rawDesc = "" +
 	"\x0fmachine_type_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rmachineTypeId\x12Q\n" +
 	"\x0fcommitment_term\x18\x03 \x01(\x0e2#.org.cudo.compute.v1.CommitmentTermB\x03\xe0A\x02R\x0ecommitmentTerm\x124\n" +
 	"\bprice_hr\x18\x04 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x02R\apriceHr\x12=\n" +
-	"\ripv4_price_hr\x18\x05 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x02R\vipv4PriceHr\"\xaf\x05\n" +
+	"\ripv4_price_hr\x18\x05 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x02R\vipv4PriceHr\"\xc6\b\n" +
 	"\aMachine\x12)\n" +
 	"\x0edata_center_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12\x13\n" +
 	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\x12+\n" +
@@ -1380,33 +1244,30 @@ const file_svc_compute_baremetal_baremetal_proto_rawDesc = "" +
 	" \x01(\x05B\x03\xe0A\x03R\vdiskSizeGib\x12\x17\n" +
 	"\x04gpus\x18\v \x01(\x05B\x03\xe0A\x03R\x04gpus\x12%\n" +
 	"\fgpu_model_id\x18\f \x01(\tB\x03\xe0A\x03R\n" +
-	"gpuModelId\x12<\n" +
-	"\x05state\x18\r \x01(\x0e2!.org.cudo.compute.v1.MachineStateB\x03\xe0A\x03R\x05state\x12L\n" +
-	"\vpower_state\x18\x0e \x01(\x0e2&.org.cudo.compute.v1.MachinePowerStateB\x03\xe0A\x03R\n" +
+	"gpuModelId\x12=\n" +
+	"\x05state\x18\r \x01(\x0e2\".org.cudo.compute.v1.Machine.StateB\x03\xe0A\x03R\x05state\x12L\n" +
+	"\vpower_state\x18\x0e \x01(\x0e2&.org.cudo.compute.v1.MachinePowerStateB\x03\xe0A\x01R\n" +
 	"powerState\x12\x13\n" +
-	"\x02os\x18\x0f \x01(\tB\x03\xe0A\x03R\x02os\x12\x1f\n" +
+	"\x02os\x18\x0f \x01(\tB\x03\xe0A\x01R\x02os\x12\x1f\n" +
 	"\bhostname\x18\x10 \x01(\tB\x03\xe0A\x03R\bhostname\x127\n" +
-	"\x15external_ip_addresses\x18\x11 \x03(\tB\x03\xe0A\x03R\x13externalIpAddresses\"\xfd\x05\n" +
-	"\x0fMachineInstance\x12\"\n" +
+	"\x15external_ip_addresses\x18\x11 \x03(\tB\x03\xe0A\x03R\x13externalIpAddresses\x12\"\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
-	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\x12)\n" +
-	"\x0edata_center_id\x18\x03 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12+\n" +
-	"\x0fmachine_type_id\x18\x04 \x01(\tB\x03\xe0A\x02R\rmachineTypeId\x12;\n" +
-	"\amachine\x18\x05 \x01(\v2\x1c.org.cudo.compute.v1.MachineB\x03\xe0A\x03R\amachine\x12@\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"project_id\x18\x12 \x01(\tB\x03\xe0A\x02R\tprojectId\x12@\n" +
+	"\vcreate_time\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12 \n" +
-	"\tcreate_by\x18\a \x01(\tB\x03\xe0A\x03R\bcreateBy\x12L\n" +
-	"\vpower_state\x18\b \x01(\x0e2&.org.cudo.compute.v1.MachinePowerStateB\x03\xe0A\x01R\n" +
-	"powerState\x12Q\n" +
-	"\x0fcommitment_term\x18\t \x01(\x0e2#.org.cudo.compute.v1.CommitmentTermB\x03\xe0A\x01R\x0ecommitmentTerm\x124\n" +
-	"\bprice_hr\x18\n" +
-	" \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x03R\apriceHr\x12*\n" +
-	"\x0eipv4_addresses\x18\v \x01(\x05B\x03\xe0A\x03R\ripv4Addresses\x12=\n" +
-	"\ripv4_price_hr\x18\f \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x03R\vipv4PriceHr\x12?\n" +
-	"\x0etotal_price_hr\x18\r \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x03R\ftotalPriceHr\x12\x13\n" +
-	"\x02os\x18\x0e \x01(\tB\x03\xe0A\x02R\x02os\x12 \n" +
-	"\tuser_data\x18\x0f \x01(\tB\x03\xe0A\x04R\buserData\"\xc5\v\n" +
+	"\tcreate_by\x18\x14 \x01(\tB\x03\xe0A\x03R\bcreateBy\x12Q\n" +
+	"\x0fcommitment_term\x18\x15 \x01(\x0e2#.org.cudo.compute.v1.CommitmentTermB\x03\xe0A\x01R\x0ecommitmentTerm\x124\n" +
+	"\bprice_hr\x18\x16 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x03R\apriceHr\x12 \n" +
+	"\tuser_data\x18\x17 \x01(\tB\x03\xe0A\x04R\buserData\"a\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bCREATING\x10\x01\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x02\x12\r\n" +
+	"\tDEPLOYING\x10\x03\x12\f\n" +
+	"\bDELETING\x10\x04\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x05\"\xc5\v\n" +
 	"\aCluster\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
@@ -1489,25 +1350,7 @@ const file_svc_compute_baremetal_baremetal_proto_rawDesc = "" +
 	"\x18NETWORK_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bETHERNET\x10\x01\x12\x0e\n" +
 	"\n" +
-	"INFINIBAND\x10\x02*\xee\x01\n" +
-	"\fMachineState\x12\x1d\n" +
-	"\x19MACHINE_STATE_UNSPECIFIED\x10\x00\x12\a\n" +
-	"\x03NEW\x10\x01\x12\x11\n" +
-	"\rCOMMISSIONING\x10\x02\x12\n" +
-	"\n" +
-	"\x06FAILED\x10\x03\x12\v\n" +
-	"\aMISSING\x10\x04\x12\t\n" +
-	"\x05READY\x10\x05\x12\f\n" +
-	"\bRESERVED\x10\x06\x12\f\n" +
-	"\bDEPLOYED\x10\a\x12\v\n" +
-	"\aRETIRED\x10\b\x12\r\n" +
-	"\tDEPLOYING\x10\t\x12\r\n" +
-	"\tALLOCATED\x10\n" +
-	"\x12\r\n" +
-	"\tRELEASING\x10\v\x12\v\n" +
-	"\aERASING\x10\f\x12\x0f\n" +
-	"\vRESCUE_MODE\x10\r\x12\v\n" +
-	"\aTESTING\x10\x0e*{\n" +
+	"INFINIBAND\x10\x02*{\n" +
 	"\x11MachinePowerState\x12#\n" +
 	"\x1fMACHINE_POWER_STATE_UNSPECIFIED\x10\x00\x12\x06\n" +
 	"\x02ON\x10\x01\x12\a\n" +
@@ -1529,58 +1372,53 @@ func file_svc_compute_baremetal_baremetal_proto_rawDescGZIP() []byte {
 }
 
 var file_svc_compute_baremetal_baremetal_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_svc_compute_baremetal_baremetal_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_svc_compute_baremetal_baremetal_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_svc_compute_baremetal_baremetal_proto_goTypes = []any{
 	(NetworkType)(0),              // 0: org.cudo.compute.v1.NetworkType
-	(MachineState)(0),             // 1: org.cudo.compute.v1.MachineState
-	(MachinePowerState)(0),        // 2: org.cudo.compute.v1.MachinePowerState
+	(MachinePowerState)(0),        // 1: org.cudo.compute.v1.MachinePowerState
+	(Machine_State)(0),            // 2: org.cudo.compute.v1.Machine.State
 	(Cluster_State)(0),            // 3: org.cudo.compute.v1.Cluster.State
 	(ClusterMachine_State)(0),     // 4: org.cudo.compute.v1.ClusterMachine.State
 	(*MachineType)(nil),           // 5: org.cudo.compute.v1.MachineType
 	(*MachineTypePrice)(nil),      // 6: org.cudo.compute.v1.MachineTypePrice
 	(*Machine)(nil),               // 7: org.cudo.compute.v1.Machine
-	(*MachineInstance)(nil),       // 8: org.cudo.compute.v1.MachineInstance
-	(*Cluster)(nil),               // 9: org.cudo.compute.v1.Cluster
-	(*ClusterMachine)(nil),        // 10: org.cudo.compute.v1.ClusterMachine
-	(compute.CommitmentTerm)(0),   // 11: org.cudo.compute.v1.CommitmentTerm
-	(*decimal.Decimal)(nil),       // 12: google.type.Decimal
-	(*timestamppb.Timestamp)(nil), // 13: google.protobuf.Timestamp
-	(vm.SshKeySource)(0),          // 14: org.cudo.compute.v1.SshKeySource
+	(*Cluster)(nil),               // 8: org.cudo.compute.v1.Cluster
+	(*ClusterMachine)(nil),        // 9: org.cudo.compute.v1.ClusterMachine
+	(compute.CommitmentTerm)(0),   // 10: org.cudo.compute.v1.CommitmentTerm
+	(*decimal.Decimal)(nil),       // 11: google.type.Decimal
+	(*timestamppb.Timestamp)(nil), // 12: google.protobuf.Timestamp
+	(vm.SshKeySource)(0),          // 13: org.cudo.compute.v1.SshKeySource
 }
 var file_svc_compute_baremetal_baremetal_proto_depIdxs = []int32{
 	6,  // 0: org.cudo.compute.v1.MachineType.prices:type_name -> org.cudo.compute.v1.MachineTypePrice
 	0,  // 1: org.cudo.compute.v1.MachineType.network_type:type_name -> org.cudo.compute.v1.NetworkType
-	11, // 2: org.cudo.compute.v1.MachineTypePrice.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
-	12, // 3: org.cudo.compute.v1.MachineTypePrice.price_hr:type_name -> google.type.Decimal
-	12, // 4: org.cudo.compute.v1.MachineTypePrice.ipv4_price_hr:type_name -> google.type.Decimal
-	1,  // 5: org.cudo.compute.v1.Machine.state:type_name -> org.cudo.compute.v1.MachineState
-	2,  // 6: org.cudo.compute.v1.Machine.power_state:type_name -> org.cudo.compute.v1.MachinePowerState
-	7,  // 7: org.cudo.compute.v1.MachineInstance.machine:type_name -> org.cudo.compute.v1.Machine
-	13, // 8: org.cudo.compute.v1.MachineInstance.create_time:type_name -> google.protobuf.Timestamp
-	2,  // 9: org.cudo.compute.v1.MachineInstance.power_state:type_name -> org.cudo.compute.v1.MachinePowerState
-	11, // 10: org.cudo.compute.v1.MachineInstance.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
-	12, // 11: org.cudo.compute.v1.MachineInstance.price_hr:type_name -> google.type.Decimal
-	12, // 12: org.cudo.compute.v1.MachineInstance.ipv4_price_hr:type_name -> google.type.Decimal
-	12, // 13: org.cudo.compute.v1.MachineInstance.total_price_hr:type_name -> google.type.Decimal
-	11, // 14: org.cudo.compute.v1.Cluster.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
-	13, // 15: org.cudo.compute.v1.Cluster.commitment_end_time:type_name -> google.protobuf.Timestamp
-	14, // 16: org.cudo.compute.v1.Cluster.ssh_key_source:type_name -> org.cudo.compute.v1.SshKeySource
-	3,  // 17: org.cudo.compute.v1.Cluster.state:type_name -> org.cudo.compute.v1.Cluster.State
-	0,  // 18: org.cudo.compute.v1.Cluster.network_type:type_name -> org.cudo.compute.v1.NetworkType
-	12, // 19: org.cudo.compute.v1.Cluster.machine_price_hr:type_name -> google.type.Decimal
-	12, // 20: org.cudo.compute.v1.Cluster.total_machine_price_hr:type_name -> google.type.Decimal
-	12, // 21: org.cudo.compute.v1.Cluster.total_price_hr:type_name -> google.type.Decimal
-	10, // 22: org.cudo.compute.v1.Cluster.machines:type_name -> org.cudo.compute.v1.ClusterMachine
-	13, // 23: org.cudo.compute.v1.Cluster.create_time:type_name -> google.protobuf.Timestamp
-	2,  // 24: org.cudo.compute.v1.ClusterMachine.power_state:type_name -> org.cudo.compute.v1.MachinePowerState
-	4,  // 25: org.cudo.compute.v1.ClusterMachine.state:type_name -> org.cudo.compute.v1.ClusterMachine.State
-	12, // 26: org.cudo.compute.v1.ClusterMachine.price_hr:type_name -> google.type.Decimal
-	13, // 27: org.cudo.compute.v1.ClusterMachine.create_time:type_name -> google.protobuf.Timestamp
-	28, // [28:28] is the sub-list for method output_type
-	28, // [28:28] is the sub-list for method input_type
-	28, // [28:28] is the sub-list for extension type_name
-	28, // [28:28] is the sub-list for extension extendee
-	0,  // [0:28] is the sub-list for field type_name
+	10, // 2: org.cudo.compute.v1.MachineTypePrice.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
+	11, // 3: org.cudo.compute.v1.MachineTypePrice.price_hr:type_name -> google.type.Decimal
+	11, // 4: org.cudo.compute.v1.MachineTypePrice.ipv4_price_hr:type_name -> google.type.Decimal
+	2,  // 5: org.cudo.compute.v1.Machine.state:type_name -> org.cudo.compute.v1.Machine.State
+	1,  // 6: org.cudo.compute.v1.Machine.power_state:type_name -> org.cudo.compute.v1.MachinePowerState
+	12, // 7: org.cudo.compute.v1.Machine.create_time:type_name -> google.protobuf.Timestamp
+	10, // 8: org.cudo.compute.v1.Machine.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
+	11, // 9: org.cudo.compute.v1.Machine.price_hr:type_name -> google.type.Decimal
+	10, // 10: org.cudo.compute.v1.Cluster.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
+	12, // 11: org.cudo.compute.v1.Cluster.commitment_end_time:type_name -> google.protobuf.Timestamp
+	13, // 12: org.cudo.compute.v1.Cluster.ssh_key_source:type_name -> org.cudo.compute.v1.SshKeySource
+	3,  // 13: org.cudo.compute.v1.Cluster.state:type_name -> org.cudo.compute.v1.Cluster.State
+	0,  // 14: org.cudo.compute.v1.Cluster.network_type:type_name -> org.cudo.compute.v1.NetworkType
+	11, // 15: org.cudo.compute.v1.Cluster.machine_price_hr:type_name -> google.type.Decimal
+	11, // 16: org.cudo.compute.v1.Cluster.total_machine_price_hr:type_name -> google.type.Decimal
+	11, // 17: org.cudo.compute.v1.Cluster.total_price_hr:type_name -> google.type.Decimal
+	9,  // 18: org.cudo.compute.v1.Cluster.machines:type_name -> org.cudo.compute.v1.ClusterMachine
+	12, // 19: org.cudo.compute.v1.Cluster.create_time:type_name -> google.protobuf.Timestamp
+	1,  // 20: org.cudo.compute.v1.ClusterMachine.power_state:type_name -> org.cudo.compute.v1.MachinePowerState
+	4,  // 21: org.cudo.compute.v1.ClusterMachine.state:type_name -> org.cudo.compute.v1.ClusterMachine.State
+	11, // 22: org.cudo.compute.v1.ClusterMachine.price_hr:type_name -> google.type.Decimal
+	12, // 23: org.cudo.compute.v1.ClusterMachine.create_time:type_name -> google.protobuf.Timestamp
+	24, // [24:24] is the sub-list for method output_type
+	24, // [24:24] is the sub-list for method input_type
+	24, // [24:24] is the sub-list for extension type_name
+	24, // [24:24] is the sub-list for extension extendee
+	0,  // [0:24] is the sub-list for field type_name
 }
 
 func init() { file_svc_compute_baremetal_baremetal_proto_init() }
@@ -1594,7 +1432,7 @@ func file_svc_compute_baremetal_baremetal_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_svc_compute_baremetal_baremetal_proto_rawDesc), len(file_svc_compute_baremetal_baremetal_proto_rawDesc)),
 			NumEnums:      5,
-			NumMessages:   6,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
