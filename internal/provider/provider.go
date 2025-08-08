@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/baremetal"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -43,6 +44,7 @@ type CudoProviderModel struct {
 }
 
 type CudoClientData struct {
+	BareMetalClient         baremetal.BareMetalServiceClient
 	VMClient                vm.VMServiceClient
 	NetworkClient           network.NetworkServiceClient
 	DefaultBillingAccountID string
@@ -181,10 +183,12 @@ func (p *CudoProvider) Configure(ctx context.Context, req provider.ConfigureRequ
 		return
 	}
 
+	bareMetalClient := baremetal.NewBareMetalServiceClient(conn)
 	vmClient := vm.NewVMServiceClient(conn)
 	networkClient := network.NewNetworkServiceClient(conn)
 
 	ccd := &CudoClientData{
+		BareMetalClient:         bareMetalClient,
 		VMClient:                vmClient,
 		NetworkClient:           networkClient,
 		DefaultProjectID:        projectID,
@@ -202,6 +206,7 @@ func (p *CudoProvider) Resources(ctx context.Context) []func() resource.Resource
 		NewNetworkResource,
 		NewVMImageResource,
 		NewVMResource,
+		NewMachineResource,
 	}
 }
 
@@ -213,6 +218,7 @@ func (p *CudoProvider) DataSources(ctx context.Context) []func() datasource.Data
 		NewVMDataSource,
 		NewSecurityGroupDataSource,
 		NewNetworkDataSource,
+		NewMachineDataSource,
 	}
 }
 
