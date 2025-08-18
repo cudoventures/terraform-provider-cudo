@@ -24,14 +24,14 @@ type StorageDiskDataSource struct {
 
 // SecurityGroupDataSourceModel describes the resource data model.
 type StorageDiskDataSourceModel struct {
+	DataCenterID types.String `tfsdk:"data_center_id"`
 	ID           types.String `tfsdk:"id"`
 	ProjectID    types.String `tfsdk:"project_id"`
-	DataCenterID types.String `tfsdk:"data_center_id"`
 	SizeGib      types.Int64  `tfsdk:"size_gib"`
 }
 
 func (d *StorageDiskDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = "cudo_storage_disk"
+	resp.TypeName = req.ProviderTypeName + "_storage_disk"
 }
 
 func (d *StorageDiskDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
@@ -39,6 +39,10 @@ func (d *StorageDiskDataSource) Schema(ctx context.Context, req datasource.Schem
 		MarkdownDescription: "Disk data source",
 		Description:         "Gets a Disk",
 		Attributes: map[string]schema.Attribute{
+			"data_center_id": schema.StringAttribute{
+				Description: "The unique identifier of the datacenter where the disk is located.",
+				Computed:    true,
+			},
 			"id": schema.StringAttribute{
 				Description: "Storage disk ID.",
 				Required:    true,
@@ -46,10 +50,6 @@ func (d *StorageDiskDataSource) Schema(ctx context.Context, req datasource.Schem
 			"project_id": schema.StringAttribute{
 				Description: "The unique identifier of the project the disk is in.",
 				Optional:    true,
-			},
-			"data_center_id": schema.StringAttribute{
-				Description: "The unique identifier of the datacenter where the disk is located.",
-				Computed:    true,
 			},
 			"size_gib": schema.Int64Attribute{
 				Description: "Size of the storage disk in GiB",
@@ -82,18 +82,18 @@ func (d *StorageDiskDataSource) Read(ctx context.Context, req datasource.ReadReq
 	var state StorageDiskDataSourceModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	projectId := d.client.DefaultProjectID
-	if !state.ProjectID.IsNull() {
-		projectId = state.ProjectID.ValueString()
+	projectID := state.ProjectID.ValueString()
+	if state.ProjectID.IsNull() {
+		state.ProjectID = types.StringValue(d.client.DefaultProjectID)
+		projectID = d.client.DefaultProjectID
 	}
 
 	res, err := d.client.VMClient.GetDisk(ctx, &vm.GetDiskRequest{
-		ProjectId: projectId,
+		ProjectId: projectID,
 		Id:        state.ID.ValueString(),
 	})
 	if err != nil {
@@ -107,6 +107,5 @@ func (d *StorageDiskDataSource) Read(ctx context.Context, req datasource.ReadReq
 	state.DataCenterID = types.StringValue(res.Disk.DataCenterId)
 	state.SizeGib = types.Int64Value(int64(res.Disk.SizeGib))
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

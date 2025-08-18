@@ -22,7 +22,9 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &NetworkResource{}
+var _ resource.ResourceWithConfigure = &NetworkResource{}
 var _ resource.ResourceWithImportState = &NetworkResource{}
+var _ resource.ResourceWithModifyPlan = &NetworkResource{}
 
 func NewNetworkResource() resource.Resource {
 	return &NetworkResource{}
@@ -35,16 +37,17 @@ type NetworkResource struct {
 
 // NetworkResourceModel describes the resource data model.
 type NetworkResourceModel struct {
-	ID                types.String `tfsdk:"id"`
-	DataCenterId      types.String `tfsdk:"data_center_id"`
-	IPRange           types.String `tfsdk:"ip_range"`
-	Gateway           types.String `tfsdk:"gateway"`
+	DataCenterID      types.String `tfsdk:"data_center_id"`
 	ExternalIPAddress types.String `tfsdk:"external_ip_address"`
+	Gateway           types.String `tfsdk:"gateway"`
+	ID                types.String `tfsdk:"id"`
 	InternalIPAddress types.String `tfsdk:"internal_ip_address"`
+	IPRange           types.String `tfsdk:"ip_range"`
+	ProjectID         types.String `tfsdk:"project_id"`
 }
 
 func (r *NetworkResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "cudo_network"
+	resp.TypeName = req.ProviderTypeName + "_network"
 }
 
 func (r *NetworkResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -52,15 +55,6 @@ func (r *NetworkResource) Schema(ctx context.Context, req resource.SchemaRequest
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "Network resource",
 		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: "Network ID",
-				Required:            true,
-				Validators: []validator.String{stringvalidator.RegexMatches(
-					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
-			},
 			"data_center_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
@@ -70,6 +64,27 @@ func (r *NetworkResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Validators: []validator.String{stringvalidator.RegexMatches(
 					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
 			},
+			"external_ip_address": schema.StringAttribute{
+				MarkdownDescription: "External IP of the network router",
+				Computed:            true,
+			},
+			"gateway": schema.StringAttribute{
+				MarkdownDescription: "Internal IP of the network gateway",
+				Computed:            true,
+			},
+			"id": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+				MarkdownDescription: "Network ID",
+				Required:            true,
+				Validators: []validator.String{stringvalidator.RegexMatches(
+					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
+			},
+			"internal_ip_address": schema.StringAttribute{
+				MarkdownDescription: "Internal IP of the network router",
+				Computed:            true,
+			},
 			"ip_range": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
@@ -77,24 +92,20 @@ func (r *NetworkResource) Schema(ctx context.Context, req resource.SchemaRequest
 				MarkdownDescription: "IP range of network in CIDR format e.g 192.168.0.0/24",
 				Required:            true,
 			},
-			"gateway": schema.StringAttribute{
-				MarkdownDescription: "Internal IP of the network gateway",
+			"project_id": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+				MarkdownDescription: "The project the network is in.",
+				Optional:            true,
 				Computed:            true,
-			},
-			"external_ip_address": schema.StringAttribute{
-				MarkdownDescription: "External IP of the network router",
-				Computed:            true,
-			},
-			"internal_ip_address": schema.StringAttribute{
-				MarkdownDescription: "Internal IP of the network router",
-				Computed:            true,
+				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid RFC1034 resource id")},
 			},
 		},
 	}
 }
 
 func (r *NetworkResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
 	}
@@ -112,20 +123,34 @@ func (r *NetworkResource) Configure(ctx context.Context, req resource.ConfigureR
 	r.client = client
 }
 
+func (r *NetworkResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	var projectID types.String
+
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("project_id"), &projectID)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if projectID.IsUnknown() && r.client.DefaultProjectID != "" {
+		projectID = types.StringValue(r.client.DefaultProjectID)
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("project_id"), projectID)...)
+	}
+}
+
 func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var state NetworkResourceModel
+	var plan NetworkResourceModel
 
 	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	_, err := r.client.NetworkClient.CreateNetwork(ctx, &network.CreateNetworkRequest{
-		ProjectId:    r.client.DefaultProjectID,
-		CidrPrefix:   state.IPRange.ValueString(),
-		DataCenterId: state.DataCenterId.ValueString(),
-		Id:           state.ID.ValueString(),
+		CidrPrefix:   plan.IPRange.ValueString(),
+		DataCenterId: plan.DataCenterID.ValueString(),
+		Id:           plan.ID.ValueString(),
+		ProjectId:    plan.ProjectID.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -135,7 +160,7 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	network, err := waitForNetworkAvailable(ctx, r.client.NetworkClient, r.client.DefaultProjectID, state.ID.ValueString())
+	network, err := waitForNetworkAvailable(ctx, r.client.NetworkClient, r.client.DefaultProjectID, plan.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to create network resource",
@@ -145,26 +170,29 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	if network != nil {
-		state.Gateway = types.StringValue(network.Gateway)
-		state.ExternalIPAddress = types.StringValue(network.ExternalIpAddress)
-		state.InternalIPAddress = types.StringValue(network.InternalIpAddress)
+		plan.Gateway = types.StringValue(network.Gateway)
+		plan.ExternalIPAddress = types.StringValue(network.ExternalIpAddress)
+		plan.InternalIPAddress = types.StringValue(network.InternalIpAddress)
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
 func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var state NetworkResourceModel
 
-	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
+	if state.ProjectID.IsNull() {
+		state.ProjectID = types.StringValue(r.client.DefaultProjectID)
+	}
+
 	res, err := r.client.NetworkClient.GetNetwork(ctx, &network.GetNetworkRequest{
 		Id:        state.ID.ValueString(),
-		ProjectId: r.client.DefaultProjectID,
+		ProjectId: state.ProjectID.ValueString(),
 	})
 	if err != nil {
 		if ok := helper.IsErrCode(err, codes.NotFound); ok {
@@ -178,48 +206,37 @@ func (r *NetworkResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	state.ID = types.StringValue(res.Id)
-	state.DataCenterId = types.StringValue(res.DataCenterId)
+	state.DataCenterID = types.StringValue(res.DataCenterId)
 	state.ExternalIPAddress = types.StringValue(res.ExternalIpAddress)
+	state.Gateway = types.StringValue(res.Gateway)
+	state.ID = types.StringValue(res.Id)
 	state.InternalIPAddress = types.StringValue(res.InternalIpAddress)
 	state.IPRange = types.StringValue(res.IpRange)
-	state.Gateway = types.StringValue(res.Gateway)
 
-	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *NetworkResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan NetworkResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
-	if resp.Diagnostics.HasError() {
-		resp.Diagnostics.AddError(
-			"Error getting network plan",
-			"Error getting network plan",
-		)
-		return
-	}
-
-	// Read Terraform state data into the model
-	var state NetworkResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+	resp.Diagnostics.AddError(
+		"Unable to update network",
+		"Updating a network is not supported",
+	)
 }
 
 func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var state *NetworkResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	projectId := r.client.DefaultProjectID
-	networkId := state.ID.ValueString()
+	projectID := state.ProjectID.ValueString()
+	if state.ProjectID.IsNull() {
+		projectID = r.client.DefaultProjectID
+	}
+
+	ID := state.ID.ValueString()
 
 	_, err := r.client.NetworkClient.DeleteNetwork(ctx, &network.DeleteNetworkRequest{
-		ProjectId: projectId,
-		Id:        networkId,
+		ProjectId: projectID,
+		Id:        ID,
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -229,7 +246,7 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 		return
 	}
 
-	_, err = waitForNetworkDelete(ctx, r.client.NetworkClient, projectId, networkId)
+	_, err = waitForNetworkDelete(ctx, r.client.NetworkClient, projectID, ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for network resource to be deleted",
@@ -237,10 +254,6 @@ func (r *NetworkResource) Delete(ctx context.Context, req resource.DeleteRequest
 		)
 		return
 	}
-}
-
-func (r *NetworkResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 func waitForNetworkAvailable(ctx context.Context, c network.NetworkServiceClient, projectID string, networkID string) (*network.Network, error) {
@@ -251,17 +264,13 @@ func waitForNetworkAvailable(ctx context.Context, c network.NetworkServiceClient
 		})
 		if err != nil {
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
-				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s not found: ", networkID, projectID))
 				return res, network.Network_DELETED.String(), nil
 			}
-			return nil, "", err
+			return nil, network.Network_STATE_UNKNOWN.String(), err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.State.String()))
 		return res, res.State.String(), nil
 	}
-
-	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s", networkID, projectID))
 
 	stateConf := &helper.StateChangeConf{
 		Pending: []string{
@@ -306,18 +315,13 @@ func waitForNetworkDelete(ctx context.Context, c network.NetworkServiceClient, p
 		})
 		if err != nil {
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
-				tflog.Debug(ctx, fmt.Sprintf("Network %s in project %s is done: ", networkID, projectID))
 				return res, network.Network_DELETED.String(), nil
 			}
-			tflog.Error(ctx, fmt.Sprintf("error getting network %s in project %s: %v", networkID, projectID, err))
-			return nil, "", err
+			return nil, network.Network_STATE_UNKNOWN.String(), err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending network %s in project %s state: %s", networkID, projectID, res.State.String()))
 		return res, res.State.String(), nil
 	}
-
-	tflog.Debug(ctx, fmt.Sprintf("waiting for network %s in project %s ", networkID, projectID))
 
 	stateConf := &helper.StateChangeConf{
 		Pending: []string{
@@ -344,4 +348,24 @@ func waitForNetworkDelete(ctx context.Context, c network.NetworkServiceClient, p
 	}
 
 	return nil, nil
+}
+
+var networkImportIDRegExp = regexp.MustCompile("projects/(.+)/networks/(.+)")
+
+func (r *NetworkResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	var projectID, ID string
+	if parts := networkImportIDRegExp.FindStringSubmatch(req.ID); parts != nil {
+		projectID = parts[1]
+		ID = parts[2]
+	}
+
+	if projectID == "" || ID == "" {
+		resp.Diagnostics.AddError(
+			"Unexpected Import Identifier",
+			fmt.Sprintf("Expected import identifier with format: \"projects/<project_id>/networks/<id>\". Got: %q", req.ID),
+		)
+	}
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("project_id"), projectID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), ID)...)
 }

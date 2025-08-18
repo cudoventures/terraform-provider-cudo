@@ -79,6 +79,7 @@ func TestAcc_SecurityGroupResource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("cudo_security_group.sg", "id", securityGroupID),
 					resource.TestCheckResourceAttr("cudo_security_group.sg", "data_center_id", "black-mesa"),
+					resource.TestCheckResourceAttr("cudo_security_group.sg", "project_id", projectID),
 					resource.TestCheckResourceAttr("cudo_security_group.sg", "description", "security group for a web server"),
 					resource.TestCheckResourceAttr("cudo_security_group.sg", "rules.#", "2"),
 					resource.TestCheckResourceAttr("cudo_security_group.sg", "rules.0.ports", "80"),

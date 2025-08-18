@@ -17,13 +17,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"google.golang.org/grpc/codes"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &StorageDiskResource{}
+var _ resource.ResourceWithConfigure = &StorageDiskResource{}
 var _ resource.ResourceWithImportState = &StorageDiskResource{}
+var _ resource.ResourceWithModifyPlan = &StorageDiskResource{}
 
 func NewStorageDiskResource() resource.Resource {
 	return &StorageDiskResource{}
@@ -36,14 +37,14 @@ type StorageDiskResource struct {
 
 // SecurityGroupResourceModel describes the resource data model.
 type StorageDiskResourceModel struct {
-	ProjectID    types.String `tfsdk:"project_id"`
 	DataCenterID types.String `tfsdk:"data_center_id"`
-	Id           types.String `tfsdk:"id"`
+	ID           types.String `tfsdk:"id"`
+	ProjectID    types.String `tfsdk:"project_id"`
 	SizeGib      types.Int64  `tfsdk:"size_gib"`
 }
 
 func (r *StorageDiskResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "cudo_storage_disk"
+	resp.TypeName = req.ProviderTypeName + "_storage_disk"
 }
 
 func (r *StorageDiskResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -66,6 +67,8 @@ func (r *StorageDiskResource) Schema(ctx context.Context, req resource.SchemaReq
 				},
 				MarkdownDescription: "The project the storage disk is in.",
 				Optional:            true,
+				Computed:            true,
+				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid RFC1034 resource id")},
 			},
 			"id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
@@ -106,117 +109,37 @@ func (r *StorageDiskResource) Configure(ctx context.Context, req resource.Config
 	r.client = client
 }
 
-func waitForDiskDelete(ctx context.Context, c vm.VMServiceClient, projectID, diskID string) error {
-	refreshFunc := func() (interface{}, string, error) {
-		res, err := c.GetDisk(ctx, &vm.GetDiskRequest{
-			Id:        diskID,
-			ProjectId: projectID,
-		})
-		if err != nil {
-			if ok := helper.IsErrCode(err, codes.NotFound); ok {
-				return res, "done", nil
-			}
-			return nil, vm.Disk_UNKNOWN.String(), err
-		}
+func (r *StorageDiskResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	var projectID types.String
 
-		return res, res.Disk.DiskState.String(), nil
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("waiting for Disk %s in project %s ", diskID, projectID))
-
-	stateConf := &helper.StateChangeConf{
-		Pending: []string{
-			vm.Disk_ATTACHED.String(),
-			vm.Disk_CLONING.String(),
-			vm.Disk_CREATING.String(),
-			vm.Disk_DELETING.String(),
-			vm.Disk_DISABLED.String(),
-			vm.Disk_FAILED.String(),
-			vm.Disk_READY.String(),
-			vm.Disk_UNKNOWN.String(),
-			vm.Disk_UPDATING.String(),
-		},
-		Target:       []string{"done"},
-		Refresh:      refreshFunc,
-		Timeout:      20 * time.Minute,
-		Delay:        1 * time.Second,
-		MinTimeout:   3 * time.Second,
-		PollInterval: 5 * time.Second,
-	}
-
-	_, err := stateConf.WaitForState(ctx)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func waitForDiskCreate(ctx context.Context, c vm.VMServiceClient, projectID, diskID string) error {
-	refreshFunc := func() (interface{}, string, error) {
-		res, err := c.GetDisk(ctx, &vm.GetDiskRequest{
-			ProjectId: projectID,
-			Id:        diskID,
-		})
-		if err != nil {
-			// if not found assume resource is initializing
-			if ok := helper.IsErrCode(err, codes.NotFound); ok {
-				return res, vm.Disk_CREATING.String(), nil
-			}
-			return nil, "", err
-		}
-
-		return res, res.Disk.DiskState.String(), nil
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("waiting for Disk %s in project %s ", diskID, projectID))
-
-	stateConf := &helper.StateChangeConf{
-		Pending: []string{
-			vm.Disk_CREATING.String(),
-			vm.Disk_ATTACHED.String(),
-			vm.Disk_DISABLED.String(),
-			vm.Disk_UPDATING.String(),
-			vm.Disk_FAILED.String(),
-			vm.Disk_CLONING.String(),
-			vm.Disk_DELETING.String(),
-		},
-		Target:       []string{vm.Disk_READY.String()},
-		Refresh:      refreshFunc,
-		Timeout:      20 * time.Minute,
-		Delay:        1 * time.Second,
-		MinTimeout:   3 * time.Second,
-		PollInterval: 5 * time.Second,
-	}
-
-	_, err := stateConf.WaitForState(ctx)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r *StorageDiskResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var state StorageDiskResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("project_id"), &projectID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	projectID := r.client.DefaultProjectID
-	if !state.ProjectID.IsNull() {
-		projectID = state.ProjectID.ValueString()
+	if projectID.IsUnknown() && r.client.DefaultProjectID != "" {
+		projectID = types.StringValue(r.client.DefaultProjectID)
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("project_id"), projectID)...)
+	}
+}
+
+func (r *StorageDiskResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan StorageDiskResourceModel
+
+	// Read Terraform plan data into the model
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	_, err := r.client.VMClient.CreateStorageDisk(ctx, &vm.CreateStorageDiskRequest{
-		DataCenterId: state.DataCenterID.ValueString(),
-		ProjectId:    projectID,
+		DataCenterId: plan.DataCenterID.ValueString(),
+		ProjectId:    plan.ProjectID.ValueString(),
 		Disk: &vm.Disk{
-			Id:      string(state.Id.ValueString()),
-			SizeGib: int32(state.SizeGib.ValueInt64()),
+			DataCenterId: plan.DataCenterID.ValueString(),
+			Id:           string(plan.ID.ValueString()),
+			ProjectId:    plan.ProjectID.ValueString(),
+			SizeGib:      int32(plan.SizeGib.ValueInt64()),
 		},
 	})
 	if err != nil {
@@ -227,7 +150,7 @@ func (r *StorageDiskResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	if err := waitForDiskCreate(ctx, r.client.VMClient, projectID, state.Id.ValueString()); err != nil {
+	if err := waitForDiskCreate(ctx, r.client.VMClient, plan.ProjectID.ValueString(), plan.ID.ValueString()); err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for Disk resource to be created",
 			err.Error(),
@@ -235,26 +158,69 @@ func (r *StorageDiskResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+}
+
+func waitForDiskCreate(ctx context.Context, c vm.VMServiceClient, projectID, diskID string) error {
+	refreshFunc := func() (interface{}, string, error) {
+		res, err := c.GetDisk(ctx, &vm.GetDiskRequest{
+			ProjectId: projectID,
+			Id:        diskID,
+		})
+		if err != nil {
+			if ok := helper.IsErrCode(err, codes.NotFound); ok {
+				return res, vm.Disk_CREATING.String(), nil
+			}
+			return nil, vm.Disk_UNKNOWN.String(), err
+		}
+
+		return res, res.Disk.DiskState.String(), nil
+	}
+
+	stateConf := &helper.StateChangeConf{
+		Pending: []string{
+			vm.Disk_ATTACHED.String(),
+			vm.Disk_CLONING.String(),
+			vm.Disk_CREATING.String(),
+			vm.Disk_DELETING.String(),
+			vm.Disk_DISABLED.String(),
+			vm.Disk_FAILED.String(),
+			vm.Disk_UPDATING.String(),
+		},
+		Target: []string{
+			vm.Disk_READY.String(),
+			vm.Disk_UNKNOWN.String(),
+		},
+		Refresh:      refreshFunc,
+		Timeout:      20 * time.Minute,
+		Delay:        1 * time.Second,
+		MinTimeout:   3 * time.Second,
+		PollInterval: 5 * time.Second,
+	}
+
+	_, err := stateConf.WaitForState(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *StorageDiskResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var state *StorageDiskResourceModel
 
-	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	projectId := r.client.DefaultProjectID
-	if !state.ProjectID.IsNull() {
-		projectId = state.ProjectID.ValueString()
+	if state.ProjectID.IsNull() {
+		state.ProjectID = types.StringValue(r.client.DefaultProjectID)
 	}
 
 	res, err := r.client.VMClient.GetDisk(ctx, &vm.GetDiskRequest{
-		Id:        state.Id.ValueString(),
-		ProjectId: projectId,
+		Id:        state.ID.ValueString(),
+		ProjectId: state.ProjectID.ValueString(),
 	})
 	if err != nil {
 		if helper.IsErrCode(err, codes.NotFound) {
@@ -269,48 +235,36 @@ func (r *StorageDiskResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	state.DataCenterID = types.StringValue(res.Disk.DataCenterId)
-	state.Id = types.StringValue(res.Disk.Id)
+	state.ID = types.StringValue(res.Disk.Id)
 	state.SizeGib = types.Int64Value(int64(res.Disk.SizeGib))
 
-	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *StorageDiskResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan StorageDiskResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
-	if resp.Diagnostics.HasError() {
-		resp.Diagnostics.AddError(
-			"Error getting storage disk plan",
-			"Error getting storage disk plan",
-		)
-		return
-	}
-
-	// Read Terraform state data into the model
-	var state StorageDiskResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+	resp.Diagnostics.AddError(
+		"Unable to update storage disk",
+		"Updating a storage disk is not supported",
+	)
 }
 
 func (r *StorageDiskResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var state *StorageDiskResourceModel
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	projectId := r.client.DefaultProjectID
-	if !state.ProjectID.IsNull() {
-		projectId = state.ProjectID.ValueString()
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	projectID := state.ProjectID.ValueString()
+	if state.ProjectID.IsNull() {
+		projectID = r.client.DefaultProjectID
 	}
 
 	_, err := r.client.VMClient.DeleteStorageDisk(ctx, &vm.DeleteStorageDiskRequest{
-		ProjectId: projectId,
-		Id:        state.Id.ValueString(),
+		ProjectId: projectID,
+		Id:        state.ID.ValueString(),
 	})
-
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to delete storage disk",
@@ -319,17 +273,77 @@ func (r *StorageDiskResource) Delete(ctx context.Context, req resource.DeleteReq
 		return
 	}
 
-	if err := waitForDiskDelete(ctx, r.client.VMClient, projectId, state.Id.ValueString()); err != nil {
+	if err := waitForDiskDelete(ctx, r.client.VMClient, projectID, state.ID.ValueString()); err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for Disk resource to be deleted",
 			err.Error(),
 		)
 		return
 	}
-
-	tflog.Trace(ctx, "deleted storage disk")
 }
 
+func waitForDiskDelete(ctx context.Context, c vm.VMServiceClient, projectID, diskID string) error {
+	refreshFunc := func() (interface{}, string, error) {
+		res, err := c.GetDisk(ctx, &vm.GetDiskRequest{
+			Id:        diskID,
+			ProjectId: projectID,
+		})
+		if err != nil {
+			if ok := helper.IsErrCode(err, codes.NotFound); ok {
+				return res, "NOT_FOUND", nil
+			}
+			return nil, vm.Disk_UNKNOWN.String(), err
+		}
+
+		return res, res.Disk.DiskState.String(), nil
+	}
+
+	stateConf := &helper.StateChangeConf{
+		Pending: []string{
+			vm.Disk_ATTACHED.String(),
+			vm.Disk_CLONING.String(),
+			vm.Disk_CREATING.String(),
+			vm.Disk_DELETING.String(),
+			vm.Disk_DISABLED.String(),
+			vm.Disk_READY.String(),
+			vm.Disk_UPDATING.String(),
+		},
+		Target: []string{
+			vm.Disk_FAILED.String(),
+			vm.Disk_UNKNOWN.String(),
+			"NOT_FOUND",
+		},
+		Refresh:      refreshFunc,
+		Timeout:      20 * time.Minute,
+		Delay:        1 * time.Second,
+		MinTimeout:   3 * time.Second,
+		PollInterval: 5 * time.Second,
+	}
+
+	_, err := stateConf.WaitForState(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var storageDiskImportIDRegExp = regexp.MustCompile("projects/(.+)/disks/(.+)")
+
 func (r *StorageDiskResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	var projectID, ID string
+	if parts := storageDiskImportIDRegExp.FindStringSubmatch(req.ID); parts != nil {
+		projectID = parts[1]
+		ID = parts[2]
+	}
+
+	if projectID == "" || ID == "" {
+		resp.Diagnostics.AddError(
+			"Unexpected Import Identifier",
+			fmt.Sprintf("Expected import identifier with format: \"projects/<project_id>/disks/<id>\". Got: %q", req.ID),
+		)
+	}
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("project_id"), projectID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), ID)...)
 }

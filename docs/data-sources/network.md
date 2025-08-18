@@ -25,6 +25,10 @@ data "cudo_network" "my-net" {
 
 - `id` (String) Network ID
 
+### Optional
+
+- `project_id` (String) The unique identifier of the project the network is in.
+
 ### Read-Only
 
 - `data_center_id` (String) The id of the datacenter where the network is located.

@@ -20,13 +20,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"google.golang.org/grpc/codes"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &SecurityGroupResource{}
+var _ resource.ResourceWithConfigure = &SecurityGroupResource{}
 var _ resource.ResourceWithImportState = &SecurityGroupResource{}
+var _ resource.ResourceWithModifyPlan = &SecurityGroupResource{}
 
 func NewSecurityGroupResource() resource.Resource {
 	return &SecurityGroupResource{}
@@ -38,8 +39,8 @@ type SecurityGroupResource struct {
 }
 
 type RuleModel struct {
-	Id          types.String `tfsdk:"id"`
 	IcmpType    types.String `tfsdk:"icmp_type"`
+	Id          types.String `tfsdk:"id"`
 	IpRangeCidr types.String `tfsdk:"ip_range"`
 	Ports       types.String `tfsdk:"ports"`
 	Protocol    types.String `tfsdk:"protocol"`
@@ -48,14 +49,15 @@ type RuleModel struct {
 
 // SecurityGroupResourceModel describes the resource data model.
 type SecurityGroupResourceModel struct {
-	Id           types.String `tfsdk:"id"`
 	DataCenterID types.String `tfsdk:"data_center_id"`
 	Description  types.String `tfsdk:"description"`
+	ID           types.String `tfsdk:"id"`
+	ProjectID    types.String `tfsdk:"project_id"`
 	Rules        []RuleModel  `tfsdk:"rules"`
 }
 
 func (r *SecurityGroupResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "cudo_security_group"
+	resp.TypeName = req.ProviderTypeName + "_security_group"
 }
 
 func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -63,15 +65,6 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "Security group resource",
 		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				MarkdownDescription: "Security Group ID",
-				Required:            true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
-				Validators: []validator.String{stringvalidator.RegexMatches(
-					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
-			},
 			"data_center_id": schema.StringAttribute{
 				MarkdownDescription: "The unique identifier of the datacenter where the network is located.",
 				Required:            true,
@@ -89,20 +82,38 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 				Validators: []validator.String{stringvalidator.RegexMatches(securityGroupDescriptionRegex,
 					"must be a valid security group description up to 255 characters, commas, periods, & spaces")},
 			},
+			"id": schema.StringAttribute{
+				MarkdownDescription: "Security Group ID",
+				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+				Validators: []validator.String{stringvalidator.RegexMatches(
+					regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid resource id")},
+			},
+			"project_id": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+				MarkdownDescription: "The project the security group is in.",
+				Optional:            true,
+				Computed:            true,
+				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid RFC1034 resource id")},
+			},
 			"rules": schema.ListNestedAttribute{
 				Description: "List of security group rules",
 				Required:    true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"id": schema.StringAttribute{
-							Description: "The unique identifier of the rule",
-							Computed:    true,
-						},
 						"icmp_type": schema.StringAttribute{
 							Description: "Specific ICMP type of the rule. If a type has multiple codes, it includes all the codes within. This can only be used with ICMP",
 							Optional:    true,
 							Validators: []validator.String{stringvalidator.RegexMatches(
 								icmpTypesRegex, "must be a valid icmp type i.e. 0,3,4,5,8,9,10,11,12,13,14,17,18")},
+						},
+						"id": schema.StringAttribute{
+							Description: "The unique identifier of the rule",
+							Computed:    true,
 						},
 						"ip_range": schema.StringAttribute{
 							Description: "A single IP address or CIDR format range to apply rule to",
@@ -151,6 +162,20 @@ func (r *SecurityGroupResource) Configure(ctx context.Context, req resource.Conf
 	r.client = client
 }
 
+func (r *SecurityGroupResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	var projectID types.String
+
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("project_id"), &projectID)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if projectID.IsUnknown() && r.client.DefaultProjectID != "" {
+		projectID = types.StringValue(r.client.DefaultProjectID)
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("project_id"), projectID)...)
+	}
+}
+
 func getNullableString(value string) basetypes.StringValue {
 	var result = basetypes.StringValue{}
 	if value != "" {
@@ -162,7 +187,7 @@ func getNullableString(value string) basetypes.StringValue {
 	return result
 }
 
-func getRuleModels(rules []*securitygroup.SecurityGroup_Rule) []RuleModel {
+func getRulePlan(rules []*securitygroup.SecurityGroup_Rule) []RuleModel {
 	var ruleModels []RuleModel
 	for _, rule := range rules {
 		protocol := ""
@@ -190,8 +215,8 @@ func getRuleModels(rules []*securitygroup.SecurityGroup_Rule) []RuleModel {
 		}
 
 		ruleModel := RuleModel{
-			Id:          types.StringValue(rule.Id),
 			IcmpType:    getNullableString(rule.IcmpType),
+			Id:          types.StringValue(rule.Id),
 			IpRangeCidr: getNullableString(rule.IpRangeCidr),
 			Ports:       getNullableString(rule.Ports),
 			Protocol:    getNullableString(protocol),
@@ -247,50 +272,50 @@ func getRuleParams(stateRules []RuleModel) []*securitygroup.SecurityGroup_Rule {
 }
 
 func (r *SecurityGroupResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var state *SecurityGroupResourceModel
+	var plan *SecurityGroupResourceModel
 
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
-
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	res, err := r.client.NetworkClient.CreateSecurityGroup(ctx, &network.CreateSecurityGroupRequest{
 		SecurityGroup: &securitygroup.SecurityGroup{
-			ProjectId:    r.client.DefaultProjectID,
-			DataCenterId: state.DataCenterID.ValueString(),
-			Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
-			Id:           state.Id.ValueString(),          // security group id
-			Rules:        getRuleParams(state.Rules),
+			ProjectId:    plan.ProjectID.ValueString(),
+			DataCenterId: plan.DataCenterID.ValueString(),
+			Description:  plan.Description.ValueString(),
+			Id:           plan.ID.ValueString(),
+			Rules:        getRuleParams(plan.Rules),
 		},
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to create security group resource",
+			"Unable to create security group",
 			err.Error(),
 		)
 		return
 	}
 
-	state.Rules = getRuleModels(res.Rules)
+	plan.Rules = getRulePlan(res.Rules)
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
 func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var state SecurityGroupResourceModel
 
-	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
+	if state.ProjectID.IsNull() {
+		state.ProjectID = types.StringValue(r.client.DefaultProjectID)
+	}
+
 	res, err := r.client.NetworkClient.GetSecurityGroup(ctx, &network.GetSecurityGroupRequest{
-		Id:        state.Id.ValueString(),
-		ProjectId: r.client.DefaultProjectID,
+		Id:        state.ID.ValueString(),
+		ProjectId: state.ProjectID.ValueString(),
 	})
 
 	if err != nil {
@@ -299,39 +324,35 @@ func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadReque
 			return
 		}
 		resp.Diagnostics.AddError(
-			"Unable to read security group resource",
+			"Unable to read security group",
 			err.Error(),
 		)
 		return
 	}
 
-	state.Id = types.StringValue(res.Id)
+	state.ID = types.StringValue(res.Id)
 	state.Description = types.StringValue(res.Description)
 	state.DataCenterID = types.StringValue(res.DataCenterId)
-	state.Id = types.StringValue(res.Id)
-	state.Rules = getRuleModels(res.Rules)
+	state.Rules = getRulePlan(res.Rules)
 
-	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var state *SecurityGroupResourceModel
+	var plan *SecurityGroupResourceModel
 
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
-
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	res, err := r.client.NetworkClient.UpdateSecurityGroup(ctx, &network.UpdateSecurityGroupRequest{
 		SecurityGroup: &securitygroup.SecurityGroup{
-			Id:           state.Id.ValueString(),
-			ProjectId:    r.client.DefaultProjectID,
-			DataCenterId: state.DataCenterID.ValueString(),
-			Description:  state.Description.ValueString(), //allows up to 255 characters, commas, periods, & spaces has regex
-			Rules:        getRuleParams(state.Rules),
+			DataCenterId: plan.DataCenterID.ValueString(),
+			Description:  plan.Description.ValueString(),
+			Id:           plan.ID.ValueString(),
+			ProjectId:    plan.ProjectID.ValueString(),
+			Rules:        getRuleParams(plan.Rules),
 		},
 	})
 	if err != nil {
@@ -342,9 +363,8 @@ func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	state.Rules = getRuleModels(res.Rules)
-	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	plan.Rules = getRulePlan(res.Rules)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
 func (r *SecurityGroupResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -353,7 +373,7 @@ func (r *SecurityGroupResource) Delete(ctx context.Context, req resource.DeleteR
 
 	_, err := r.client.NetworkClient.DeleteSecurityGroup(ctx, &network.DeleteSecurityGroupRequest{
 		ProjectId: r.client.DefaultProjectID,
-		Id:        state.Id.ValueString(),
+		Id:        state.ID.ValueString(),
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -362,12 +382,26 @@ func (r *SecurityGroupResource) Delete(ctx context.Context, req resource.DeleteR
 		)
 		return
 	}
-
-	tflog.Trace(ctx, "deleted a security group")
 }
 
+var securityGroupImportIDRegExp = regexp.MustCompile("projects/(.+)/security-groups/(.+)")
+
 func (r *SecurityGroupResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	var projectID, ID string
+	if parts := securityGroupImportIDRegExp.FindStringSubmatch(req.ID); parts != nil {
+		projectID = parts[1]
+		ID = parts[2]
+	}
+
+	if projectID == "" || ID == "" {
+		resp.Diagnostics.AddError(
+			"Unexpected Import Identifier",
+			fmt.Sprintf("Expected import identifier with format: \"projects/<project_id>/security-groups/<id>\". Got: %q", req.ID),
+		)
+	}
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("project_id"), projectID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), ID)...)
 }
 
 var securityGroupDescriptionRegex = regexp.MustCompile(`^[A-Za-z0-9,'.\s]{1,255}$`)

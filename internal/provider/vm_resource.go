@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute"
@@ -13,12 +14,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32default"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
@@ -27,20 +28,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"google.golang.org/grpc/codes"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &VMResource{}
+var _ resource.ResourceWithConfigure = &VMResource{}
 var _ resource.ResourceWithImportState = &VMResource{}
+var _ resource.ResourceWithModifyPlan = &VMResource{}
 
 func NewVMResource() resource.Resource {
 	return &VMResource{}
 }
 
 func (r *VMResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "cudo_vm"
+	resp.TypeName = req.ProviderTypeName + "_vm"
 }
 
 func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -71,14 +73,9 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Required: true,
 			},
 			"commitment_months": schema.Int32Attribute{
-				PlanModifiers: []planmodifier.Int32{
-					int32planmodifier.RequiresReplace(),
-				},
 				MarkdownDescription: "The minimum length of time to commit to the VM instance. It cannot be deleted before the commitment end date.",
 				Optional:            true,
-				Computed:            true,
-				Validators:          []validator.Int32{int32validator.OneOf(0, 1, 3, 6, 12, 24, 36)},
-				Default:             int32default.StaticInt32(0),
+				Validators:          []validator.Int32{int32validator.OneOf(1, 3, 6, 12, 24, 36)},
 			},
 			"cpu_model": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
@@ -201,6 +198,8 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				},
 				MarkdownDescription: "The project the VM instance is in.",
 				Optional:            true,
+				Computed:            true,
+				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid RFC1034 resource id")},
 			},
 			"renewable_energy": schema.BoolAttribute{
 				MarkdownDescription: "Whether the VM instance is powered by renewable energy",
@@ -273,27 +272,27 @@ type VMResource struct {
 // VMResourceModel describes the resource data model.
 type VMResourceModel struct {
 	BootDisk          *VMBootDiskResourceModel      `tfsdk:"boot_disk"`
-	CommitmentTerm    types.Int32                   `tfsdk:"commitment_months"`
-	DataCenterID      types.String                  `tfsdk:"data_center_id"`
+	CommitmentMonths  types.Int32                   `tfsdk:"commitment_months"`
 	CPUModel          types.String                  `tfsdk:"cpu_model"`
-	GPUs              types.Int64                   `tfsdk:"gpus"`
+	DataCenterID      types.String                  `tfsdk:"data_center_id"`
+	ExternalIPAddress types.String                  `tfsdk:"external_ip_address"`
 	GPUModel          types.String                  `tfsdk:"gpu_model"`
+	GPUs              types.Int64                   `tfsdk:"gpus"`
 	ID                types.String                  `tfsdk:"id"`
+	InternalIPAddress types.String                  `tfsdk:"internal_ip_address"`
 	MachineType       types.String                  `tfsdk:"machine_type"`
 	MemoryGib         types.Int64                   `tfsdk:"memory_gib"`
+	Metadata          types.Map                     `tfsdk:"metadata"`
+	Networks          []*VMNICResourceModel         `tfsdk:"networks"`
 	Password          types.String                  `tfsdk:"password"`
 	ProjectID         types.String                  `tfsdk:"project_id"`
+	RenewableEnergy   types.Bool                    `tfsdk:"renewable_energy"`
+	SecurityGroupIDs  types.Set                     `tfsdk:"security_group_ids"`
 	SSHKeys           []types.String                `tfsdk:"ssh_keys"`
 	SSHKeySource      types.String                  `tfsdk:"ssh_key_source"`
 	StartScript       types.String                  `tfsdk:"start_script"`
 	StorageDisks      []*VMStorageDiskResourceModel `tfsdk:"storage_disks"`
 	VCPUs             types.Int64                   `tfsdk:"vcpus"`
-	Networks          []*VMNICResourceModel         `tfsdk:"networks"`
-	InternalIPAddress types.String                  `tfsdk:"internal_ip_address"`
-	ExternalIPAddress types.String                  `tfsdk:"external_ip_address"`
-	RenewableEnergy   types.Bool                    `tfsdk:"renewable_energy"`
-	SecurityGroupIDs  types.Set                     `tfsdk:"security_group_ids"`
-	Metadata          types.Map                     `tfsdk:"metadata"`
 }
 
 type VMBootDiskResourceModel struct {
@@ -302,10 +301,10 @@ type VMBootDiskResourceModel struct {
 }
 
 type VMNICResourceModel struct {
-	NetworkID         types.String `tfsdk:"network_id"`
 	AssignPublicIP    types.Bool   `tfsdk:"assign_public_ip"`
-	InternalIPAddress types.String `tfsdk:"internal_ip_address"`
 	ExternalIPAddress types.String `tfsdk:"external_ip_address"`
+	InternalIPAddress types.String `tfsdk:"internal_ip_address"`
+	NetworkID         types.String `tfsdk:"network_id"`
 	SecurityGroupIDs  types.Set    `tfsdk:"security_group_ids"`
 }
 
@@ -333,17 +332,31 @@ func (r *VMResource) Configure(ctx context.Context, req resource.ConfigureReques
 	r.client = client
 }
 
+func (r *VMResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	var projectID types.String
+
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("project_id"), &projectID)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if projectID.IsUnknown() && r.client.DefaultProjectID != "" {
+		projectID = types.StringValue(r.client.DefaultProjectID)
+		resp.Diagnostics.Append(resp.Plan.SetAttribute(ctx, path.Root("project_id"), projectID)...)
+	}
+}
+
 func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var state VMResourceModel
+	var plan VMResourceModel
 
 	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	sshKeySource := vm.SshKeySource_SSH_KEY_SOURCE_PROJECT
-	switch state.SSHKeySource.ValueString() {
+	switch plan.SSHKeySource.ValueString() {
 	case "personal", "user":
 		sshKeySource = vm.SshKeySource_SSH_KEY_SOURCE_USER
 	case "custom", "none":
@@ -352,24 +365,19 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 
 	var customKeys []string
 	if sshKeySource == vm.SshKeySource_SSH_KEY_SOURCE_NONE {
-		for _, key := range state.SSHKeys {
+		for _, key := range plan.SSHKeys {
 			customKeys = append(customKeys, key.ValueString())
 		}
 	}
 
-	projectId := r.client.DefaultProjectID
-	if !state.ProjectID.IsNull() {
-		projectId = state.ProjectID.ValueString()
-	}
-
 	var bootDisk vm.Disk
-	if !state.BootDisk.SizeGib.IsNull() {
-		sizeGib := int32(state.BootDisk.SizeGib.ValueInt64())
+	if !plan.BootDisk.SizeGib.IsNull() {
+		sizeGib := int32(plan.BootDisk.SizeGib.ValueInt64())
 		bootDisk.SizeGib = sizeGib
 	}
-	nics := make([]*vm.CreateVMRequest_NIC, len(state.Networks))
 
-	for i, nic := range state.Networks {
+	nics := make([]*vm.CreateVMRequest_NIC, len(plan.Networks))
+	for i, nic := range plan.Networks {
 		var securityGroupIDS []string
 		if !nic.SecurityGroupIDs.IsNull() {
 			resp.Diagnostics.Append(nic.SecurityGroupIDs.ElementsAs(ctx, &securityGroupIDS, false)...)
@@ -385,83 +393,83 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	}
 
 	var securityGroupIDs []string
-	resp.Diagnostics.Append(state.SecurityGroupIDs.ElementsAs(ctx, &securityGroupIDs, false)...)
+	resp.Diagnostics.Append(plan.SecurityGroupIDs.ElementsAs(ctx, &securityGroupIDs, false)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	storageDiskIds := make([]string, len(state.StorageDisks))
-	for i, diskResource := range state.StorageDisks {
+	storageDiskIds := make([]string, len(plan.StorageDisks))
+	for i, diskResource := range plan.StorageDisks {
 		storageDiskIds[i] = diskResource.DiskID.ValueString()
 	}
 
 	metadataMap := make(map[string]string)
-	diag := state.Metadata.ElementsAs(ctx, &metadataMap, false)
+	diag := plan.Metadata.ElementsAs(ctx, &metadataMap, false)
 	if diag.HasError() {
 		resp.Diagnostics.Append(diag...)
 		return
 	}
 
 	commitmentTerm := compute.CommitmentTerm_COMMITMENT_TERM_NONE
-	switch state.CommitmentTerm.ValueInt32() {
-	case 1:
-		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_1_MONTH
-	case 3:
-		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_3_MONTHS
-	case 6:
-		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_6_MONTHS
-	case 12:
-		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_12_MONTHS
-	case 24:
-		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_24_MONTHS
-	case 36:
-		commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_36_MONTHS
+	if !plan.CommitmentMonths.IsNull() {
+		switch plan.CommitmentMonths.ValueInt32() {
+		case 1:
+			commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_1_MONTH
+		case 3:
+			commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_3_MONTHS
+		case 6:
+			commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_6_MONTHS
+		case 12:
+			commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_12_MONTHS
+		case 24:
+			commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_24_MONTHS
+		case 36:
+			commitmentTerm = compute.CommitmentTerm_COMMITMENT_TERM_36_MONTHS
+		}
 	}
 
 	params := &vm.CreateVMRequest{
-		ProjectId:        projectId,
 		BootDisk:         &bootDisk,
+		BootDiskImageId:  plan.BootDisk.ImageID.ValueString(),
 		CommitmentTerm:   commitmentTerm,
-		DataCenterId:     state.DataCenterID.ValueString(),
-		Gpus:             int32(state.GPUs.ValueInt64()),
-		MachineType:      state.MachineType.ValueString(),
-		MemoryGib:        int32(state.MemoryGib.ValueInt64()),
+		CustomSshKeys:    customKeys,
+		DataCenterId:     plan.DataCenterID.ValueString(),
+		Gpus:             int32(plan.GPUs.ValueInt64()),
+		MachineType:      plan.MachineType.ValueString(),
+		MemoryGib:        int32(plan.MemoryGib.ValueInt64()),
+		Metadata:         metadataMap,
 		Nics:             nics,
-		BootDiskImageId:  state.BootDisk.ImageID.ValueString(),
-		Password:         state.Password.ValueString(),
-		Vcpus:            int32(state.VCPUs.ValueInt64()),
-		VmId:             state.ID.ValueString(),
+		Password:         plan.Password.ValueString(),
+		ProjectId:        plan.ProjectID.ValueString(),
 		SecurityGroupIds: securityGroupIDs,
 		SshKeySource:     sshKeySource,
-		CustomSshKeys:    customKeys,
-		StartScript:      state.StartScript.ValueString(),
+		StartScript:      plan.StartScript.ValueString(),
 		StorageDiskIds:   storageDiskIds,
-		Metadata:         metadataMap,
+		Vcpus:            int32(plan.VCPUs.ValueInt64()),
+		VmId:             plan.ID.ValueString(),
 	}
 
 	_, err := r.client.VMClient.CreateVM(ctx, params)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating VM resource",
-			"Could not create VM, unexpected error: "+err.Error(),
+			"Unable to create VM instance",
+			err.Error(),
 		)
 		return
 	}
 
-	vm, err := waitForVmAvailable(ctx, r.client.VMClient, params.ProjectId, state.ID.ValueString())
+	vm, err := waitForVmAvailable(ctx, r.client.VMClient, plan.ProjectID.ValueString(), plan.ID.ValueString(), plan.StorageDisks)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating VM resource",
-			"Could not wait for VM resource to become available: "+err.Error(),
+			"Unable to wait for VM to become available",
+			err.Error(),
 		)
 		return
 	}
 
 	// if the vm is created and returned update the state.
-	if vm != nil && vm.VM != nil {
-		appendVmState(vm.VM, &state)
-	}
-	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.Append(appendVmState(vm, &plan)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
 func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -486,55 +494,36 @@ func (r *VMResource) Read(ctx context.Context, req resource.ReadRequest, resp *r
 			return
 		}
 		resp.Diagnostics.AddError(
-			"Unable to read VM resource",
+			"Unable to read VM instance",
 			err.Error(),
 		)
 		return
 	}
 
-	appendVmState(vm.VM, &state)
+	resp.Diagnostics.Append(appendVmState(vm.VM, &state)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
 func (r *VMResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan VMResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
-	if resp.Diagnostics.HasError() {
-		resp.Diagnostics.AddError(
-			"Error getting vm plan",
-			"Error getting vm plan",
-		)
-		return
-	}
-
-	// Read Terraform state data into the model
-	var state VMResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+	resp.Diagnostics.AddError(
+		"Unable to update VM instance",
+		"Updating a VM instance is not supported",
+	)
 }
 
 func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var state VMResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
-	projectId := r.client.DefaultProjectID
-	vmId := state.ID.ValueString()
-
-	if _, err := waitForVmAvailable(ctx, r.client.VMClient, projectId, vmId); err != nil {
-		resp.Diagnostics.AddError(
-			"Unable to wait for VM resource to be available",
-			err.Error(),
-		)
-		return
+	projectID := state.ProjectID.ValueString()
+	if state.ProjectID.IsNull() {
+		projectID = r.client.DefaultProjectID
 	}
+	vmID := state.ID.ValueString()
 
 	_, err := r.client.VMClient.TerminateVM(ctx, &vm.TerminateVMRequest{
-		ProjectId: projectId,
-		Id:        vmId,
+		ProjectId: projectID,
+		Id:        vmID,
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -544,7 +533,7 @@ func (r *VMResource) Delete(ctx context.Context, req resource.DeleteRequest, res
 		return
 	}
 
-	_, err = waitForVmDelete(ctx, r.client.VMClient, projectId, vmId)
+	_, err = waitForVmDelete(ctx, r.client.VMClient, projectID, vmID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to wait for VM resource to be deleted",
@@ -558,7 +547,7 @@ func (r *VMResource) ImportState(ctx context.Context, req resource.ImportStateRe
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func waitForVmAvailable(ctx context.Context, c vm.VMServiceClient, projectId string, vmID string) (*vm.GetVMResponse, error) {
+func waitForVmAvailable(ctx context.Context, c vm.VMServiceClient, projectId string, vmID string, storageDisks []*VMStorageDiskResourceModel) (*vm.VM, error) {
 	refreshFunc := func() (interface{}, string, error) {
 		params := &vm.GetVMRequest{
 			Id:        vmID,
@@ -566,44 +555,27 @@ func waitForVmAvailable(ctx context.Context, c vm.VMServiceClient, projectId str
 		}
 		res, err := c.GetVM(ctx, params)
 		if err != nil {
-			if ok := helper.IsErrCode(err, codes.NotFound); ok {
-				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s not found: ", vmID, projectId))
-				return res, vm.VM_DELETED.String(), nil
-			}
-			return nil, "", err
+			return res, "target", err
 		}
-
-		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectId, res.VM.State))
-		return res, res.VM.State.String(), nil
+		// if there are storage disks in the plan, wait for them to attach to the vm
+		if len(res.VM.StorageDisks) != len(storageDisks) {
+			return res, "pending", nil
+		}
+		switch res.VM.State {
+		case vm.VM_ACTIVE,
+			vm.VM_DELETED,
+			vm.VM_FAILED,
+			vm.VM_STOPPED,
+			vm.VM_SUSPENDED:
+			return res, "target", nil
+		default:
+			return res, "pending", nil
+		}
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectId))
-
 	stateConf := &helper.StateChangeConf{
-		Pending: []string{
-			vm.VM_CLONING.String(),
-			vm.VM_CREATING_SNAPSHOT.String(),
-			vm.VM_DELETING_SNAPSHOT.String(),
-			vm.VM_DELETING.String(),
-			vm.VM_HOTPLUGGING.String(),
-			vm.VM_MIGRATING.String(),
-			vm.VM_PENDING.String(),
-			vm.VM_RECREATING.String(),
-			vm.VM_RESIZING_DISK.String(),
-			vm.VM_RESIZING.String(),
-			vm.VM_REVERTING_SNAPSHOT.String(),
-			vm.VM_STARTING.String(),
-			vm.VM_STOPPING.String(),
-			vm.VM_SUSPENDING.String(),
-			vm.VM_UNKNOWN.String(),
-		},
-		Target: []string{
-			vm.VM_ACTIVE.String(),
-			vm.VM_DELETED.String(),
-			vm.VM_FAILED.String(),
-			vm.VM_STOPPED.String(),
-			vm.VM_SUSPENDED.String(),
-		},
+		Pending:    []string{"pending"},
+		Target:     []string{"target"},
 		Refresh:    refreshFunc,
 		Timeout:    2 * time.Hour,
 		Delay:      1 * time.Second,
@@ -613,12 +585,7 @@ func waitForVmAvailable(ctx context.Context, c vm.VMServiceClient, projectId str
 	if res, err := stateConf.WaitForState(ctx); err != nil {
 		return nil, fmt.Errorf("error waiting for VM %s in project %s to become available: %w", vmID, projectId, err)
 	} else if vm, ok := res.(*vm.GetVMResponse); ok {
-		var state string
-		if vm != nil && vm.VM != nil {
-			state = vm.VM.State.String()
-		}
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectId, state))
-		return vm, nil
+		return vm.VM, nil
 	} else {
 		return nil, fmt.Errorf("error waiting for VM: %v", res)
 	}
@@ -632,22 +599,17 @@ func waitForVmDelete(ctx context.Context, c vm.VMServiceClient, projectId string
 		})
 		if err != nil {
 			if ok := helper.IsErrCode(err, codes.NotFound); ok {
-				tflog.Debug(ctx, fmt.Sprintf("VM %s in project %s has been deleted: ", vmID, projectId))
 				return res, "deleted", nil
 			}
-			tflog.Error(ctx, fmt.Sprintf("error getting VM %s in project %s: %v", vmID, projectId, err))
-			return nil, "", err
+			return nil, "unknown", err
 		}
 
-		tflog.Trace(ctx, fmt.Sprintf("pending VM %s in project %s state: %s", vmID, projectId, res.VM.State))
 		return res, "pending", nil
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("waiting for VM %s in project %s ", vmID, projectId))
-
 	stateConf := &helper.StateChangeConf{
 		Pending:    []string{"pending"},
-		Target:     []string{"deleted"},
+		Target:     []string{"deleted", "unknown"},
 		Refresh:    refreshFunc,
 		Timeout:    2 * time.Hour,
 		MinTimeout: 3 * time.Second,
@@ -656,37 +618,15 @@ func waitForVmDelete(ctx context.Context, c vm.VMServiceClient, projectId string
 	if res, err := stateConf.WaitForState(ctx); err != nil {
 		return nil, fmt.Errorf("error waiting for VM %s in project %s to become done: %w", vmID, projectId, err)
 	} else if vm, ok := res.(*vm.GetVMResponse); ok {
-		var state string
-		if vm != nil && vm.VM != nil {
-			state = vm.VM.State.String()
-		}
-		tflog.Trace(ctx, fmt.Sprintf("completed waiting for VM %s in project %s (%s)", vmID, projectId, state))
 		return vm, nil
 	} else {
 		return nil, fmt.Errorf("error waiting for VM: %v", res)
 	}
 }
 
-func appendVmState(instance *vm.VM, state *VMResourceModel) {
-	var months int32
-	switch instance.CommitmentTerm {
-	case compute.CommitmentTerm_COMMITMENT_TERM_1_MONTH:
-		months = 1
-	case compute.CommitmentTerm_COMMITMENT_TERM_3_MONTHS:
-		months = 3
-	case compute.CommitmentTerm_COMMITMENT_TERM_6_MONTHS:
-		months = 6
-	case compute.CommitmentTerm_COMMITMENT_TERM_12_MONTHS:
-		months = 12
-	case compute.CommitmentTerm_COMMITMENT_TERM_24_MONTHS:
-		months = 24
-	case compute.CommitmentTerm_COMMITMENT_TERM_36_MONTHS:
-		months = 36
-	}
-	state.CommitmentTerm = types.Int32Value(months)
-	state.DataCenterID = types.StringValue(instance.DatacenterId)
-	state.CPUModel = types.StringValue(instance.CpuModel)
-	state.GPUs = types.Int64Value(int64(instance.GpuQuantity))
+func appendVmState(instance *vm.VM, state *VMResourceModel) diag.Diagnostics {
+	var diags diag.Diagnostics
+
 	state.BootDisk.SizeGib = types.Int64Value(int64(instance.BootDiskSizeGib))
 	if instance.PublicImageId != "" {
 		state.BootDisk.ImageID = types.StringValue(instance.PublicImageId)
@@ -694,11 +634,65 @@ func appendVmState(instance *vm.VM, state *VMResourceModel) {
 	if instance.PrivateImageId != "" {
 		state.BootDisk.ImageID = types.StringValue(instance.PrivateImageId)
 	}
+
+	switch instance.CommitmentTerm {
+	case compute.CommitmentTerm_COMMITMENT_TERM_NONE:
+		state.CommitmentMonths = types.Int32Null()
+	case compute.CommitmentTerm_COMMITMENT_TERM_1_MONTH:
+		state.CommitmentMonths = types.Int32Value(1)
+	case compute.CommitmentTerm_COMMITMENT_TERM_3_MONTHS:
+		state.CommitmentMonths = types.Int32Value(3)
+	case compute.CommitmentTerm_COMMITMENT_TERM_6_MONTHS:
+		state.CommitmentMonths = types.Int32Value(6)
+	case compute.CommitmentTerm_COMMITMENT_TERM_12_MONTHS:
+		state.CommitmentMonths = types.Int32Value(12)
+	case compute.CommitmentTerm_COMMITMENT_TERM_24_MONTHS:
+		state.CommitmentMonths = types.Int32Value(24)
+	case compute.CommitmentTerm_COMMITMENT_TERM_36_MONTHS:
+		state.CommitmentMonths = types.Int32Value(36)
+	}
+
+	state.CPUModel = types.StringValue(instance.CpuModel)
+	state.DataCenterID = types.StringValue(instance.DatacenterId)
+	state.ExternalIPAddress = types.StringValue(instance.ExternalIpAddress)
+	state.GPUModel = types.StringValue(instance.GpuModel)
+	state.GPUs = types.Int64Value(int64(instance.GpuQuantity))
+	state.ID = types.StringValue(instance.Id)
+	state.InternalIPAddress = types.StringValue(instance.InternalIpAddress)
 	state.MachineType = types.StringValue(instance.MachineType)
+	state.MemoryGib = types.Int64Value(int64(instance.Memory))
+
+	var networks []*VMNICResourceModel
+	for _, network := range instance.Nics {
+		securityGroupIDs := make([]attr.Value, 0, len(network.SecurityGroupIds))
+		for _, securityGroupID := range network.SecurityGroupIds {
+			securityGroupIDs = append(securityGroupIDs, types.StringValue(securityGroupID))
+		}
+		securityGroupSetValue := types.SetNull(types.StringType)
+		if len(securityGroupIDs) > 0 {
+			var d diag.Diagnostics
+			securityGroupSetValue, d = types.SetValue(types.StringType, securityGroupIDs)
+			diags.Append(d...)
+		}
+
+		networks = append(networks, &VMNICResourceModel{
+			AssignPublicIP:    types.BoolNull(),
+			ExternalIPAddress: types.StringValue(network.ExternalIpAddress),
+			InternalIPAddress: types.StringValue(network.InternalIpAddress),
+			NetworkID:         types.StringValue(network.NetworkId),
+			SecurityGroupIDs:  securityGroupSetValue,
+		})
+	}
+	state.Networks = networks
+
 	for i, nic := range state.Networks {
 		nic.ExternalIPAddress = types.StringValue(instance.Nics[i].ExternalIpAddress)
 		nic.InternalIPAddress = types.StringValue(instance.Nics[i].InternalIpAddress)
 	}
+
+	state.ProjectID = types.StringValue(instance.ProjectId)
+	state.RenewableEnergy = types.BoolValue(instance.RenewableEnergy)
+
 	var storageDisks []*VMStorageDiskResourceModel
 	for _, vmDisk := range instance.StorageDisks {
 		storageDisks = append(storageDisks, &VMStorageDiskResourceModel{
@@ -706,9 +700,31 @@ func appendVmState(instance *vm.VM, state *VMResourceModel) {
 		})
 	}
 	state.StorageDisks = storageDisks
-	state.GPUModel = types.StringValue(instance.GpuModel)
-	state.ID = types.StringValue(instance.Id)
-	state.InternalIPAddress = types.StringValue(instance.InternalIpAddress)
-	state.ExternalIPAddress = types.StringValue(instance.ExternalIpAddress)
-	state.RenewableEnergy = types.BoolValue(instance.RenewableEnergy)
+
+	mdElems := make(map[string]attr.Value)
+	for k, v := range instance.Metadata {
+		mdElems[k] = types.StringValue(v)
+	}
+	if len(mdElems) > 0 {
+		md, mapDiags := types.MapValue(types.StringType, mdElems)
+		diags.Append(mapDiags...)
+		state.Metadata = md
+	}
+
+	switch instance.SshKeySource {
+	case vm.SshKeySource_SSH_KEY_SOURCE_NONE:
+		state.SSHKeySource = types.StringValue("none")
+		for authorizedKey := range strings.Lines(instance.AuthorizedSshKeys) {
+			state.SSHKeys = append(state.SSHKeys, types.StringValue(authorizedKey))
+		}
+	case vm.SshKeySource_SSH_KEY_SOURCE_PROJECT,
+		vm.SshKeySource_SSH_KEY_SOURCE_UNKNOWN:
+		state.SSHKeySource = types.StringNull()
+	case vm.SshKeySource_SSH_KEY_SOURCE_USER:
+		state.SSHKeySource = types.StringValue("user")
+	}
+
+	state.VCPUs = types.Int64Value(int64(instance.Vcpus))
+
+	return diags
 }

@@ -391,6 +391,7 @@ resource "cudo_vm" "vm_disk_resource" {
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "machine_type", "standard"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "cpu_model", "Haswell-noTSX-IBRS"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "data_center_id", "black-mesa"),
+					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "project_id", projectID),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "gpu_model", ""),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "memory_gib", "2"),
 					resource.TestCheckResourceAttr("cudo_vm.vm_disk_resource", "storage_disks.0.disk_id", diskID1),

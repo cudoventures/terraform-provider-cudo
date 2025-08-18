@@ -20,6 +20,7 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &VMImageResource{}
+var _ resource.ResourceWithConfigure = &VMImageResource{}
 var _ resource.ResourceWithImportState = &VMImageResource{}
 
 func NewVMImageResource() resource.Resource {
@@ -33,8 +34,8 @@ type VMImageResource struct {
 
 // VMImageResourceModel describes the resource data model.
 type VMImageResourceModel struct {
-	ID           types.String               `tfsdk:"id"`
 	DataCenterId types.String               `tfsdk:"data_center_id"`
+	ID           types.String               `tfsdk:"id"`
 	SizeGib      types.Int64                `tfsdk:"size_gib"`
 	Source       VMImageSourceResourceModel `tfsdk:"source"`
 }
@@ -45,7 +46,7 @@ type VMImageSourceResourceModel struct {
 }
 
 func (r *VMImageResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = "cudo_vm_image"
+	resp.TypeName = req.ProviderTypeName + "_vm_image"
 }
 
 func (r *VMImageResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -176,29 +177,19 @@ func (r *VMImageResource) Read(ctx context.Context, req resource.ReadRequest, re
 }
 
 func (r *VMImageResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan VMImageResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
-	if resp.Diagnostics.HasError() {
-		resp.Diagnostics.AddError(
-			"Error getting vm image plan",
-			"Error getting vm image plan",
-		)
-		return
-	}
-
-	// Read Terraform state data into the model
-	var state VMImageResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
+	resp.Diagnostics.AddError(
+		"Unable to update image",
+		"Updating an image is not supported",
+	)
 }
 
 func (r *VMImageResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var state VMImageResourceModel
+
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	_, err := r.client.VMClient.DeletePrivateVMImage(ctx, &vm.DeletePrivateVMImageRequest{
 		ProjectId: r.client.DefaultProjectID,
@@ -213,6 +204,22 @@ func (r *VMImageResource) Delete(ctx context.Context, req resource.DeleteRequest
 	}
 }
 
+var vmImageImportIDRegExp = regexp.MustCompile("projects/(.+)/images/(.+)")
+
 func (r *VMImageResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	var projectID, ID string
+	if parts := vmImageImportIDRegExp.FindStringSubmatch(req.ID); parts != nil {
+		projectID = parts[1]
+		ID = parts[2]
+	}
+
+	if projectID == "" || ID == "" {
+		resp.Diagnostics.AddError(
+			"Unexpected Import Identifier",
+			fmt.Sprintf("Expected import identifier with format: \"projects/<project_id>/images/<id>\". Got: %q", req.ID),
+		)
+	}
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("project_id"), projectID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), ID)...)
 }

@@ -45,6 +45,7 @@ resource "cudo_security_group" "my-sg" {
 ### Optional
 
 - `description` (String) Description of the security group
+- `project_id` (String) The project the security group is in.
 
 <a id="nestedatt--rules"></a>
 ### Nested Schema for `rules`

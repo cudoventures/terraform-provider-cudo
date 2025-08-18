@@ -208,8 +208,6 @@ func (r *MachineResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	// fmt.Sprintf("projects/%s/machines/%s", projectID, plan.ID.ValueString())
-
 	machine, err := waitForMachineDeploying(ctx, r.client.BareMetalClient, plan.ProjectID.ValueString(), plan.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(

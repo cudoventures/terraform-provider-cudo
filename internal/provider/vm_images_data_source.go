@@ -36,7 +36,7 @@ type VMImagesDataSourceModel struct {
 }
 
 func (d *VMImagesDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = "cudo_vm_images"
+	resp.TypeName = req.ProviderTypeName + "_vm_images"
 }
 
 func (d *VMImagesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {

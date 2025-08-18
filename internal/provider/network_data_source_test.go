@@ -52,6 +52,7 @@ func TestAcc_NetworkDataSource(t *testing.T) {
 					resource.TestCheckResourceAttr("data.cudo_network.network", "id", networkID),
 					resource.TestCheckResourceAttr("data.cudo_network.network", "data_center_id", "black-mesa"),
 					resource.TestCheckResourceAttr("data.cudo_network.network", "ip_range", "192.168.0.0/24"),
+					resource.TestCheckResourceAttr("data.cudo_network.network", "project_id", projectID),
 					resource.TestCheckResourceAttrSet("data.cudo_network.network", "internal_ip_address"),
 					resource.TestCheckResourceAttrSet("data.cudo_network.network", "external_ip_address"),
 					resource.TestCheckResourceAttrSet("data.cudo_network.network", "gateway"),

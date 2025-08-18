@@ -72,6 +72,7 @@ resource "cudo_storage_disk" "storage_disk_resource" {
 					resource.TestCheckResourceAttr("cudo_storage_disk.storage_disk_resource", "data_center_id", "black-mesa"),
 					resource.TestCheckResourceAttr("cudo_storage_disk.storage_disk_resource", "size_gib", "15"),
 					resource.TestCheckResourceAttr("cudo_storage_disk.storage_disk_resource", "id", diskID),
+					resource.TestCheckResourceAttr("cudo_storage_disk.storage_disk_resource", "project_id", projectID),
 				),
 			},
 		},

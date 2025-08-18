@@ -25,6 +25,10 @@ data "cudo_security_group" "my-sg" {
 
 - `id` (String) Security Group ID.
 
+### Optional
+
+- `project_id` (String) The unique identifier of the project the security group is in.
+
 ### Read-Only
 
 - `data_center_id` (String) Datacenter ID to request security groups from

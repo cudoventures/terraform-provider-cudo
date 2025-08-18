@@ -33,7 +33,7 @@ type VMDataCentersDataSourceModel struct {
 }
 
 func (d *VMDataCentersDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = "cudo_vm_data_centers"
+	resp.TypeName = req.ProviderTypeName + "_vm_data_centers"
 }
 
 func (d *VMDataCentersDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
@@ -95,15 +95,12 @@ func (d *VMDataCentersDataSource) Read(ctx context.Context, req datasource.ReadR
 	}
 
 	for _, dc := range res.DataCenters {
-		dataCenter := VMDataCenterDataSourceModel{
+		state.DataCenters = append(state.DataCenters, VMDataCenterDataSourceModel{
 			ID: types.StringValue(dc.Id),
-		}
-
-		state.DataCenters = append(state.DataCenters, dataCenter)
+		})
 	}
 
 	state.ID = types.StringValue("vm_data_centers")
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

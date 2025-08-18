@@ -29,6 +29,10 @@ resource "cudo_network" "network" {
 - `id` (String) Network ID
 - `ip_range` (String) IP range of network in CIDR format e.g 192.168.0.0/24
 
+### Optional
+
+- `project_id` (String) The project the network is in.
+
 ### Read-Only
 
 - `external_ip_address` (String) External IP of the network router

@@ -74,6 +74,7 @@ resource "cudo_network" "network" {
 					resource.TestCheckResourceAttr("cudo_network.network", "id", networkID),
 					resource.TestCheckResourceAttr("cudo_network.network", "data_center_id", "black-mesa"),
 					resource.TestCheckResourceAttr("cudo_network.network", "ip_range", "192.168.0.0/24"),
+					resource.TestCheckResourceAttr("cudo_network.network", "project_id", projectID),
 					resource.TestCheckResourceAttrSet("cudo_network.network", "internal_ip_address"),
 					resource.TestCheckResourceAttrSet("cudo_network.network", "external_ip_address"),
 					resource.TestCheckResourceAttrSet("cudo_network.network", "gateway"),
