@@ -30,6 +30,7 @@ type VMDataSourceModel struct {
 	Id                types.String `tfsdk:"id"`
 	ImageID           types.String `tfsdk:"image_id"`
 	InternalIPAddress types.String `tfsdk:"internal_ip_address"`
+	MachineType       types.String `tfsdk:"machine_type"`
 	MemoryGib         types.Int64  `tfsdk:"memory_gib"`
 	Metadata          types.Map    `tfsdk:"metadata"`
 	ProjectID         types.String `tfsdk:"project_id"`
@@ -72,6 +73,10 @@ func (d *VMDataSource) Schema(ctx context.Context, req datasource.SchemaRequest,
 			},
 			"internal_ip_address": schema.StringAttribute{
 				MarkdownDescription: "The internal IP address of the VM instance.",
+				Computed:            true,
+			},
+			"machine_type": schema.StringAttribute{
+				MarkdownDescription: "The machine type of the VM instance",
 				Computed:            true,
 			},
 			"memory_gib": schema.Int64Attribute{
@@ -155,6 +160,7 @@ func (d *VMDataSource) Read(ctx context.Context, req datasource.ReadRequest, res
 	state.Gpus = types.Int64Value(int64(vm.VM.GpuQuantity))
 	state.ImageID = types.StringValue(imageID)
 	state.InternalIPAddress = types.StringValue(vm.VM.InternalIpAddress)
+	state.MachineType = types.StringValue(vm.VM.MachineType)
 	state.MemoryGib = types.Int64Value(int64(vm.VM.Memory))
 	state.Metadata = metadataMap
 	state.Vcpus = types.Int64Value(int64(vm.VM.Vcpus))
