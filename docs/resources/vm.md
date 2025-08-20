@@ -55,9 +55,7 @@ resource "cudo_vm" "my-vm" {
 ### Optional
 
 - `commitment_months` (Number) The minimum length of time to commit to the VM instance. It cannot be deleted before the commitment end date.
-- `cpu_model` (String) The model of the CPU.
 - `data_center_id` (String) The id of the datacenter where the VM instance is located.
-- `gpu_model` (String) The model of the GPU.
 - `gpus` (Number) Number of GPUs
 - `machine_type` (String) VM machine type
 - `memory_gib` (Number) Amount of memory in GiB
@@ -76,7 +74,6 @@ resource "cudo_vm" "my-vm" {
 
 - `external_ip_address` (String) The external IP address of the VM instance.
 - `internal_ip_address` (String) The internal IP address of the VM instance.
-- `renewable_energy` (Boolean) Whether the VM instance is powered by renewable energy
 
 <a id="nestedatt--boot_disk"></a>
 ### Nested Schema for `boot_disk`

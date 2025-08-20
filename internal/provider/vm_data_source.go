@@ -24,10 +24,8 @@ type VMDataSource struct {
 
 type VMDataSourceModel struct {
 	BootDiskSizeGib   types.Int64  `tfsdk:"boot_disk_size_gib"`
-	CPUModel          types.String `tfsdk:"cpu_model"`
 	DatacenterID      types.String `tfsdk:"data_center_id"`
 	ExternalIPAddress types.String `tfsdk:"external_ip_address"`
-	GpuModel          types.String `tfsdk:"gpu_model"`
 	Gpus              types.Int64  `tfsdk:"gpus"`
 	Id                types.String `tfsdk:"id"`
 	ImageID           types.String `tfsdk:"image_id"`
@@ -52,20 +50,12 @@ func (d *VMDataSource) Schema(ctx context.Context, req datasource.SchemaRequest,
 				MarkdownDescription: "The size of the boot disk in gibibytes (GiB).",
 				Computed:            true,
 			},
-			"cpu_model": schema.StringAttribute{
-				MarkdownDescription: "The model of the CPU.",
-				Computed:            true,
-			},
 			"data_center_id": schema.StringAttribute{
 				MarkdownDescription: "The unique identifier of the datacenter where the VM instance is located.",
 				Computed:            true,
 			},
 			"external_ip_address": schema.StringAttribute{
 				MarkdownDescription: "The external IP address of the VM instance.",
-				Computed:            true,
-			},
-			"gpu_model": schema.StringAttribute{
-				MarkdownDescription: "The model of the GPU.",
 				Computed:            true,
 			},
 			"gpus": schema.Int64Attribute{
@@ -160,10 +150,8 @@ func (d *VMDataSource) Read(ctx context.Context, req datasource.ReadRequest, res
 	resp.Diagnostics.Append(diag...)
 
 	state.BootDiskSizeGib = types.Int64Value(int64(vm.VM.BootDiskSizeGib))
-	state.CPUModel = types.StringValue(vm.VM.CpuModel)
 	state.DatacenterID = types.StringValue(vm.VM.DatacenterId)
 	state.ExternalIPAddress = types.StringValue(vm.VM.ExternalIpAddress)
-	state.GpuModel = types.StringValue(vm.VM.GpuModel)
 	state.Gpus = types.Int64Value(int64(vm.VM.GpuQuantity))
 	state.ImageID = types.StringValue(imageID)
 	state.InternalIPAddress = types.StringValue(vm.VM.InternalIpAddress)

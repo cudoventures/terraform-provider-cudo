@@ -77,14 +77,6 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Optional:            true,
 				Validators:          []validator.Int32{int32validator.OneOf(1, 3, 6, 12, 24, 36)},
 			},
-			"cpu_model": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: "The model of the CPU.",
-				Optional:            true,
-				Computed:            true,
-			},
 			"data_center_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
@@ -96,14 +88,6 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 			},
 			"external_ip_address": schema.StringAttribute{
 				MarkdownDescription: "The external IP address of the VM instance.",
-				Computed:            true,
-			},
-			"gpu_model": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: "The model of the GPU.",
-				Optional:            true,
 				Computed:            true,
 			},
 			"gpus": schema.Int64Attribute{
@@ -201,10 +185,6 @@ func (r *VMResource) Schema(ctx context.Context, req resource.SchemaRequest, res
 				Computed:            true,
 				Validators:          []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"), "must be a valid RFC1034 resource id")},
 			},
-			"renewable_energy": schema.BoolAttribute{
-				MarkdownDescription: "Whether the VM instance is powered by renewable energy",
-				Computed:            true,
-			},
 			"security_group_ids": schema.SetAttribute{
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.RequiresReplace(),
@@ -273,10 +253,8 @@ type VMResource struct {
 type VMResourceModel struct {
 	BootDisk          *VMBootDiskResourceModel      `tfsdk:"boot_disk"`
 	CommitmentMonths  types.Int32                   `tfsdk:"commitment_months"`
-	CPUModel          types.String                  `tfsdk:"cpu_model"`
 	DataCenterID      types.String                  `tfsdk:"data_center_id"`
 	ExternalIPAddress types.String                  `tfsdk:"external_ip_address"`
-	GPUModel          types.String                  `tfsdk:"gpu_model"`
 	GPUs              types.Int64                   `tfsdk:"gpus"`
 	ID                types.String                  `tfsdk:"id"`
 	InternalIPAddress types.String                  `tfsdk:"internal_ip_address"`
@@ -286,7 +264,6 @@ type VMResourceModel struct {
 	Networks          []*VMNICResourceModel         `tfsdk:"networks"`
 	Password          types.String                  `tfsdk:"password"`
 	ProjectID         types.String                  `tfsdk:"project_id"`
-	RenewableEnergy   types.Bool                    `tfsdk:"renewable_energy"`
 	SecurityGroupIDs  types.Set                     `tfsdk:"security_group_ids"`
 	SSHKeys           []types.String                `tfsdk:"ssh_keys"`
 	SSHKeySource      types.String                  `tfsdk:"ssh_key_source"`
@@ -652,10 +629,8 @@ func appendVmState(instance *vm.VM, state *VMResourceModel) diag.Diagnostics {
 		state.CommitmentMonths = types.Int32Value(36)
 	}
 
-	state.CPUModel = types.StringValue(instance.CpuModel)
 	state.DataCenterID = types.StringValue(instance.DatacenterId)
 	state.ExternalIPAddress = types.StringValue(instance.ExternalIpAddress)
-	state.GPUModel = types.StringValue(instance.GpuModel)
 	state.GPUs = types.Int64Value(int64(instance.GpuQuantity))
 	state.ID = types.StringValue(instance.Id)
 	state.InternalIPAddress = types.StringValue(instance.InternalIpAddress)
@@ -691,7 +666,6 @@ func appendVmState(instance *vm.VM, state *VMResourceModel) diag.Diagnostics {
 	}
 
 	state.ProjectID = types.StringValue(instance.ProjectId)
-	state.RenewableEnergy = types.BoolValue(instance.RenewableEnergy)
 
 	var storageDisks []*VMStorageDiskResourceModel
 	for _, vmDisk := range instance.StorageDisks {

@@ -33,12 +33,11 @@ data "cudo_vm" "my-vm" {
 ### Read-Only
 
 - `boot_disk_size_gib` (Number) The size of the boot disk in gibibytes (GiB).
-- `cpu_model` (String) The model of the CPU.
 - `data_center_id` (String) The unique identifier of the datacenter where the VM instance is located.
 - `external_ip_address` (String) The external IP address of the VM instance.
-- `gpu_model` (String) The model of the GPU.
 - `gpus` (Number) The number of GPUs attached to the VM instance.
 - `image_id` (String) The unique identifier of the image used to create the VM instance.
 - `internal_ip_address` (String) The internal IP address of the VM instance.
+- `machine_type` (String) The machine type of the VM instance
 - `memory_gib` (Number) The amount of memory allocated to the VM instance.
 - `vcpus` (Number)
