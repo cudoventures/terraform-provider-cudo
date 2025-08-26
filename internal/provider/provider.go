@@ -207,6 +207,7 @@ func (p *CudoProvider) Resources(ctx context.Context) []func() resource.Resource
 		NewVMImageResource,
 		NewVMResource,
 		NewMachineResource,
+		NewClusterResource,
 	}
 }
 
