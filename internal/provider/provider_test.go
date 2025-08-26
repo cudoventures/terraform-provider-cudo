@@ -1,12 +1,10 @@
 package provider
 
 import (
-	"context"
 	"crypto/x509"
 	"fmt"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/network"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
@@ -60,18 +58,14 @@ func getClients(t *testing.T) (vm.VMServiceClient, network.NetworkServiceClient)
 		t.Error("Error getting system cerificate: ", err.Error())
 	}
 	creds := credentials.NewClientTLSFromCert(pool, "")
-	dialOptions = append(dialOptions, grpc.WithTransportCredentials(creds))
 	dialOptions = append(dialOptions,
+		grpc.WithTransportCredentials(creds),
 		grpc.WithPerRPCCredentials(&apiKeyCallOption{
 			disableTransportSecurity: config.DisableTLS.ValueBool(),
 			key:                      apiKey,
-		}),
-	)
+		}))
 
-	dialTimeoutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	conn, err := grpc.DialContext(dialTimeoutCtx, remoteAddr, dialOptions...)
+	conn, err := grpc.NewClient(remoteAddr, dialOptions...)
 	if err != nil {
 		t.Error("Dialing compute service failed: " + err.Error())
 	}
