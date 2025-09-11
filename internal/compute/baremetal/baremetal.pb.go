@@ -8,7 +8,8 @@ package baremetal
 
 import (
 	compute "github.com/CudoVentures/terraform-provider-cudo/internal/compute"
-	vm "github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
+	sshkey "github.com/CudoVentures/terraform-provider-cudo/internal/compute/sshkey"
+	_ "github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	decimal "google.golang.org/genproto/googleapis/type/decimal"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -557,6 +558,9 @@ type Machine struct {
 	CommitmentTerm      compute.CommitmentTerm `protobuf:"varint,21,opt,name=commitment_term,json=commitmentTerm,proto3,enum=org.cudo.compute.v1.CommitmentTerm" json:"commitment_term,omitempty"`
 	PriceHr             *decimal.Decimal       `protobuf:"bytes,22,opt,name=price_hr,json=priceHr,proto3" json:"price_hr,omitempty"`
 	UserData            string                 `protobuf:"bytes,23,opt,name=user_data,json=userData,proto3" json:"user_data,omitempty"`
+	SshKeySource        sshkey.SshKeySource    `protobuf:"varint,24,opt,name=ssh_key_source,json=sshKeySource,proto3,enum=org.cudo.compute.v1.SshKeySource" json:"ssh_key_source,omitempty"`
+	CustomSshKeys       []string               `protobuf:"bytes,25,rep,name=custom_ssh_keys,json=customSshKeys,proto3" json:"custom_ssh_keys,omitempty"`
+	StartScript         string                 `protobuf:"bytes,26,opt,name=start_script,json=startScript,proto3" json:"start_script,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -752,6 +756,27 @@ func (x *Machine) GetUserData() string {
 	return ""
 }
 
+func (x *Machine) GetSshKeySource() sshkey.SshKeySource {
+	if x != nil {
+		return x.SshKeySource
+	}
+	return sshkey.SshKeySource(0)
+}
+
+func (x *Machine) GetCustomSshKeys() []string {
+	if x != nil {
+		return x.CustomSshKeys
+	}
+	return nil
+}
+
+func (x *Machine) GetStartScript() string {
+	if x != nil {
+		return x.StartScript
+	}
+	return ""
+}
+
 type Cluster struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId           string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
@@ -761,7 +786,7 @@ type Cluster struct {
 	MachineCount        int32                  `protobuf:"varint,5,opt,name=machine_count,json=machineCount,proto3" json:"machine_count,omitempty"`
 	CommitmentTerm      compute.CommitmentTerm `protobuf:"varint,6,opt,name=commitment_term,json=commitmentTerm,proto3,enum=org.cudo.compute.v1.CommitmentTerm" json:"commitment_term,omitempty"`
 	CommitmentEndTime   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=commitment_end_time,json=commitmentEndTime,proto3" json:"commitment_end_time,omitempty"`
-	SshKeySource        vm.SshKeySource        `protobuf:"varint,8,opt,name=ssh_key_source,json=sshKeySource,proto3,enum=org.cudo.compute.v1.SshKeySource" json:"ssh_key_source,omitempty"`
+	SshKeySource        sshkey.SshKeySource    `protobuf:"varint,8,opt,name=ssh_key_source,json=sshKeySource,proto3,enum=org.cudo.compute.v1.SshKeySource" json:"ssh_key_source,omitempty"`
 	CustomSshKeys       []string               `protobuf:"bytes,9,rep,name=custom_ssh_keys,json=customSshKeys,proto3" json:"custom_ssh_keys,omitempty"`
 	StartScript         string                 `protobuf:"bytes,10,opt,name=start_script,json=startScript,proto3" json:"start_script,omitempty"`
 	State               Cluster_State          `protobuf:"varint,11,opt,name=state,proto3,enum=org.cudo.compute.v1.Cluster_State" json:"state,omitempty"`
@@ -863,11 +888,11 @@ func (x *Cluster) GetCommitmentEndTime() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Cluster) GetSshKeySource() vm.SshKeySource {
+func (x *Cluster) GetSshKeySource() sshkey.SshKeySource {
 	if x != nil {
 		return x.SshKeySource
 	}
-	return vm.SshKeySource(0)
+	return sshkey.SshKeySource(0)
 }
 
 func (x *Cluster) GetCustomSshKeys() []string {
@@ -1204,7 +1229,7 @@ var File_svc_compute_baremetal_baremetal_proto protoreflect.FileDescriptor
 
 const file_svc_compute_baremetal_baremetal_proto_rawDesc = "" +
 	"\n" +
-	"%svc/compute/baremetal/baremetal.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x17svc/compute/types.proto\x1a\x17svc/compute/vm/vm.proto\"\xbe\x04\n" +
+	"%svc/compute/baremetal/baremetal.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x17svc/compute/types.proto\x1a\x1fsvc/compute/sshkey/sshkey.proto\x1a\x17svc/compute/vm/vm.proto\"\xbe\x04\n" +
 	"\vMachineType\x12)\n" +
 	"\x0edata_center_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12\x13\n" +
 	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\x12'\n" +
@@ -1228,7 +1253,7 @@ const file_svc_compute_baremetal_baremetal_proto_rawDesc = "" +
 	"\x0fmachine_type_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rmachineTypeId\x12Q\n" +
 	"\x0fcommitment_term\x18\x03 \x01(\x0e2#.org.cudo.compute.v1.CommitmentTermB\x03\xe0A\x02R\x0ecommitmentTerm\x124\n" +
 	"\bprice_hr\x18\x04 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x02R\apriceHr\x12=\n" +
-	"\ripv4_price_hr\x18\x05 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x02R\vipv4PriceHr\"\xc6\b\n" +
+	"\ripv4_price_hr\x18\x05 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x02R\vipv4PriceHr\"\xe9\t\n" +
 	"\aMachine\x12)\n" +
 	"\x0edata_center_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12\x13\n" +
 	"\x02id\x18\x02 \x01(\tB\x03\xe0A\x02R\x02id\x12+\n" +
@@ -1248,7 +1273,7 @@ const file_svc_compute_baremetal_baremetal_proto_rawDesc = "" +
 	"\x05state\x18\r \x01(\x0e2\".org.cudo.compute.v1.Machine.StateB\x03\xe0A\x03R\x05state\x12L\n" +
 	"\vpower_state\x18\x0e \x01(\x0e2&.org.cudo.compute.v1.MachinePowerStateB\x03\xe0A\x01R\n" +
 	"powerState\x12\x13\n" +
-	"\x02os\x18\x0f \x01(\tB\x03\xe0A\x01R\x02os\x12\x1f\n" +
+	"\x02os\x18\x0f \x01(\tB\x03\xe0A\x02R\x02os\x12\x1f\n" +
 	"\bhostname\x18\x10 \x01(\tB\x03\xe0A\x03R\bhostname\x127\n" +
 	"\x15external_ip_addresses\x18\x11 \x03(\tB\x03\xe0A\x03R\x13externalIpAddresses\x12\"\n" +
 	"\n" +
@@ -1258,7 +1283,10 @@ const file_svc_compute_baremetal_baremetal_proto_rawDesc = "" +
 	"\tcreate_by\x18\x14 \x01(\tB\x03\xe0A\x03R\bcreateBy\x12Q\n" +
 	"\x0fcommitment_term\x18\x15 \x01(\x0e2#.org.cudo.compute.v1.CommitmentTermB\x03\xe0A\x01R\x0ecommitmentTerm\x124\n" +
 	"\bprice_hr\x18\x16 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x03R\apriceHr\x12 \n" +
-	"\tuser_data\x18\x17 \x01(\tB\x03\xe0A\x04R\buserData\"a\n" +
+	"\tuser_data\x18\x17 \x01(\tB\x03\xe0A\x04R\buserData\x12L\n" +
+	"\x0essh_key_source\x18\x18 \x01(\x0e2!.org.cudo.compute.v1.SshKeySourceB\x03\xe0A\x04R\fsshKeySource\x12+\n" +
+	"\x0fcustom_ssh_keys\x18\x19 \x03(\tB\x03\xe0A\x04R\rcustomSshKeys\x12&\n" +
+	"\fstart_script\x18\x1a \x01(\tB\x03\xe0A\x04R\vstartScript\"a\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
@@ -1276,7 +1304,7 @@ const file_svc_compute_baremetal_baremetal_proto_rawDesc = "" +
 	"\x0fmachine_type_id\x18\x04 \x01(\tB\x03\xe0A\x02R\rmachineTypeId\x12(\n" +
 	"\rmachine_count\x18\x05 \x01(\x05B\x03\xe0A\x02R\fmachineCount\x12Q\n" +
 	"\x0fcommitment_term\x18\x06 \x01(\x0e2#.org.cudo.compute.v1.CommitmentTermB\x03\xe0A\x01R\x0ecommitmentTerm\x12O\n" +
-	"\x13commitment_end_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x11commitmentEndTime\x12L\n" +
+	"\x13commitment_end_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x11commitmentEndTime\x12L\n" +
 	"\x0essh_key_source\x18\b \x01(\x0e2!.org.cudo.compute.v1.SshKeySourceB\x03\xe0A\x01R\fsshKeySource\x12+\n" +
 	"\x0fcustom_ssh_keys\x18\t \x03(\tB\x03\xe0A\x01R\rcustomSshKeys\x12&\n" +
 	"\fstart_script\x18\n" +
@@ -1387,7 +1415,7 @@ var file_svc_compute_baremetal_baremetal_proto_goTypes = []any{
 	(compute.CommitmentTerm)(0),   // 10: org.cudo.compute.v1.CommitmentTerm
 	(*decimal.Decimal)(nil),       // 11: google.type.Decimal
 	(*timestamppb.Timestamp)(nil), // 12: google.protobuf.Timestamp
-	(vm.SshKeySource)(0),          // 13: org.cudo.compute.v1.SshKeySource
+	(sshkey.SshKeySource)(0),      // 13: org.cudo.compute.v1.SshKeySource
 }
 var file_svc_compute_baremetal_baremetal_proto_depIdxs = []int32{
 	6,  // 0: org.cudo.compute.v1.MachineType.prices:type_name -> org.cudo.compute.v1.MachineTypePrice
@@ -1400,25 +1428,26 @@ var file_svc_compute_baremetal_baremetal_proto_depIdxs = []int32{
 	12, // 7: org.cudo.compute.v1.Machine.create_time:type_name -> google.protobuf.Timestamp
 	10, // 8: org.cudo.compute.v1.Machine.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
 	11, // 9: org.cudo.compute.v1.Machine.price_hr:type_name -> google.type.Decimal
-	10, // 10: org.cudo.compute.v1.Cluster.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
-	12, // 11: org.cudo.compute.v1.Cluster.commitment_end_time:type_name -> google.protobuf.Timestamp
-	13, // 12: org.cudo.compute.v1.Cluster.ssh_key_source:type_name -> org.cudo.compute.v1.SshKeySource
-	3,  // 13: org.cudo.compute.v1.Cluster.state:type_name -> org.cudo.compute.v1.Cluster.State
-	0,  // 14: org.cudo.compute.v1.Cluster.network_type:type_name -> org.cudo.compute.v1.NetworkType
-	11, // 15: org.cudo.compute.v1.Cluster.machine_price_hr:type_name -> google.type.Decimal
-	11, // 16: org.cudo.compute.v1.Cluster.total_machine_price_hr:type_name -> google.type.Decimal
-	11, // 17: org.cudo.compute.v1.Cluster.total_price_hr:type_name -> google.type.Decimal
-	9,  // 18: org.cudo.compute.v1.Cluster.machines:type_name -> org.cudo.compute.v1.ClusterMachine
-	12, // 19: org.cudo.compute.v1.Cluster.create_time:type_name -> google.protobuf.Timestamp
-	1,  // 20: org.cudo.compute.v1.ClusterMachine.power_state:type_name -> org.cudo.compute.v1.MachinePowerState
-	4,  // 21: org.cudo.compute.v1.ClusterMachine.state:type_name -> org.cudo.compute.v1.ClusterMachine.State
-	11, // 22: org.cudo.compute.v1.ClusterMachine.price_hr:type_name -> google.type.Decimal
-	12, // 23: org.cudo.compute.v1.ClusterMachine.create_time:type_name -> google.protobuf.Timestamp
-	24, // [24:24] is the sub-list for method output_type
-	24, // [24:24] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	13, // 10: org.cudo.compute.v1.Machine.ssh_key_source:type_name -> org.cudo.compute.v1.SshKeySource
+	10, // 11: org.cudo.compute.v1.Cluster.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
+	12, // 12: org.cudo.compute.v1.Cluster.commitment_end_time:type_name -> google.protobuf.Timestamp
+	13, // 13: org.cudo.compute.v1.Cluster.ssh_key_source:type_name -> org.cudo.compute.v1.SshKeySource
+	3,  // 14: org.cudo.compute.v1.Cluster.state:type_name -> org.cudo.compute.v1.Cluster.State
+	0,  // 15: org.cudo.compute.v1.Cluster.network_type:type_name -> org.cudo.compute.v1.NetworkType
+	11, // 16: org.cudo.compute.v1.Cluster.machine_price_hr:type_name -> google.type.Decimal
+	11, // 17: org.cudo.compute.v1.Cluster.total_machine_price_hr:type_name -> google.type.Decimal
+	11, // 18: org.cudo.compute.v1.Cluster.total_price_hr:type_name -> google.type.Decimal
+	9,  // 19: org.cudo.compute.v1.Cluster.machines:type_name -> org.cudo.compute.v1.ClusterMachine
+	12, // 20: org.cudo.compute.v1.Cluster.create_time:type_name -> google.protobuf.Timestamp
+	1,  // 21: org.cudo.compute.v1.ClusterMachine.power_state:type_name -> org.cudo.compute.v1.MachinePowerState
+	4,  // 22: org.cudo.compute.v1.ClusterMachine.state:type_name -> org.cudo.compute.v1.ClusterMachine.State
+	11, // 23: org.cudo.compute.v1.ClusterMachine.price_hr:type_name -> google.type.Decimal
+	12, // 24: org.cudo.compute.v1.ClusterMachine.create_time:type_name -> google.protobuf.Timestamp
+	25, // [25:25] is the sub-list for method output_type
+	25, // [25:25] is the sub-list for method input_type
+	25, // [25:25] is the sub-list for extension type_name
+	25, // [25:25] is the sub-list for extension extendee
+	0,  // [0:25] is the sub-list for field type_name
 }
 
 func init() { file_svc_compute_baremetal_baremetal_proto_init() }

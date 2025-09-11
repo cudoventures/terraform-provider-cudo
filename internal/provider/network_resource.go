@@ -147,10 +147,12 @@ func (r *NetworkResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	_, err := r.client.NetworkClient.CreateNetwork(ctx, &network.CreateNetworkRequest{
-		CidrPrefix:   plan.IPRange.ValueString(),
-		DataCenterId: plan.DataCenterID.ValueString(),
-		Id:           plan.ID.ValueString(),
-		ProjectId:    plan.ProjectID.ValueString(),
+		Network: &network.Network{
+			IpRange:      plan.IPRange.ValueString(),
+			DataCenterId: plan.DataCenterID.ValueString(),
+			Id:           plan.ID.ValueString(),
+			ProjectId:    plan.ProjectID.ValueString(),
+		},
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(

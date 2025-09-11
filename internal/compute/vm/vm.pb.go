@@ -9,6 +9,7 @@ package vm
 import (
 	compute "github.com/CudoVentures/terraform-provider-cudo/internal/compute"
 	securitygroup "github.com/CudoVentures/terraform-provider-cudo/internal/compute/securitygroup"
+	sshkey "github.com/CudoVentures/terraform-provider-cudo/internal/compute/sshkey"
 	_ "github.com/google/gnostic/openapiv3"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	decimal "google.golang.org/genproto/googleapis/type/decimal"
@@ -158,58 +159,6 @@ func (Vm_PreconditionFailureType) EnumDescriptor() ([]byte, []int) {
 	return file_svc_compute_vm_vm_proto_rawDescGZIP(), []int{0}
 }
 
-type SshKeySource int32
-
-const (
-	SshKeySource_SSH_KEY_SOURCE_UNKNOWN SshKeySource = 0
-	SshKeySource_SSH_KEY_SOURCE_PROJECT SshKeySource = 1
-	SshKeySource_SSH_KEY_SOURCE_USER    SshKeySource = 2
-	SshKeySource_SSH_KEY_SOURCE_NONE    SshKeySource = 3
-)
-
-// Enum value maps for SshKeySource.
-var (
-	SshKeySource_name = map[int32]string{
-		0: "SSH_KEY_SOURCE_UNKNOWN",
-		1: "SSH_KEY_SOURCE_PROJECT",
-		2: "SSH_KEY_SOURCE_USER",
-		3: "SSH_KEY_SOURCE_NONE",
-	}
-	SshKeySource_value = map[string]int32{
-		"SSH_KEY_SOURCE_UNKNOWN": 0,
-		"SSH_KEY_SOURCE_PROJECT": 1,
-		"SSH_KEY_SOURCE_USER":    2,
-		"SSH_KEY_SOURCE_NONE":    3,
-	}
-)
-
-func (x SshKeySource) Enum() *SshKeySource {
-	p := new(SshKeySource)
-	*p = x
-	return p
-}
-
-func (x SshKeySource) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (SshKeySource) Descriptor() protoreflect.EnumDescriptor {
-	return file_svc_compute_vm_vm_proto_enumTypes[1].Descriptor()
-}
-
-func (SshKeySource) Type() protoreflect.EnumType {
-	return &file_svc_compute_vm_vm_proto_enumTypes[1]
-}
-
-func (x SshKeySource) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use SshKeySource.Descriptor instead.
-func (SshKeySource) EnumDescriptor() ([]byte, []int) {
-	return file_svc_compute_vm_vm_proto_rawDescGZIP(), []int{1}
-}
-
 type VM_VmState int32
 
 const (
@@ -294,11 +243,11 @@ func (x VM_VmState) String() string {
 }
 
 func (VM_VmState) Descriptor() protoreflect.EnumDescriptor {
-	return file_svc_compute_vm_vm_proto_enumTypes[2].Descriptor()
+	return file_svc_compute_vm_vm_proto_enumTypes[1].Descriptor()
 }
 
 func (VM_VmState) Type() protoreflect.EnumType {
-	return &file_svc_compute_vm_vm_proto_enumTypes[2]
+	return &file_svc_compute_vm_vm_proto_enumTypes[1]
 }
 
 func (x VM_VmState) Number() protoreflect.EnumNumber {
@@ -355,11 +304,11 @@ func (x VM_SecurityGroupRule_Protocol) String() string {
 }
 
 func (VM_SecurityGroupRule_Protocol) Descriptor() protoreflect.EnumDescriptor {
-	return file_svc_compute_vm_vm_proto_enumTypes[3].Descriptor()
+	return file_svc_compute_vm_vm_proto_enumTypes[2].Descriptor()
 }
 
 func (VM_SecurityGroupRule_Protocol) Type() protoreflect.EnumType {
-	return &file_svc_compute_vm_vm_proto_enumTypes[3]
+	return &file_svc_compute_vm_vm_proto_enumTypes[2]
 }
 
 func (x VM_SecurityGroupRule_Protocol) Number() protoreflect.EnumNumber {
@@ -404,11 +353,11 @@ func (x VM_SecurityGroupRule_RuleType) String() string {
 }
 
 func (VM_SecurityGroupRule_RuleType) Descriptor() protoreflect.EnumDescriptor {
-	return file_svc_compute_vm_vm_proto_enumTypes[4].Descriptor()
+	return file_svc_compute_vm_vm_proto_enumTypes[3].Descriptor()
 }
 
 func (VM_SecurityGroupRule_RuleType) Type() protoreflect.EnumType {
-	return &file_svc_compute_vm_vm_proto_enumTypes[4]
+	return &file_svc_compute_vm_vm_proto_enumTypes[3]
 }
 
 func (x VM_SecurityGroupRule_RuleType) Number() protoreflect.EnumNumber {
@@ -471,11 +420,11 @@ func (x PrivateImage_PrivateImageState) String() string {
 }
 
 func (PrivateImage_PrivateImageState) Descriptor() protoreflect.EnumDescriptor {
-	return file_svc_compute_vm_vm_proto_enumTypes[5].Descriptor()
+	return file_svc_compute_vm_vm_proto_enumTypes[4].Descriptor()
 }
 
 func (PrivateImage_PrivateImageState) Type() protoreflect.EnumType {
-	return &file_svc_compute_vm_vm_proto_enumTypes[5]
+	return &file_svc_compute_vm_vm_proto_enumTypes[4]
 }
 
 func (x PrivateImage_PrivateImageState) Number() protoreflect.EnumNumber {
@@ -520,11 +469,11 @@ func (x Disk_StorageClass) String() string {
 }
 
 func (Disk_StorageClass) Descriptor() protoreflect.EnumDescriptor {
-	return file_svc_compute_vm_vm_proto_enumTypes[6].Descriptor()
+	return file_svc_compute_vm_vm_proto_enumTypes[5].Descriptor()
 }
 
 func (Disk_StorageClass) Type() protoreflect.EnumType {
-	return &file_svc_compute_vm_vm_proto_enumTypes[6]
+	return &file_svc_compute_vm_vm_proto_enumTypes[5]
 }
 
 func (x Disk_StorageClass) Number() protoreflect.EnumNumber {
@@ -569,11 +518,11 @@ func (x Disk_DiskType) String() string {
 }
 
 func (Disk_DiskType) Descriptor() protoreflect.EnumDescriptor {
-	return file_svc_compute_vm_vm_proto_enumTypes[7].Descriptor()
+	return file_svc_compute_vm_vm_proto_enumTypes[6].Descriptor()
 }
 
 func (Disk_DiskType) Type() protoreflect.EnumType {
-	return &file_svc_compute_vm_vm_proto_enumTypes[7]
+	return &file_svc_compute_vm_vm_proto_enumTypes[6]
 }
 
 func (x Disk_DiskType) Number() protoreflect.EnumNumber {
@@ -636,11 +585,11 @@ func (x Disk_DiskState) String() string {
 }
 
 func (Disk_DiskState) Descriptor() protoreflect.EnumDescriptor {
-	return file_svc_compute_vm_vm_proto_enumTypes[8].Descriptor()
+	return file_svc_compute_vm_vm_proto_enumTypes[7].Descriptor()
 }
 
 func (Disk_DiskState) Type() protoreflect.EnumType {
-	return &file_svc_compute_vm_vm_proto_enumTypes[8]
+	return &file_svc_compute_vm_vm_proto_enumTypes[7]
 }
 
 func (x Disk_DiskState) Number() protoreflect.EnumNumber {
@@ -687,7 +636,7 @@ type VM struct {
 	Price             *VM_VMPrice                    `protobuf:"bytes,33,opt,name=price,proto3" json:"price,omitempty"`
 	CommitmentTerm    compute.CommitmentTerm         `protobuf:"varint,34,opt,name=commitment_term,json=commitmentTerm,proto3,enum=org.cudo.compute.v1.CommitmentTerm" json:"commitment_term,omitempty"`
 	CommitmentEndTime *timestamppb.Timestamp         `protobuf:"bytes,35,opt,name=commitment_end_time,json=commitmentEndTime,proto3" json:"commitment_end_time,omitempty"`
-	SshKeySource      SshKeySource                   `protobuf:"varint,36,opt,name=ssh_key_source,json=sshKeySource,proto3,enum=org.cudo.compute.v1.SshKeySource" json:"ssh_key_source,omitempty"`
+	SshKeySource      sshkey.SshKeySource            `protobuf:"varint,36,opt,name=ssh_key_source,json=sshKeySource,proto3,enum=org.cudo.compute.v1.SshKeySource" json:"ssh_key_source,omitempty"`
 	AuthorizedSshKeys string                         `protobuf:"bytes,37,opt,name=authorized_ssh_keys,json=authorizedSshKeys,proto3" json:"authorized_ssh_keys,omitempty"`
 	SecurityGroups    []*securitygroup.SecurityGroup `protobuf:"bytes,38,rep,name=security_groups,json=securityGroups,proto3" json:"security_groups,omitempty"`
 	ProjectId         string                         `protobuf:"bytes,39,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
@@ -956,11 +905,11 @@ func (x *VM) GetCommitmentEndTime() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *VM) GetSshKeySource() SshKeySource {
+func (x *VM) GetSshKeySource() sshkey.SshKeySource {
 	if x != nil {
 		return x.SshKeySource
 	}
-	return SshKeySource_SSH_KEY_SOURCE_UNKNOWN
+	return sshkey.SshKeySource(0)
 }
 
 func (x *VM) GetAuthorizedSshKeys() string {
@@ -1597,7 +1546,7 @@ var File_svc_compute_vm_vm_proto protoreflect.FileDescriptor
 
 const file_svc_compute_vm_vm_proto_rawDesc = "" +
 	"\n" +
-	"\x17svc/compute/vm/vm.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a-svc/compute/securitygroup/securitygroup.proto\x1a\x17svc/compute/types.proto\"\x97\x1c\n" +
+	"\x17svc/compute/vm/vm.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a-svc/compute/securitygroup/securitygroup.proto\x1a\x1fsvc/compute/sshkey/sshkey.proto\x1a\x17svc/compute/types.proto\"\x97\x1c\n" +
 	"\x02VM\x12(\n" +
 	"\rdatacenter_id\x18\x01 \x01(\tB\x03\xe0A\x03R\fdatacenterId\x12!\n" +
 	"\fmachine_type\x18\x02 \x01(\tR\vmachineType\x12\x0e\n" +
@@ -1799,12 +1748,7 @@ const file_svc_compute_vm_vm_proto_rawDesc = "" +
 	"\x0eDISK_NOT_READY\x10\r\x12\x13\n" +
 	"\x0fDISK_NOT_IN_USE\x10\x0e\x12\x17\n" +
 	"\x13DISK_TYPE_INCORRECT\x10\x0f\x12\x10\n" +
-	"\fVM_COMMITTED\x10\x10*x\n" +
-	"\fSshKeySource\x12\x1a\n" +
-	"\x16SSH_KEY_SOURCE_UNKNOWN\x10\x00\x12\x1a\n" +
-	"\x16SSH_KEY_SOURCE_PROJECT\x10\x01\x12\x17\n" +
-	"\x13SSH_KEY_SOURCE_USER\x10\x02\x12\x17\n" +
-	"\x13SSH_KEY_SOURCE_NONE\x10\x03BEZCgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/vmb\x06proto3"
+	"\fVM_COMMITTED\x10\x10BEZCgithub.com/CudoVentures/terraform-provider-cudo/internal/compute/vmb\x06proto3"
 
 var (
 	file_svc_compute_vm_vm_proto_rawDescOnce sync.Once
@@ -1818,52 +1762,52 @@ func file_svc_compute_vm_vm_proto_rawDescGZIP() []byte {
 	return file_svc_compute_vm_vm_proto_rawDescData
 }
 
-var file_svc_compute_vm_vm_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
+var file_svc_compute_vm_vm_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
 var file_svc_compute_vm_vm_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_svc_compute_vm_vm_proto_goTypes = []any{
 	(Vm_PreconditionFailureType)(0),     // 0: org.cudo.compute.v1.Vm_PreconditionFailureType
-	(SshKeySource)(0),                   // 1: org.cudo.compute.v1.SshKeySource
-	(VM_VmState)(0),                     // 2: org.cudo.compute.v1.VM.VmState
-	(VM_SecurityGroupRule_Protocol)(0),  // 3: org.cudo.compute.v1.VM.SecurityGroupRule.Protocol
-	(VM_SecurityGroupRule_RuleType)(0),  // 4: org.cudo.compute.v1.VM.SecurityGroupRule.RuleType
-	(PrivateImage_PrivateImageState)(0), // 5: org.cudo.compute.v1.PrivateImage.PrivateImageState
-	(Disk_StorageClass)(0),              // 6: org.cudo.compute.v1.Disk.StorageClass
-	(Disk_DiskType)(0),                  // 7: org.cudo.compute.v1.Disk.DiskType
-	(Disk_DiskState)(0),                 // 8: org.cudo.compute.v1.Disk.DiskState
-	(*VM)(nil),                          // 9: org.cudo.compute.v1.VM
-	(*VMMonitoringItem)(nil),            // 10: org.cudo.compute.v1.VMMonitoringItem
-	(*PrivateImage)(nil),                // 11: org.cudo.compute.v1.PrivateImage
-	(*Disk)(nil),                        // 12: org.cudo.compute.v1.Disk
-	(*VM_NIC)(nil),                      // 13: org.cudo.compute.v1.VM.NIC
-	(*VM_SecurityGroupRule)(nil),        // 14: org.cudo.compute.v1.VM.SecurityGroupRule
-	nil,                                 // 15: org.cudo.compute.v1.VM.MetadataEntry
-	(*VM_VMPrice)(nil),                  // 16: org.cudo.compute.v1.VM.VMPrice
-	(*timestamppb.Timestamp)(nil),       // 17: google.protobuf.Timestamp
-	(compute.CommitmentTerm)(0),         // 18: org.cudo.compute.v1.CommitmentTerm
+	(VM_VmState)(0),                     // 1: org.cudo.compute.v1.VM.VmState
+	(VM_SecurityGroupRule_Protocol)(0),  // 2: org.cudo.compute.v1.VM.SecurityGroupRule.Protocol
+	(VM_SecurityGroupRule_RuleType)(0),  // 3: org.cudo.compute.v1.VM.SecurityGroupRule.RuleType
+	(PrivateImage_PrivateImageState)(0), // 4: org.cudo.compute.v1.PrivateImage.PrivateImageState
+	(Disk_StorageClass)(0),              // 5: org.cudo.compute.v1.Disk.StorageClass
+	(Disk_DiskType)(0),                  // 6: org.cudo.compute.v1.Disk.DiskType
+	(Disk_DiskState)(0),                 // 7: org.cudo.compute.v1.Disk.DiskState
+	(*VM)(nil),                          // 8: org.cudo.compute.v1.VM
+	(*VMMonitoringItem)(nil),            // 9: org.cudo.compute.v1.VMMonitoringItem
+	(*PrivateImage)(nil),                // 10: org.cudo.compute.v1.PrivateImage
+	(*Disk)(nil),                        // 11: org.cudo.compute.v1.Disk
+	(*VM_NIC)(nil),                      // 12: org.cudo.compute.v1.VM.NIC
+	(*VM_SecurityGroupRule)(nil),        // 13: org.cudo.compute.v1.VM.SecurityGroupRule
+	nil,                                 // 14: org.cudo.compute.v1.VM.MetadataEntry
+	(*VM_VMPrice)(nil),                  // 15: org.cudo.compute.v1.VM.VMPrice
+	(*timestamppb.Timestamp)(nil),       // 16: google.protobuf.Timestamp
+	(compute.CommitmentTerm)(0),         // 17: org.cudo.compute.v1.CommitmentTerm
+	(sshkey.SshKeySource)(0),            // 18: org.cudo.compute.v1.SshKeySource
 	(*securitygroup.SecurityGroup)(nil), // 19: org.cudo.compute.v1.SecurityGroup
 	(*decimal.Decimal)(nil),             // 20: google.type.Decimal
 }
 var file_svc_compute_vm_vm_proto_depIdxs = []int32{
-	13, // 0: org.cudo.compute.v1.VM.nics:type_name -> org.cudo.compute.v1.VM.NIC
-	14, // 1: org.cudo.compute.v1.VM.rules:type_name -> org.cudo.compute.v1.VM.SecurityGroupRule
-	12, // 2: org.cudo.compute.v1.VM.boot_disk:type_name -> org.cudo.compute.v1.Disk
-	12, // 3: org.cudo.compute.v1.VM.storage_disks:type_name -> org.cudo.compute.v1.Disk
-	15, // 4: org.cudo.compute.v1.VM.metadata:type_name -> org.cudo.compute.v1.VM.MetadataEntry
-	2,  // 5: org.cudo.compute.v1.VM.state:type_name -> org.cudo.compute.v1.VM.VmState
-	17, // 6: org.cudo.compute.v1.VM.create_time:type_name -> google.protobuf.Timestamp
-	17, // 7: org.cudo.compute.v1.VM.expire_time:type_name -> google.protobuf.Timestamp
-	16, // 8: org.cudo.compute.v1.VM.price:type_name -> org.cudo.compute.v1.VM.VMPrice
-	18, // 9: org.cudo.compute.v1.VM.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
-	17, // 10: org.cudo.compute.v1.VM.commitment_end_time:type_name -> google.protobuf.Timestamp
-	1,  // 11: org.cudo.compute.v1.VM.ssh_key_source:type_name -> org.cudo.compute.v1.SshKeySource
+	12, // 0: org.cudo.compute.v1.VM.nics:type_name -> org.cudo.compute.v1.VM.NIC
+	13, // 1: org.cudo.compute.v1.VM.rules:type_name -> org.cudo.compute.v1.VM.SecurityGroupRule
+	11, // 2: org.cudo.compute.v1.VM.boot_disk:type_name -> org.cudo.compute.v1.Disk
+	11, // 3: org.cudo.compute.v1.VM.storage_disks:type_name -> org.cudo.compute.v1.Disk
+	14, // 4: org.cudo.compute.v1.VM.metadata:type_name -> org.cudo.compute.v1.VM.MetadataEntry
+	1,  // 5: org.cudo.compute.v1.VM.state:type_name -> org.cudo.compute.v1.VM.VmState
+	16, // 6: org.cudo.compute.v1.VM.create_time:type_name -> google.protobuf.Timestamp
+	16, // 7: org.cudo.compute.v1.VM.expire_time:type_name -> google.protobuf.Timestamp
+	15, // 8: org.cudo.compute.v1.VM.price:type_name -> org.cudo.compute.v1.VM.VMPrice
+	17, // 9: org.cudo.compute.v1.VM.commitment_term:type_name -> org.cudo.compute.v1.CommitmentTerm
+	16, // 10: org.cudo.compute.v1.VM.commitment_end_time:type_name -> google.protobuf.Timestamp
+	18, // 11: org.cudo.compute.v1.VM.ssh_key_source:type_name -> org.cudo.compute.v1.SshKeySource
 	19, // 12: org.cudo.compute.v1.VM.security_groups:type_name -> org.cudo.compute.v1.SecurityGroup
-	5,  // 13: org.cudo.compute.v1.PrivateImage.state:type_name -> org.cudo.compute.v1.PrivateImage.PrivateImageState
-	6,  // 14: org.cudo.compute.v1.Disk.storage_class:type_name -> org.cudo.compute.v1.Disk.StorageClass
-	7,  // 15: org.cudo.compute.v1.Disk.disk_type:type_name -> org.cudo.compute.v1.Disk.DiskType
-	17, // 16: org.cudo.compute.v1.Disk.create_time:type_name -> google.protobuf.Timestamp
-	8,  // 17: org.cudo.compute.v1.Disk.disk_state:type_name -> org.cudo.compute.v1.Disk.DiskState
-	3,  // 18: org.cudo.compute.v1.VM.SecurityGroupRule.protocol:type_name -> org.cudo.compute.v1.VM.SecurityGroupRule.Protocol
-	4,  // 19: org.cudo.compute.v1.VM.SecurityGroupRule.rule_type:type_name -> org.cudo.compute.v1.VM.SecurityGroupRule.RuleType
+	4,  // 13: org.cudo.compute.v1.PrivateImage.state:type_name -> org.cudo.compute.v1.PrivateImage.PrivateImageState
+	5,  // 14: org.cudo.compute.v1.Disk.storage_class:type_name -> org.cudo.compute.v1.Disk.StorageClass
+	6,  // 15: org.cudo.compute.v1.Disk.disk_type:type_name -> org.cudo.compute.v1.Disk.DiskType
+	16, // 16: org.cudo.compute.v1.Disk.create_time:type_name -> google.protobuf.Timestamp
+	7,  // 17: org.cudo.compute.v1.Disk.disk_state:type_name -> org.cudo.compute.v1.Disk.DiskState
+	2,  // 18: org.cudo.compute.v1.VM.SecurityGroupRule.protocol:type_name -> org.cudo.compute.v1.VM.SecurityGroupRule.Protocol
+	3,  // 19: org.cudo.compute.v1.VM.SecurityGroupRule.rule_type:type_name -> org.cudo.compute.v1.VM.SecurityGroupRule.RuleType
 	20, // 20: org.cudo.compute.v1.VM.VMPrice.vcpu_price_hr:type_name -> google.type.Decimal
 	20, // 21: org.cudo.compute.v1.VM.VMPrice.total_vcpu_price_hr:type_name -> google.type.Decimal
 	20, // 22: org.cudo.compute.v1.VM.VMPrice.memory_gib_price_hr:type_name -> google.type.Decimal
@@ -1891,7 +1835,7 @@ func file_svc_compute_vm_vm_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_svc_compute_vm_vm_proto_rawDesc), len(file_svc_compute_vm_vm_proto_rawDesc)),
-			NumEnums:      9,
+			NumEnums:      8,
 			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,

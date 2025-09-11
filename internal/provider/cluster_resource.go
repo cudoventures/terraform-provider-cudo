@@ -8,7 +8,7 @@ import (
 
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/baremetal"
-	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/vm"
+	"github.com/CudoVentures/terraform-provider-cudo/internal/compute/sshkey"
 	"github.com/CudoVentures/terraform-provider-cudo/internal/helper"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
@@ -205,16 +205,16 @@ func (r *ClusterResource) Create(ctx context.Context, req resource.CreateRequest
 		}
 	}
 
-	sshKeySource := vm.SshKeySource_SSH_KEY_SOURCE_PROJECT
+	sshKeySource := sshkey.SshKeySource_SSH_KEY_SOURCE_PROJECT
 	switch plan.SSHKeySource.ValueString() {
 	case "personal", "user":
-		sshKeySource = vm.SshKeySource_SSH_KEY_SOURCE_USER
+		sshKeySource = sshkey.SshKeySource_SSH_KEY_SOURCE_USER
 	case "custom", "none":
-		sshKeySource = vm.SshKeySource_SSH_KEY_SOURCE_NONE
+		sshKeySource = sshkey.SshKeySource_SSH_KEY_SOURCE_NONE
 	}
 
 	var customKeys []string
-	if sshKeySource == vm.SshKeySource_SSH_KEY_SOURCE_NONE {
+	if sshKeySource == sshkey.SshKeySource_SSH_KEY_SOURCE_NONE {
 		for _, key := range plan.SSHKeys {
 			customKeys = append(customKeys, key.ValueString())
 		}

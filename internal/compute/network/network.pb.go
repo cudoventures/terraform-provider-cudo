@@ -97,6 +97,7 @@ func (Network_State) EnumDescriptor() ([]byte, []int) {
 
 type Network struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
+	ProjectId         string                 `protobuf:"bytes,14,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	Id                string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	DataCenterId      string                 `protobuf:"bytes,2,opt,name=data_center_id,json=dataCenterId,proto3" json:"data_center_id,omitempty"`
 	IpRange           string                 `protobuf:"bytes,3,opt,name=ip_range,json=ipRange,proto3" json:"ip_range,omitempty"`
@@ -139,6 +140,13 @@ func (x *Network) ProtoReflect() protoreflect.Message {
 // Deprecated: Use Network.ProtoReflect.Descriptor instead.
 func (*Network) Descriptor() ([]byte, []int) {
 	return file_svc_compute_network_network_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Network) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
 }
 
 func (x *Network) GetId() string {
@@ -215,19 +223,21 @@ var File_svc_compute_network_network_proto protoreflect.FileDescriptor
 
 const file_svc_compute_network_network_proto_rawDesc = "" +
 	"\n" +
-	"!svc/compute/network/network.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x17svc/compute/vm/vm.proto\"\x94\x05\n" +
-	"\aNetwork\x12\x13\n" +
+	"!svc/compute/network/network.proto\x12\x13org.cudo.compute.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x17svc/compute/vm/vm.proto\"\xa3\x05\n" +
+	"\aNetwork\x12\"\n" +
+	"\n" +
+	"project_id\x18\x0e \x01(\tB\x03\xe0A\x02R\tprojectId\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12)\n" +
 	"\x0edata_center_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12\x1e\n" +
-	"\bip_range\x18\x03 \x01(\tB\x03\xe0A\x02R\aipRange\x12 \n" +
-	"\agateway\x18\x04 \x01(\tB\x06\xe0A\x03\xe0A\x02R\agateway\x127\n" +
-	"\bprice_hr\x18\x06 \x01(\v2\x14.google.type.DecimalB\x06\xe0A\x03\xe0A\x02R\apriceHr\x126\n" +
-	"\x13external_ip_address\x18\a \x01(\tB\x06\xe0A\x03\xe0A\x02R\x11externalIpAddress\x126\n" +
-	"\x13internal_ip_address\x18\b \x01(\tB\x06\xe0A\x03\xe0A\x02R\x11internalIpAddress\x12B\n" +
-	"\bvm_state\x18\f \x01(\x0e2\x1f.org.cudo.compute.v1.VM.VmStateB\x06\xe0A\x03\xe0A\x02R\avmState\x12C\n" +
-	"\vcreate_time\x18\x1f \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x03\xe0A\x02R\n" +
-	"createTime\x12@\n" +
-	"\x05state\x18\r \x01(\x0e2\".org.cudo.compute.v1.Network.StateB\x06\xe0A\x03\xe0A\x02R\x05state\"\x92\x01\n" +
+	"\bip_range\x18\x03 \x01(\tB\x03\xe0A\x02R\aipRange\x12\x1d\n" +
+	"\agateway\x18\x04 \x01(\tB\x03\xe0A\x03R\agateway\x124\n" +
+	"\bprice_hr\x18\x06 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x03R\apriceHr\x123\n" +
+	"\x13external_ip_address\x18\a \x01(\tB\x03\xe0A\x03R\x11externalIpAddress\x123\n" +
+	"\x13internal_ip_address\x18\b \x01(\tB\x03\xe0A\x03R\x11internalIpAddress\x12?\n" +
+	"\bvm_state\x18\f \x01(\x0e2\x1f.org.cudo.compute.v1.VM.VmStateB\x03\xe0A\x03R\avmState\x12@\n" +
+	"\vcreate_time\x18\x1f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12=\n" +
+	"\x05state\x18\r \x01(\x0e2\".org.cudo.compute.v1.Network.StateB\x03\xe0A\x03R\x05state\"\x92\x01\n" +
 	"\x05State\x12\x11\n" +
 	"\rSTATE_UNKNOWN\x10\x00\x12\n" +
 	"\n" +

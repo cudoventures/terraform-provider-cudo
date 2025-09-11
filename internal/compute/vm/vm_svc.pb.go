@@ -8,6 +8,7 @@ package vm
 
 import (
 	compute "github.com/CudoVentures/terraform-provider-cudo/internal/compute"
+	sshkey "github.com/CudoVentures/terraform-provider-cudo/internal/compute/sshkey"
 	_ "github.com/google/gnostic/openapiv3"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	decimal "google.golang.org/genproto/googleapis/type/decimal"
@@ -86,7 +87,7 @@ type CreateVMRequest struct {
 	ProjectId       string                 `protobuf:"bytes,3,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	VmId            string                 `protobuf:"bytes,4,opt,name=vm_id,json=vmId,proto3" json:"vm_id,omitempty"`
 	StartScript     string                 `protobuf:"bytes,5,opt,name=start_script,json=startScript,proto3" json:"start_script,omitempty"`
-	SshKeySource    SshKeySource           `protobuf:"varint,6,opt,name=ssh_key_source,json=sshKeySource,proto3,enum=org.cudo.compute.v1.SshKeySource" json:"ssh_key_source,omitempty"`
+	SshKeySource    sshkey.SshKeySource    `protobuf:"varint,6,opt,name=ssh_key_source,json=sshKeySource,proto3,enum=org.cudo.compute.v1.SshKeySource" json:"ssh_key_source,omitempty"`
 	CustomSshKeys   []string               `protobuf:"bytes,7,rep,name=custom_ssh_keys,json=customSshKeys,proto3" json:"custom_ssh_keys,omitempty"`
 	Password        string                 `protobuf:"bytes,8,opt,name=password,proto3" json:"password,omitempty"`
 	BootDisk        *Disk                  `protobuf:"bytes,9,opt,name=boot_disk,json=bootDisk,proto3" json:"boot_disk,omitempty"`
@@ -176,11 +177,11 @@ func (x *CreateVMRequest) GetStartScript() string {
 	return ""
 }
 
-func (x *CreateVMRequest) GetSshKeySource() SshKeySource {
+func (x *CreateVMRequest) GetSshKeySource() sshkey.SshKeySource {
 	if x != nil {
 		return x.SshKeySource
 	}
-	return SshKeySource_SSH_KEY_SOURCE_UNKNOWN
+	return sshkey.SshKeySource(0)
 }
 
 func (x *CreateVMRequest) GetCustomSshKeys() []string {
@@ -3505,7 +3506,7 @@ type UpdateVMAuthorizedSSHKeysRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	Id            string                 `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
-	SshKeySource  SshKeySource           `protobuf:"varint,3,opt,name=ssh_key_source,json=sshKeySource,proto3,enum=org.cudo.compute.v1.SshKeySource" json:"ssh_key_source,omitempty"`
+	SshKeySource  sshkey.SshKeySource    `protobuf:"varint,3,opt,name=ssh_key_source,json=sshKeySource,proto3,enum=org.cudo.compute.v1.SshKeySource" json:"ssh_key_source,omitempty"`
 	CustomSshKeys []string               `protobuf:"bytes,4,rep,name=custom_ssh_keys,json=customSshKeys,proto3" json:"custom_ssh_keys,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -3555,11 +3556,11 @@ func (x *UpdateVMAuthorizedSSHKeysRequest) GetId() string {
 	return ""
 }
 
-func (x *UpdateVMAuthorizedSSHKeysRequest) GetSshKeySource() SshKeySource {
+func (x *UpdateVMAuthorizedSSHKeysRequest) GetSshKeySource() sshkey.SshKeySource {
 	if x != nil {
 		return x.SshKeySource
 	}
-	return SshKeySource_SSH_KEY_SOURCE_UNKNOWN
+	return sshkey.SshKeySource(0)
 }
 
 func (x *UpdateVMAuthorizedSSHKeysRequest) GetCustomSshKeys() []string {
@@ -4798,7 +4799,7 @@ var File_svc_compute_vm_vm_svc_proto protoreflect.FileDescriptor
 
 const file_svc_compute_vm_vm_svc_proto_rawDesc = "" +
 	"\n" +
-	"\x1bsvc/compute/vm/vm_svc.proto\x12\x13org.cudo.compute.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x19google/type/decimal.proto\x1a\x18google/type/latlng.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a\x17svc/compute/types.proto\x1a\x17svc/compute/vm/vm.proto\"\xcb\n" +
+	"\x1bsvc/compute/vm/vm_svc.proto\x12\x13org.cudo.compute.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x19google/type/decimal.proto\x1a\x18google/type/latlng.proto\x1a$gnostic/openapi/v3/annotations.proto\x1a\x17svc/compute/types.proto\x1a\x17svc/compute/vm/vm.proto\x1a\x1fsvc/compute/sshkey/sshkey.proto\"\xcb\n" +
 	"\n" +
 	"\x0fCreateVMRequest\x12)\n" +
 	"\x0edata_center_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12&\n" +
@@ -5361,7 +5362,7 @@ var file_svc_compute_vm_vm_svc_proto_goTypes = []any{
 	nil,                                                               // 80: org.cudo.compute.v1.UpdateVMMetadataRequest.MetadataEntry
 	nil,                                                               // 81: org.cudo.compute.v1.UpdateVMMetadataResponse.MetadataEntry
 	(*GetVMMachineTypeResponse_MachineTypePrice)(nil),                 // 82: org.cudo.compute.v1.GetVMMachineTypeResponse.MachineTypePrice
-	(SshKeySource)(0),                                                 // 83: org.cudo.compute.v1.SshKeySource
+	(sshkey.SshKeySource)(0),                                          // 83: org.cudo.compute.v1.SshKeySource
 	(*Disk)(nil),                                                      // 84: org.cudo.compute.v1.Disk
 	(*timestamppb.Timestamp)(nil),                                     // 85: google.protobuf.Timestamp
 	(*durationpb.Duration)(nil),                                       // 86: google.protobuf.Duration
