@@ -133,8 +133,6 @@ func (r *StorageDiskResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	_, err := r.client.VMClient.CreateStorageDisk(ctx, &vm.CreateStorageDiskRequest{
-		DataCenterId: plan.DataCenterID.ValueString(),
-		ProjectId:    plan.ProjectID.ValueString(),
 		Disk: &vm.Disk{
 			DataCenterId: plan.DataCenterID.ValueString(),
 			Id:           string(plan.ID.ValueString()),

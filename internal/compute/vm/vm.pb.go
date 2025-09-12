@@ -1698,8 +1698,8 @@ const file_svc_compute_vm_vm_proto_rawDesc = "" +
 	"\x04Disk\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12\"\n" +
 	"\n" +
-	"project_id\x18\x02 \x01(\tB\x03\xe0A\x03R\tprojectId\x12)\n" +
-	"\x0edata_center_id\x18\x03 \x01(\tB\x03\xe0A\x03R\fdataCenterId\x12\x18\n" +
+	"project_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tprojectId\x12)\n" +
+	"\x0edata_center_id\x18\x03 \x01(\tB\x03\xe0A\x02R\fdataCenterId\x12\x18\n" +
 	"\x05vm_id\x18\x04 \x01(\tB\x03\xe0A\x03R\x04vmId\x12\x1e\n" +
 	"\bsize_gib\x18\x05 \x01(\x05B\x03\xe0A\x02R\asizeGib\x12P\n" +
 	"\rstorage_class\x18\x06 \x01(\x0e2&.org.cudo.compute.v1.Disk.StorageClassB\x03\xe0A\x04R\fstorageClass\x12D\n" +

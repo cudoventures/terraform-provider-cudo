@@ -2778,8 +2778,6 @@ func (x *GetDiskResponse) GetDisk() *Disk {
 
 type CreateStorageDiskRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	DataCenterId  string                 `protobuf:"bytes,2,opt,name=data_center_id,json=dataCenterId,proto3" json:"data_center_id,omitempty"`
 	Disk          *Disk                  `protobuf:"bytes,3,opt,name=disk,proto3" json:"disk,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2813,20 +2811,6 @@ func (x *CreateStorageDiskRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreateStorageDiskRequest.ProtoReflect.Descriptor instead.
 func (*CreateStorageDiskRequest) Descriptor() ([]byte, []int) {
 	return file_svc_compute_vm_vm_svc_proto_rawDescGZIP(), []int{50}
-}
-
-func (x *CreateStorageDiskRequest) GetProjectId() string {
-	if x != nil {
-		return x.ProjectId
-	}
-	return ""
-}
-
-func (x *CreateStorageDiskRequest) GetDataCenterId() string {
-	if x != nil {
-		return x.DataCenterId
-	}
-	return ""
 }
 
 func (x *CreateStorageDiskRequest) GetDisk() *Disk {
@@ -5077,11 +5061,8 @@ const file_svc_compute_vm_vm_svc_proto_rawDesc = "" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\"@\n" +
 	"\x0fGetDiskResponse\x12-\n" +
-	"\x04disk\x18\x01 \x01(\v2\x19.org.cudo.compute.v1.DiskR\x04disk\"\x8e\x01\n" +
-	"\x18CreateStorageDiskRequest\x12\x1d\n" +
-	"\n" +
-	"project_id\x18\x01 \x01(\tR\tprojectId\x12$\n" +
-	"\x0edata_center_id\x18\x02 \x01(\tR\fdataCenterId\x12-\n" +
+	"\x04disk\x18\x01 \x01(\v2\x19.org.cudo.compute.v1.DiskR\x04disk\"I\n" +
+	"\x18CreateStorageDiskRequest\x12-\n" +
 	"\x04disk\x18\x03 \x01(\v2\x19.org.cudo.compute.v1.DiskR\x04disk\"\x1b\n" +
 	"\x19CreateStorageDiskResponse\"I\n" +
 	"\x18DeleteStorageDiskRequest\x12\x1d\n" +
@@ -5187,7 +5168,7 @@ const file_svc_compute_vm_vm_svc_proto_rawDesc = "" +
 	"\x13memory_gib_price_hr\x18\x02 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x02R\x10memoryGibPriceHr\x12;\n" +
 	"\fgpu_price_hr\x18\x03 \x01(\v2\x14.google.type.DecimalB\x03\xe0A\x02R\n" +
 	"gpuPriceHr\x12Q\n" +
-	"\x0fcommitment_term\x18\x04 \x01(\x0e2#.org.cudo.compute.v1.CommitmentTermB\x03\xe0A\x02R\x0ecommitmentTerm2\xa0;\n" +
+	"\x0fcommitment_term\x18\x04 \x01(\x0e2#.org.cudo.compute.v1.CommitmentTermB\x03\xe0A\x02R\x0ecommitmentTerm2\xa8;\n" +
 	"\tVMService\x12\xaa\x01\n" +
 	"\bCountVMs\x12$.org.cudo.compute.v1.CountVMsRequest\x1a%.org.cudo.compute.v1.CountVMsResponse\"Q\xbaG#\n" +
 	"\x10Virtual Machines\x12\x05Count*\bCountVMs\x82\xd3\xe4\x93\x02%\x12#/v1/projects/{project_id}/count-vms\x12\xb7\x01\n" +
@@ -5230,9 +5211,9 @@ const file_svc_compute_vm_vm_svc_proto_rawDesc = "" +
 	"\x13ListPrivateVMImages\x12/.org.cudo.compute.v1.ListPrivateVMImagesRequest\x1a0.org.cudo.compute.v1.ListPrivateVMImagesResponse\"j\xbaG?\n" +
 	"\x10Virtual Machines\x12\x16List private VM images*\x13ListPrivateVMImages\x82\xd3\xe4\x93\x02\"\x12 /v1/projects/{project_id}/images\x12\xee\x01\n" +
 	"\x14UpdatePrivateVMImage\x120.org.cudo.compute.v1.UpdatePrivateVMImageRequest\x1a1.org.cudo.compute.v1.UpdatePrivateVMImageResponse\"q\xbaGA\n" +
-	"\x10Virtual Machines\x12\x17Update private VM image*\x14UpdatePrivateVMImage\x82\xd3\xe4\x93\x02'\"%/v1/projects/{project_id}/images/{id}\x12\xd0\x01\n" +
-	"\x11CreateStorageDisk\x12-.org.cudo.compute.v1.CreateStorageDiskRequest\x1a..org.cudo.compute.v1.CreateStorageDiskResponse\"\\\xbaG/\n" +
-	"\x05Disks\x12\x13Create storage disk*\x11CreateStorageDisk\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/v1/projects/{project_id}/disks\x12\xcc\x01\n" +
+	"\x10Virtual Machines\x12\x17Update private VM image*\x14UpdatePrivateVMImage\x82\xd3\xe4\x93\x02'\"%/v1/projects/{project_id}/images/{id}\x12\xd8\x01\n" +
+	"\x11CreateStorageDisk\x12-.org.cudo.compute.v1.CreateStorageDiskRequest\x1a..org.cudo.compute.v1.CreateStorageDiskResponse\"d\xbaG/\n" +
+	"\x05Disks\x12\x13Create storage disk*\x11CreateStorageDisk\x82\xd3\xe4\x93\x02,:\x04disk\"$/v1/projects/{disk.project_id}/disks\x12\xcc\x01\n" +
 	"\fResizeVMDisk\x12(.org.cudo.compute.v1.ResizeVMDiskRequest\x1a).org.cudo.compute.v1.ResizeVMDiskResponse\"g\xbaG4\n" +
 	"\x10Virtual Machines\x12\x12Resize a VM's disk*\fResizeVMDisk\x82\xd3\xe4\x93\x02*2(/v1/projects/{project_id}/vms/{id}/disks\x12\xa4\x01\n" +
 	"\tListDisks\x12%.org.cudo.compute.v1.ListDisksRequest\x1a&.org.cudo.compute.v1.ListDisksResponse\"H\xbaG\x1e\n" +
