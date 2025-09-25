@@ -348,12 +348,6 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 		}
 	}
 
-	var bootDisk vm.Disk
-	if !plan.BootDisk.SizeGib.IsNull() {
-		sizeGib := int32(plan.BootDisk.SizeGib.ValueInt64())
-		bootDisk.SizeGib = sizeGib
-	}
-
 	nics := make([]*vm.CreateVMRequest_NIC, len(plan.Networks))
 	for i, nic := range plan.Networks {
 		var securityGroupIDS []string
@@ -407,7 +401,7 @@ func (r *VMResource) Create(ctx context.Context, req resource.CreateRequest, res
 	}
 
 	params := &vm.CreateVMRequest{
-		BootDisk:         &bootDisk,
+		BootDiskSizeGib:  int32(plan.BootDisk.SizeGib.ValueInt64()),
 		BootDiskImageId:  plan.BootDisk.ImageID.ValueString(),
 		CommitmentTerm:   commitmentTerm,
 		CustomSshKeys:    customKeys,
