@@ -38,16 +38,49 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NetworkServiceClient interface {
+	// Create a network
+	//
+	// Creates a new virtual network.
 	CreateNetwork(ctx context.Context, in *CreateNetworkRequest, opts ...grpc.CallOption) (*Network, error)
+	// Get a network
+	//
+	// Retrieves the details of a virtual network.
 	GetNetwork(ctx context.Context, in *GetNetworkRequest, opts ...grpc.CallOption) (*Network, error)
+	// List networks
+	//
+	// Lists all virtual networks in a project.
 	ListNetworks(ctx context.Context, in *ListNetworksRequest, opts ...grpc.CallOption) (*ListNetworksResponse, error)
+	// Delete a network
+	//
+	// Deletes a virtual network. A network cannot be deleted if there are any virtual machines attached to it.
 	DeleteNetwork(ctx context.Context, in *DeleteNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Start a network
+	//
+	// Starts a virtual network.
 	StartNetwork(ctx context.Context, in *StartNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Stop a network
+	//
+	// Stops a virtual network. When a virtual network is stopped, no traffic will be routed between the virtual network and the internet.
 	StopNetwork(ctx context.Context, in *StopNetworkRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Create a security group
+	//
+	// Creates a new security group.
 	CreateSecurityGroup(ctx context.Context, in *CreateSecurityGroupRequest, opts ...grpc.CallOption) (*securitygroup.SecurityGroup, error)
+	// Get a security group
+	//
+	// Retrieves the details of a security group.
 	GetSecurityGroup(ctx context.Context, in *GetSecurityGroupRequest, opts ...grpc.CallOption) (*securitygroup.SecurityGroup, error)
+	// List security groups
+	//
+	// Lists all security groups in a project.
 	ListSecurityGroups(ctx context.Context, in *ListSecurityGroupsRequest, opts ...grpc.CallOption) (*ListSecurityGroupsResponse, error)
+	// Update a security group
+	//
+	// Updates an existing security group.
 	UpdateSecurityGroup(ctx context.Context, in *UpdateSecurityGroupRequest, opts ...grpc.CallOption) (*securitygroup.SecurityGroup, error)
+	// Delete a security group
+	//
+	// Deletes a security group. The security group will be removed from any virtual machines that are using it.
 	DeleteSecurityGroup(ctx context.Context, in *DeleteSecurityGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -173,16 +206,49 @@ func (c *networkServiceClient) DeleteSecurityGroup(ctx context.Context, in *Dele
 // All implementations must embed UnimplementedNetworkServiceServer
 // for forward compatibility.
 type NetworkServiceServer interface {
+	// Create a network
+	//
+	// Creates a new virtual network.
 	CreateNetwork(context.Context, *CreateNetworkRequest) (*Network, error)
+	// Get a network
+	//
+	// Retrieves the details of a virtual network.
 	GetNetwork(context.Context, *GetNetworkRequest) (*Network, error)
+	// List networks
+	//
+	// Lists all virtual networks in a project.
 	ListNetworks(context.Context, *ListNetworksRequest) (*ListNetworksResponse, error)
+	// Delete a network
+	//
+	// Deletes a virtual network. A network cannot be deleted if there are any virtual machines attached to it.
 	DeleteNetwork(context.Context, *DeleteNetworkRequest) (*emptypb.Empty, error)
+	// Start a network
+	//
+	// Starts a virtual network.
 	StartNetwork(context.Context, *StartNetworkRequest) (*emptypb.Empty, error)
+	// Stop a network
+	//
+	// Stops a virtual network. When a virtual network is stopped, no traffic will be routed between the virtual network and the internet.
 	StopNetwork(context.Context, *StopNetworkRequest) (*emptypb.Empty, error)
+	// Create a security group
+	//
+	// Creates a new security group.
 	CreateSecurityGroup(context.Context, *CreateSecurityGroupRequest) (*securitygroup.SecurityGroup, error)
+	// Get a security group
+	//
+	// Retrieves the details of a security group.
 	GetSecurityGroup(context.Context, *GetSecurityGroupRequest) (*securitygroup.SecurityGroup, error)
+	// List security groups
+	//
+	// Lists all security groups in a project.
 	ListSecurityGroups(context.Context, *ListSecurityGroupsRequest) (*ListSecurityGroupsResponse, error)
+	// Update a security group
+	//
+	// Updates an existing security group.
 	UpdateSecurityGroup(context.Context, *UpdateSecurityGroupRequest) (*securitygroup.SecurityGroup, error)
+	// Delete a security group
+	//
+	// Deletes a security group. The security group will be removed from any virtual machines that are using it.
 	DeleteSecurityGroup(context.Context, *DeleteSecurityGroupRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedNetworkServiceServer()
 }

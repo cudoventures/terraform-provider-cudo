@@ -32,11 +32,29 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type VolumeServiceClient interface {
+	// Create a volume
+	//
+	// Creates a new NFS volume.
 	CreateVolume(ctx context.Context, in *CreateVolumeRequest, opts ...grpc.CallOption) (*Volume, error)
+	// Delete a volume
+	//
+	// Deletes an NFS volume.
 	DeleteVolume(ctx context.Context, in *DeleteVolumeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Get a volume
+	//
+	// Retrieves the details of an NFS volume.
 	GetVolume(ctx context.Context, in *GetVolumeRequest, opts ...grpc.CallOption) (*Volume, error)
+	// List volume prices
+	//
+	// Lists all available NFS volume prices.
 	ListVolumePrices(ctx context.Context, in *ListVolumePricesRequest, opts ...grpc.CallOption) (*ListVolumePricesResponse, error)
+	// List volumes
+	//
+	// Lists NFS volumes in a project.
 	ListVolumes(ctx context.Context, in *ListVolumesRequest, opts ...grpc.CallOption) (*ListVolumesResponse, error)
+	// Update a volume
+	//
+	// Updates an NFS volume.
 	UpdateVolume(ctx context.Context, in *UpdateVolumeRequest, opts ...grpc.CallOption) (*Volume, error)
 }
 
@@ -112,11 +130,29 @@ func (c *volumeServiceClient) UpdateVolume(ctx context.Context, in *UpdateVolume
 // All implementations must embed UnimplementedVolumeServiceServer
 // for forward compatibility.
 type VolumeServiceServer interface {
+	// Create a volume
+	//
+	// Creates a new NFS volume.
 	CreateVolume(context.Context, *CreateVolumeRequest) (*Volume, error)
+	// Delete a volume
+	//
+	// Deletes an NFS volume.
 	DeleteVolume(context.Context, *DeleteVolumeRequest) (*emptypb.Empty, error)
+	// Get a volume
+	//
+	// Retrieves the details of an NFS volume.
 	GetVolume(context.Context, *GetVolumeRequest) (*Volume, error)
+	// List volume prices
+	//
+	// Lists all available NFS volume prices.
 	ListVolumePrices(context.Context, *ListVolumePricesRequest) (*ListVolumePricesResponse, error)
+	// List volumes
+	//
+	// Lists NFS volumes in a project.
 	ListVolumes(context.Context, *ListVolumesRequest) (*ListVolumesResponse, error)
+	// Update a volume
+	//
+	// Updates an NFS volume.
 	UpdateVolume(context.Context, *UpdateVolumeRequest) (*Volume, error)
 	mustEmbedUnimplementedVolumeServiceServer()
 }

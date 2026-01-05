@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -61,41 +62,149 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type VMServiceClient interface {
+	// Count virtual machines in a project
+	//
+	// Returns the total number of virtual machines in a project.
 	CountVMs(ctx context.Context, in *CountVMsRequest, opts ...grpc.CallOption) (*CountVMsResponse, error)
+	// Create a virtual machine
+	//
+	// Creates and starts a new virtual machine.
 	CreateVM(ctx context.Context, in *CreateVMRequest, opts ...grpc.CallOption) (*CreateVMResponse, error)
+	// Get a virtual machine
+	//
+	// Retrieves the details of a virtual machine.
 	GetVM(ctx context.Context, in *GetVMRequest, opts ...grpc.CallOption) (*GetVMResponse, error)
+	// List virtual machines
+	//
+	// Lists all virtual machines in a project.
 	ListVMs(ctx context.Context, in *ListVMsRequest, opts ...grpc.CallOption) (*ListVMsResponse, error)
+	// Monitor a virtual machine
+	//
+	// Returns live monitoring metrics for a virtual machine.
 	MonitorVM(ctx context.Context, in *MonitorVMRequest, opts ...grpc.CallOption) (*MonitorVMResponse, error)
-	RebootVM(ctx context.Context, in *RebootVMRequest, opts ...grpc.CallOption) (*RebootVMResponse, error)
-	StartVM(ctx context.Context, in *StartVMRequest, opts ...grpc.CallOption) (*StartVMResponse, error)
-	StopVM(ctx context.Context, in *StopVMRequest, opts ...grpc.CallOption) (*StopVMResponse, error)
-	TerminateVM(ctx context.Context, in *TerminateVMRequest, opts ...grpc.CallOption) (*TerminateVMResponse, error)
+	// Reboot a virtual machine
+	//
+	// Performs a soft reboot of a virtual machine. The operating system is instructed to reboot. If the OS does not respond, use StopVM and then StartVM.
+	RebootVM(ctx context.Context, in *RebootVMRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Start a virtual machine
+	//
+	// Starts a stopped virtual machine.
+	StartVM(ctx context.Context, in *StartVMRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Stop a virtual machine
+	//
+	// Stops a running virtual machine. The virtual machine can be started again later.
+	StopVM(ctx context.Context, in *StopVMRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Delete a virtual machine
+	//
+	// Permanently deletes a virtual machine. All data on the virtual machine's boot disk will be lost. Any attached storage disks will be detached but not deleted.
+	TerminateVM(ctx context.Context, in *TerminateVMRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Connect to a virtual machine
+	//
+	// Provides a URL and token to connect to the virtual machine via a web-based VNC console.
 	ConnectVM(ctx context.Context, in *ConnectVMRequest, opts ...grpc.CallOption) (*ConnectVMResponse, error)
+	// Resize a virtual machine
+	//
+	// Resizes a virtual machine. The size of the virtual machine cannot be reduced while it is in a committed term.
 	ResizeVM(ctx context.Context, in *ResizeVMRequest, opts ...grpc.CallOption) (*ResizeVMResponse, error)
+	// List public virtual machine images
+	//
+	// Lists all public images available for virtual machines.
 	ListPublicVMImages(ctx context.Context, in *ListPublicVMImagesRequest, opts ...grpc.CallOption) (*ListPublicVMImagesResponse, error)
+	// List virtual machine types
+	//
+	// Lists all virtual machine types available.
 	ListVMMachineTypes(ctx context.Context, in *ListVMMachineTypesRequest, opts ...grpc.CallOption) (*ListVMMachineTypesResponse, error)
+	// Lists virtual machine types (deprecated)
+	//
+	// Lists all virtual machine types available.
 	ListVMMachineTypes2(ctx context.Context, in *ListVMMachineTypesRequest, opts ...grpc.CallOption) (*ListVMMachineTypesResponse, error)
+	// List virtual machine data centers
+	//
+	// Lists all data centers available for virtual machines.
 	ListVMDataCenters(ctx context.Context, in *ListVMDataCentersRequest, opts ...grpc.CallOption) (*ListVMDataCentersResponse, error)
+	// List virtual machine GPU models
+	//
+	// Lists all GPU models available for virtual machines.
 	ListVMGpuModels(ctx context.Context, in *ListVMGpuModelsRequest, opts ...grpc.CallOption) (*ListVMGpuModelsResponse, error)
+	// Create a private virtual machine image
+	//
+	// Creates a new private virtual machine image from an existing virtual machine's boot disk.
 	CreatePrivateVMImage(ctx context.Context, in *CreatePrivateVMImageRequest, opts ...grpc.CallOption) (*CreatePrivateVMImageResponse, error)
-	DeletePrivateVMImage(ctx context.Context, in *DeletePrivateVMImageRequest, opts ...grpc.CallOption) (*DeletePrivateVMImageResponse, error)
+	// Delete a private virtual machine image
+	//
+	// Deletes a private virtual machine image.
+	DeletePrivateVMImage(ctx context.Context, in *DeletePrivateVMImageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Get a private virtual machine image
+	//
+	// Retrieves the details of a private virtual machine image.
 	GetPrivateVMImage(ctx context.Context, in *GetPrivateVMImageRequest, opts ...grpc.CallOption) (*GetPrivateVMImageResponse, error)
+	// List private virtual machine images
+	//
+	// Lists private virtual machine images in a project.
 	ListPrivateVMImages(ctx context.Context, in *ListPrivateVMImagesRequest, opts ...grpc.CallOption) (*ListPrivateVMImagesResponse, error)
-	UpdatePrivateVMImage(ctx context.Context, in *UpdatePrivateVMImageRequest, opts ...grpc.CallOption) (*UpdatePrivateVMImageResponse, error)
-	CreateStorageDisk(ctx context.Context, in *CreateStorageDiskRequest, opts ...grpc.CallOption) (*CreateStorageDiskResponse, error)
-	ResizeVMDisk(ctx context.Context, in *ResizeVMDiskRequest, opts ...grpc.CallOption) (*ResizeVMDiskResponse, error)
+	// Update a private virtual machine image
+	//
+	// Updates the description of a private virtual machine image.
+	UpdatePrivateVMImage(ctx context.Context, in *UpdatePrivateVMImageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Create a disk
+	//
+	// Creates a new virtual machine disk.
+	CreateStorageDisk(ctx context.Context, in *CreateStorageDiskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Resize a virtual machine disk
+	//
+	// Resizes a disk attached to a virtual machine. The new size must be larger than the current size.
+	ResizeVMDisk(ctx context.Context, in *ResizeVMDiskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// List disks
+	//
+	// Lists virtual machine disks in a project.
 	ListDisks(ctx context.Context, in *ListDisksRequest, opts ...grpc.CallOption) (*ListDisksResponse, error)
+	// Get a disk
+	//
+	// Retrieves the details of a virtual machine disk.
 	GetDisk(ctx context.Context, in *GetDiskRequest, opts ...grpc.CallOption) (*GetDiskResponse, error)
-	DeleteStorageDisk(ctx context.Context, in *DeleteStorageDiskRequest, opts ...grpc.CallOption) (*DeleteStorageDiskResponse, error)
-	AttachStorageDisk(ctx context.Context, in *AttachStorageDiskRequest, opts ...grpc.CallOption) (*AttachStorageDiskResponse, error)
-	DetachStorageDisk(ctx context.Context, in *DetachStorageDiskRequest, opts ...grpc.CallOption) (*DetachStorageDiskResponse, error)
-	AttachSecurityGroup(ctx context.Context, in *AttachSecurityGroupRequest, opts ...grpc.CallOption) (*AttachSecurityGroupResponse, error)
-	DetachSecurityGroup(ctx context.Context, in *DetachSecurityGroupRequest, opts ...grpc.CallOption) (*DetachSecurityGroupResponse, error)
+	// Delete a disk
+	//
+	// Deletes a virtual machine disk. The disk must be detached from any virtual machines before it can be deleted.
+	DeleteStorageDisk(ctx context.Context, in *DeleteStorageDiskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Attach a disk to a virtual machine
+	//
+	// Attaches a virtual machine disk to a virtual machine.
+	AttachStorageDisk(ctx context.Context, in *AttachStorageDiskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Detach a disk from a virtual machine
+	//
+	// Detaches a virtual machine disk from a virtual machine.
+	DetachStorageDisk(ctx context.Context, in *DetachStorageDiskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Attach a security group to a virtual machine
+	//
+	// Attaches a security group to a virtual machine.
+	AttachSecurityGroup(ctx context.Context, in *AttachSecurityGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Detach a security group from a virtual machine
+	//
+	// Detaches a security group from a virtual machine.
+	DetachSecurityGroup(ctx context.Context, in *DetachSecurityGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Update virtual machine metadata
+	//
+	// Updates the metadata of a virtual machine.
 	UpdateVMMetadata(ctx context.Context, in *UpdateVMMetadataRequest, opts ...grpc.CallOption) (*UpdateVMMetadataResponse, error)
+	// Update virtual machine expiration time
+	//
+	// Updates the expiration time of a virtual machine. The virtual machine will be automatically deleted when it reaches its expiration time.
 	UpdateVMExpireTime(ctx context.Context, in *UpdateVMExpireTimeRequest, opts ...grpc.CallOption) (*UpdateVMExpireTimeResponse, error)
-	UpdateVMPassword(ctx context.Context, in *UpdateVMPasswordRequest, opts ...grpc.CallOption) (*UpdateVMPasswordResponse, error)
-	UpdateVMAuthorizedSSHKeys(ctx context.Context, in *UpdateVMAuthorizedSSHKeysRequest, opts ...grpc.CallOption) (*UpdateVMAuthorizedSSHKeysResponse, error)
-	CommitVM(ctx context.Context, in *CommitVMRequest, opts ...grpc.CallOption) (*CommitVMResponse, error)
+	// Update virtual machine password
+	//
+	// Updates the root or administrator password of a virtual machine.
+	UpdateVMPassword(ctx context.Context, in *UpdateVMPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Update virtual machine authorized SSH keys
+	//
+	// Updates the authorized SSH keys of a virtual machine.
+	UpdateVMAuthorizedSSHKeys(ctx context.Context, in *UpdateVMAuthorizedSSHKeysRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Purchase a commitment for a virtual machine
+	//
+	// Commits a virtual machine to a longer-term plan in exchange for a lower hourly rate. The virtual machine must not already be in a committed term.
+	CommitVM(ctx context.Context, in *CommitVMRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Get a virtual machine type
+	//
+	// Retrieves the details of a virtual machine type.
 	GetVMMachineType(ctx context.Context, in *GetVMMachineTypeRequest, opts ...grpc.CallOption) (*GetVMMachineTypeResponse, error)
 }
 
@@ -157,9 +266,9 @@ func (c *vMServiceClient) MonitorVM(ctx context.Context, in *MonitorVMRequest, o
 	return out, nil
 }
 
-func (c *vMServiceClient) RebootVM(ctx context.Context, in *RebootVMRequest, opts ...grpc.CallOption) (*RebootVMResponse, error) {
+func (c *vMServiceClient) RebootVM(ctx context.Context, in *RebootVMRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RebootVMResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_RebootVM_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -167,9 +276,9 @@ func (c *vMServiceClient) RebootVM(ctx context.Context, in *RebootVMRequest, opt
 	return out, nil
 }
 
-func (c *vMServiceClient) StartVM(ctx context.Context, in *StartVMRequest, opts ...grpc.CallOption) (*StartVMResponse, error) {
+func (c *vMServiceClient) StartVM(ctx context.Context, in *StartVMRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StartVMResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_StartVM_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -177,9 +286,9 @@ func (c *vMServiceClient) StartVM(ctx context.Context, in *StartVMRequest, opts 
 	return out, nil
 }
 
-func (c *vMServiceClient) StopVM(ctx context.Context, in *StopVMRequest, opts ...grpc.CallOption) (*StopVMResponse, error) {
+func (c *vMServiceClient) StopVM(ctx context.Context, in *StopVMRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StopVMResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_StopVM_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -187,9 +296,9 @@ func (c *vMServiceClient) StopVM(ctx context.Context, in *StopVMRequest, opts ..
 	return out, nil
 }
 
-func (c *vMServiceClient) TerminateVM(ctx context.Context, in *TerminateVMRequest, opts ...grpc.CallOption) (*TerminateVMResponse, error) {
+func (c *vMServiceClient) TerminateVM(ctx context.Context, in *TerminateVMRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TerminateVMResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_TerminateVM_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -277,9 +386,9 @@ func (c *vMServiceClient) CreatePrivateVMImage(ctx context.Context, in *CreatePr
 	return out, nil
 }
 
-func (c *vMServiceClient) DeletePrivateVMImage(ctx context.Context, in *DeletePrivateVMImageRequest, opts ...grpc.CallOption) (*DeletePrivateVMImageResponse, error) {
+func (c *vMServiceClient) DeletePrivateVMImage(ctx context.Context, in *DeletePrivateVMImageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeletePrivateVMImageResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_DeletePrivateVMImage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -307,9 +416,9 @@ func (c *vMServiceClient) ListPrivateVMImages(ctx context.Context, in *ListPriva
 	return out, nil
 }
 
-func (c *vMServiceClient) UpdatePrivateVMImage(ctx context.Context, in *UpdatePrivateVMImageRequest, opts ...grpc.CallOption) (*UpdatePrivateVMImageResponse, error) {
+func (c *vMServiceClient) UpdatePrivateVMImage(ctx context.Context, in *UpdatePrivateVMImageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdatePrivateVMImageResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_UpdatePrivateVMImage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -317,9 +426,9 @@ func (c *vMServiceClient) UpdatePrivateVMImage(ctx context.Context, in *UpdatePr
 	return out, nil
 }
 
-func (c *vMServiceClient) CreateStorageDisk(ctx context.Context, in *CreateStorageDiskRequest, opts ...grpc.CallOption) (*CreateStorageDiskResponse, error) {
+func (c *vMServiceClient) CreateStorageDisk(ctx context.Context, in *CreateStorageDiskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateStorageDiskResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_CreateStorageDisk_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -327,9 +436,9 @@ func (c *vMServiceClient) CreateStorageDisk(ctx context.Context, in *CreateStora
 	return out, nil
 }
 
-func (c *vMServiceClient) ResizeVMDisk(ctx context.Context, in *ResizeVMDiskRequest, opts ...grpc.CallOption) (*ResizeVMDiskResponse, error) {
+func (c *vMServiceClient) ResizeVMDisk(ctx context.Context, in *ResizeVMDiskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ResizeVMDiskResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_ResizeVMDisk_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -357,9 +466,9 @@ func (c *vMServiceClient) GetDisk(ctx context.Context, in *GetDiskRequest, opts 
 	return out, nil
 }
 
-func (c *vMServiceClient) DeleteStorageDisk(ctx context.Context, in *DeleteStorageDiskRequest, opts ...grpc.CallOption) (*DeleteStorageDiskResponse, error) {
+func (c *vMServiceClient) DeleteStorageDisk(ctx context.Context, in *DeleteStorageDiskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteStorageDiskResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_DeleteStorageDisk_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -367,9 +476,9 @@ func (c *vMServiceClient) DeleteStorageDisk(ctx context.Context, in *DeleteStora
 	return out, nil
 }
 
-func (c *vMServiceClient) AttachStorageDisk(ctx context.Context, in *AttachStorageDiskRequest, opts ...grpc.CallOption) (*AttachStorageDiskResponse, error) {
+func (c *vMServiceClient) AttachStorageDisk(ctx context.Context, in *AttachStorageDiskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AttachStorageDiskResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_AttachStorageDisk_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -377,9 +486,9 @@ func (c *vMServiceClient) AttachStorageDisk(ctx context.Context, in *AttachStora
 	return out, nil
 }
 
-func (c *vMServiceClient) DetachStorageDisk(ctx context.Context, in *DetachStorageDiskRequest, opts ...grpc.CallOption) (*DetachStorageDiskResponse, error) {
+func (c *vMServiceClient) DetachStorageDisk(ctx context.Context, in *DetachStorageDiskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DetachStorageDiskResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_DetachStorageDisk_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -387,9 +496,9 @@ func (c *vMServiceClient) DetachStorageDisk(ctx context.Context, in *DetachStora
 	return out, nil
 }
 
-func (c *vMServiceClient) AttachSecurityGroup(ctx context.Context, in *AttachSecurityGroupRequest, opts ...grpc.CallOption) (*AttachSecurityGroupResponse, error) {
+func (c *vMServiceClient) AttachSecurityGroup(ctx context.Context, in *AttachSecurityGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AttachSecurityGroupResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_AttachSecurityGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -397,9 +506,9 @@ func (c *vMServiceClient) AttachSecurityGroup(ctx context.Context, in *AttachSec
 	return out, nil
 }
 
-func (c *vMServiceClient) DetachSecurityGroup(ctx context.Context, in *DetachSecurityGroupRequest, opts ...grpc.CallOption) (*DetachSecurityGroupResponse, error) {
+func (c *vMServiceClient) DetachSecurityGroup(ctx context.Context, in *DetachSecurityGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DetachSecurityGroupResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_DetachSecurityGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -427,9 +536,9 @@ func (c *vMServiceClient) UpdateVMExpireTime(ctx context.Context, in *UpdateVMEx
 	return out, nil
 }
 
-func (c *vMServiceClient) UpdateVMPassword(ctx context.Context, in *UpdateVMPasswordRequest, opts ...grpc.CallOption) (*UpdateVMPasswordResponse, error) {
+func (c *vMServiceClient) UpdateVMPassword(ctx context.Context, in *UpdateVMPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateVMPasswordResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_UpdateVMPassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -437,9 +546,9 @@ func (c *vMServiceClient) UpdateVMPassword(ctx context.Context, in *UpdateVMPass
 	return out, nil
 }
 
-func (c *vMServiceClient) UpdateVMAuthorizedSSHKeys(ctx context.Context, in *UpdateVMAuthorizedSSHKeysRequest, opts ...grpc.CallOption) (*UpdateVMAuthorizedSSHKeysResponse, error) {
+func (c *vMServiceClient) UpdateVMAuthorizedSSHKeys(ctx context.Context, in *UpdateVMAuthorizedSSHKeysRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateVMAuthorizedSSHKeysResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_UpdateVMAuthorizedSSHKeys_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -447,9 +556,9 @@ func (c *vMServiceClient) UpdateVMAuthorizedSSHKeys(ctx context.Context, in *Upd
 	return out, nil
 }
 
-func (c *vMServiceClient) CommitVM(ctx context.Context, in *CommitVMRequest, opts ...grpc.CallOption) (*CommitVMResponse, error) {
+func (c *vMServiceClient) CommitVM(ctx context.Context, in *CommitVMRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CommitVMResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, VMService_CommitVM_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -471,41 +580,149 @@ func (c *vMServiceClient) GetVMMachineType(ctx context.Context, in *GetVMMachine
 // All implementations must embed UnimplementedVMServiceServer
 // for forward compatibility.
 type VMServiceServer interface {
+	// Count virtual machines in a project
+	//
+	// Returns the total number of virtual machines in a project.
 	CountVMs(context.Context, *CountVMsRequest) (*CountVMsResponse, error)
+	// Create a virtual machine
+	//
+	// Creates and starts a new virtual machine.
 	CreateVM(context.Context, *CreateVMRequest) (*CreateVMResponse, error)
+	// Get a virtual machine
+	//
+	// Retrieves the details of a virtual machine.
 	GetVM(context.Context, *GetVMRequest) (*GetVMResponse, error)
+	// List virtual machines
+	//
+	// Lists all virtual machines in a project.
 	ListVMs(context.Context, *ListVMsRequest) (*ListVMsResponse, error)
+	// Monitor a virtual machine
+	//
+	// Returns live monitoring metrics for a virtual machine.
 	MonitorVM(context.Context, *MonitorVMRequest) (*MonitorVMResponse, error)
-	RebootVM(context.Context, *RebootVMRequest) (*RebootVMResponse, error)
-	StartVM(context.Context, *StartVMRequest) (*StartVMResponse, error)
-	StopVM(context.Context, *StopVMRequest) (*StopVMResponse, error)
-	TerminateVM(context.Context, *TerminateVMRequest) (*TerminateVMResponse, error)
+	// Reboot a virtual machine
+	//
+	// Performs a soft reboot of a virtual machine. The operating system is instructed to reboot. If the OS does not respond, use StopVM and then StartVM.
+	RebootVM(context.Context, *RebootVMRequest) (*emptypb.Empty, error)
+	// Start a virtual machine
+	//
+	// Starts a stopped virtual machine.
+	StartVM(context.Context, *StartVMRequest) (*emptypb.Empty, error)
+	// Stop a virtual machine
+	//
+	// Stops a running virtual machine. The virtual machine can be started again later.
+	StopVM(context.Context, *StopVMRequest) (*emptypb.Empty, error)
+	// Delete a virtual machine
+	//
+	// Permanently deletes a virtual machine. All data on the virtual machine's boot disk will be lost. Any attached storage disks will be detached but not deleted.
+	TerminateVM(context.Context, *TerminateVMRequest) (*emptypb.Empty, error)
+	// Connect to a virtual machine
+	//
+	// Provides a URL and token to connect to the virtual machine via a web-based VNC console.
 	ConnectVM(context.Context, *ConnectVMRequest) (*ConnectVMResponse, error)
+	// Resize a virtual machine
+	//
+	// Resizes a virtual machine. The size of the virtual machine cannot be reduced while it is in a committed term.
 	ResizeVM(context.Context, *ResizeVMRequest) (*ResizeVMResponse, error)
+	// List public virtual machine images
+	//
+	// Lists all public images available for virtual machines.
 	ListPublicVMImages(context.Context, *ListPublicVMImagesRequest) (*ListPublicVMImagesResponse, error)
+	// List virtual machine types
+	//
+	// Lists all virtual machine types available.
 	ListVMMachineTypes(context.Context, *ListVMMachineTypesRequest) (*ListVMMachineTypesResponse, error)
+	// Lists virtual machine types (deprecated)
+	//
+	// Lists all virtual machine types available.
 	ListVMMachineTypes2(context.Context, *ListVMMachineTypesRequest) (*ListVMMachineTypesResponse, error)
+	// List virtual machine data centers
+	//
+	// Lists all data centers available for virtual machines.
 	ListVMDataCenters(context.Context, *ListVMDataCentersRequest) (*ListVMDataCentersResponse, error)
+	// List virtual machine GPU models
+	//
+	// Lists all GPU models available for virtual machines.
 	ListVMGpuModels(context.Context, *ListVMGpuModelsRequest) (*ListVMGpuModelsResponse, error)
+	// Create a private virtual machine image
+	//
+	// Creates a new private virtual machine image from an existing virtual machine's boot disk.
 	CreatePrivateVMImage(context.Context, *CreatePrivateVMImageRequest) (*CreatePrivateVMImageResponse, error)
-	DeletePrivateVMImage(context.Context, *DeletePrivateVMImageRequest) (*DeletePrivateVMImageResponse, error)
+	// Delete a private virtual machine image
+	//
+	// Deletes a private virtual machine image.
+	DeletePrivateVMImage(context.Context, *DeletePrivateVMImageRequest) (*emptypb.Empty, error)
+	// Get a private virtual machine image
+	//
+	// Retrieves the details of a private virtual machine image.
 	GetPrivateVMImage(context.Context, *GetPrivateVMImageRequest) (*GetPrivateVMImageResponse, error)
+	// List private virtual machine images
+	//
+	// Lists private virtual machine images in a project.
 	ListPrivateVMImages(context.Context, *ListPrivateVMImagesRequest) (*ListPrivateVMImagesResponse, error)
-	UpdatePrivateVMImage(context.Context, *UpdatePrivateVMImageRequest) (*UpdatePrivateVMImageResponse, error)
-	CreateStorageDisk(context.Context, *CreateStorageDiskRequest) (*CreateStorageDiskResponse, error)
-	ResizeVMDisk(context.Context, *ResizeVMDiskRequest) (*ResizeVMDiskResponse, error)
+	// Update a private virtual machine image
+	//
+	// Updates the description of a private virtual machine image.
+	UpdatePrivateVMImage(context.Context, *UpdatePrivateVMImageRequest) (*emptypb.Empty, error)
+	// Create a disk
+	//
+	// Creates a new virtual machine disk.
+	CreateStorageDisk(context.Context, *CreateStorageDiskRequest) (*emptypb.Empty, error)
+	// Resize a virtual machine disk
+	//
+	// Resizes a disk attached to a virtual machine. The new size must be larger than the current size.
+	ResizeVMDisk(context.Context, *ResizeVMDiskRequest) (*emptypb.Empty, error)
+	// List disks
+	//
+	// Lists virtual machine disks in a project.
 	ListDisks(context.Context, *ListDisksRequest) (*ListDisksResponse, error)
+	// Get a disk
+	//
+	// Retrieves the details of a virtual machine disk.
 	GetDisk(context.Context, *GetDiskRequest) (*GetDiskResponse, error)
-	DeleteStorageDisk(context.Context, *DeleteStorageDiskRequest) (*DeleteStorageDiskResponse, error)
-	AttachStorageDisk(context.Context, *AttachStorageDiskRequest) (*AttachStorageDiskResponse, error)
-	DetachStorageDisk(context.Context, *DetachStorageDiskRequest) (*DetachStorageDiskResponse, error)
-	AttachSecurityGroup(context.Context, *AttachSecurityGroupRequest) (*AttachSecurityGroupResponse, error)
-	DetachSecurityGroup(context.Context, *DetachSecurityGroupRequest) (*DetachSecurityGroupResponse, error)
+	// Delete a disk
+	//
+	// Deletes a virtual machine disk. The disk must be detached from any virtual machines before it can be deleted.
+	DeleteStorageDisk(context.Context, *DeleteStorageDiskRequest) (*emptypb.Empty, error)
+	// Attach a disk to a virtual machine
+	//
+	// Attaches a virtual machine disk to a virtual machine.
+	AttachStorageDisk(context.Context, *AttachStorageDiskRequest) (*emptypb.Empty, error)
+	// Detach a disk from a virtual machine
+	//
+	// Detaches a virtual machine disk from a virtual machine.
+	DetachStorageDisk(context.Context, *DetachStorageDiskRequest) (*emptypb.Empty, error)
+	// Attach a security group to a virtual machine
+	//
+	// Attaches a security group to a virtual machine.
+	AttachSecurityGroup(context.Context, *AttachSecurityGroupRequest) (*emptypb.Empty, error)
+	// Detach a security group from a virtual machine
+	//
+	// Detaches a security group from a virtual machine.
+	DetachSecurityGroup(context.Context, *DetachSecurityGroupRequest) (*emptypb.Empty, error)
+	// Update virtual machine metadata
+	//
+	// Updates the metadata of a virtual machine.
 	UpdateVMMetadata(context.Context, *UpdateVMMetadataRequest) (*UpdateVMMetadataResponse, error)
+	// Update virtual machine expiration time
+	//
+	// Updates the expiration time of a virtual machine. The virtual machine will be automatically deleted when it reaches its expiration time.
 	UpdateVMExpireTime(context.Context, *UpdateVMExpireTimeRequest) (*UpdateVMExpireTimeResponse, error)
-	UpdateVMPassword(context.Context, *UpdateVMPasswordRequest) (*UpdateVMPasswordResponse, error)
-	UpdateVMAuthorizedSSHKeys(context.Context, *UpdateVMAuthorizedSSHKeysRequest) (*UpdateVMAuthorizedSSHKeysResponse, error)
-	CommitVM(context.Context, *CommitVMRequest) (*CommitVMResponse, error)
+	// Update virtual machine password
+	//
+	// Updates the root or administrator password of a virtual machine.
+	UpdateVMPassword(context.Context, *UpdateVMPasswordRequest) (*emptypb.Empty, error)
+	// Update virtual machine authorized SSH keys
+	//
+	// Updates the authorized SSH keys of a virtual machine.
+	UpdateVMAuthorizedSSHKeys(context.Context, *UpdateVMAuthorizedSSHKeysRequest) (*emptypb.Empty, error)
+	// Purchase a commitment for a virtual machine
+	//
+	// Commits a virtual machine to a longer-term plan in exchange for a lower hourly rate. The virtual machine must not already be in a committed term.
+	CommitVM(context.Context, *CommitVMRequest) (*emptypb.Empty, error)
+	// Get a virtual machine type
+	//
+	// Retrieves the details of a virtual machine type.
 	GetVMMachineType(context.Context, *GetVMMachineTypeRequest) (*GetVMMachineTypeResponse, error)
 	mustEmbedUnimplementedVMServiceServer()
 }
@@ -532,16 +749,16 @@ func (UnimplementedVMServiceServer) ListVMs(context.Context, *ListVMsRequest) (*
 func (UnimplementedVMServiceServer) MonitorVM(context.Context, *MonitorVMRequest) (*MonitorVMResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MonitorVM not implemented")
 }
-func (UnimplementedVMServiceServer) RebootVM(context.Context, *RebootVMRequest) (*RebootVMResponse, error) {
+func (UnimplementedVMServiceServer) RebootVM(context.Context, *RebootVMRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RebootVM not implemented")
 }
-func (UnimplementedVMServiceServer) StartVM(context.Context, *StartVMRequest) (*StartVMResponse, error) {
+func (UnimplementedVMServiceServer) StartVM(context.Context, *StartVMRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartVM not implemented")
 }
-func (UnimplementedVMServiceServer) StopVM(context.Context, *StopVMRequest) (*StopVMResponse, error) {
+func (UnimplementedVMServiceServer) StopVM(context.Context, *StopVMRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopVM not implemented")
 }
-func (UnimplementedVMServiceServer) TerminateVM(context.Context, *TerminateVMRequest) (*TerminateVMResponse, error) {
+func (UnimplementedVMServiceServer) TerminateVM(context.Context, *TerminateVMRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TerminateVM not implemented")
 }
 func (UnimplementedVMServiceServer) ConnectVM(context.Context, *ConnectVMRequest) (*ConnectVMResponse, error) {
@@ -568,7 +785,7 @@ func (UnimplementedVMServiceServer) ListVMGpuModels(context.Context, *ListVMGpuM
 func (UnimplementedVMServiceServer) CreatePrivateVMImage(context.Context, *CreatePrivateVMImageRequest) (*CreatePrivateVMImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePrivateVMImage not implemented")
 }
-func (UnimplementedVMServiceServer) DeletePrivateVMImage(context.Context, *DeletePrivateVMImageRequest) (*DeletePrivateVMImageResponse, error) {
+func (UnimplementedVMServiceServer) DeletePrivateVMImage(context.Context, *DeletePrivateVMImageRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePrivateVMImage not implemented")
 }
 func (UnimplementedVMServiceServer) GetPrivateVMImage(context.Context, *GetPrivateVMImageRequest) (*GetPrivateVMImageResponse, error) {
@@ -577,13 +794,13 @@ func (UnimplementedVMServiceServer) GetPrivateVMImage(context.Context, *GetPriva
 func (UnimplementedVMServiceServer) ListPrivateVMImages(context.Context, *ListPrivateVMImagesRequest) (*ListPrivateVMImagesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPrivateVMImages not implemented")
 }
-func (UnimplementedVMServiceServer) UpdatePrivateVMImage(context.Context, *UpdatePrivateVMImageRequest) (*UpdatePrivateVMImageResponse, error) {
+func (UnimplementedVMServiceServer) UpdatePrivateVMImage(context.Context, *UpdatePrivateVMImageRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePrivateVMImage not implemented")
 }
-func (UnimplementedVMServiceServer) CreateStorageDisk(context.Context, *CreateStorageDiskRequest) (*CreateStorageDiskResponse, error) {
+func (UnimplementedVMServiceServer) CreateStorageDisk(context.Context, *CreateStorageDiskRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateStorageDisk not implemented")
 }
-func (UnimplementedVMServiceServer) ResizeVMDisk(context.Context, *ResizeVMDiskRequest) (*ResizeVMDiskResponse, error) {
+func (UnimplementedVMServiceServer) ResizeVMDisk(context.Context, *ResizeVMDiskRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResizeVMDisk not implemented")
 }
 func (UnimplementedVMServiceServer) ListDisks(context.Context, *ListDisksRequest) (*ListDisksResponse, error) {
@@ -592,19 +809,19 @@ func (UnimplementedVMServiceServer) ListDisks(context.Context, *ListDisksRequest
 func (UnimplementedVMServiceServer) GetDisk(context.Context, *GetDiskRequest) (*GetDiskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDisk not implemented")
 }
-func (UnimplementedVMServiceServer) DeleteStorageDisk(context.Context, *DeleteStorageDiskRequest) (*DeleteStorageDiskResponse, error) {
+func (UnimplementedVMServiceServer) DeleteStorageDisk(context.Context, *DeleteStorageDiskRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteStorageDisk not implemented")
 }
-func (UnimplementedVMServiceServer) AttachStorageDisk(context.Context, *AttachStorageDiskRequest) (*AttachStorageDiskResponse, error) {
+func (UnimplementedVMServiceServer) AttachStorageDisk(context.Context, *AttachStorageDiskRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AttachStorageDisk not implemented")
 }
-func (UnimplementedVMServiceServer) DetachStorageDisk(context.Context, *DetachStorageDiskRequest) (*DetachStorageDiskResponse, error) {
+func (UnimplementedVMServiceServer) DetachStorageDisk(context.Context, *DetachStorageDiskRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DetachStorageDisk not implemented")
 }
-func (UnimplementedVMServiceServer) AttachSecurityGroup(context.Context, *AttachSecurityGroupRequest) (*AttachSecurityGroupResponse, error) {
+func (UnimplementedVMServiceServer) AttachSecurityGroup(context.Context, *AttachSecurityGroupRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AttachSecurityGroup not implemented")
 }
-func (UnimplementedVMServiceServer) DetachSecurityGroup(context.Context, *DetachSecurityGroupRequest) (*DetachSecurityGroupResponse, error) {
+func (UnimplementedVMServiceServer) DetachSecurityGroup(context.Context, *DetachSecurityGroupRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DetachSecurityGroup not implemented")
 }
 func (UnimplementedVMServiceServer) UpdateVMMetadata(context.Context, *UpdateVMMetadataRequest) (*UpdateVMMetadataResponse, error) {
@@ -613,13 +830,13 @@ func (UnimplementedVMServiceServer) UpdateVMMetadata(context.Context, *UpdateVMM
 func (UnimplementedVMServiceServer) UpdateVMExpireTime(context.Context, *UpdateVMExpireTimeRequest) (*UpdateVMExpireTimeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateVMExpireTime not implemented")
 }
-func (UnimplementedVMServiceServer) UpdateVMPassword(context.Context, *UpdateVMPasswordRequest) (*UpdateVMPasswordResponse, error) {
+func (UnimplementedVMServiceServer) UpdateVMPassword(context.Context, *UpdateVMPasswordRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateVMPassword not implemented")
 }
-func (UnimplementedVMServiceServer) UpdateVMAuthorizedSSHKeys(context.Context, *UpdateVMAuthorizedSSHKeysRequest) (*UpdateVMAuthorizedSSHKeysResponse, error) {
+func (UnimplementedVMServiceServer) UpdateVMAuthorizedSSHKeys(context.Context, *UpdateVMAuthorizedSSHKeysRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateVMAuthorizedSSHKeys not implemented")
 }
-func (UnimplementedVMServiceServer) CommitVM(context.Context, *CommitVMRequest) (*CommitVMResponse, error) {
+func (UnimplementedVMServiceServer) CommitVM(context.Context, *CommitVMRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CommitVM not implemented")
 }
 func (UnimplementedVMServiceServer) GetVMMachineType(context.Context, *GetVMMachineTypeRequest) (*GetVMMachineTypeResponse, error) {

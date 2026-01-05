@@ -31,10 +31,25 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SshKeyServiceClient interface {
+	// Create an SSH key
+	//
+	// Creates an SSH key that can be used to access bare-metal and virtual machines.
 	CreateSshKey(ctx context.Context, in *CreateSshKeyRequest, opts ...grpc.CallOption) (*SshKey, error)
+	// Delete an SSH key
+	//
+	// Deletes an SSH key. This will not remove the SSH key from existing bare-metal and virtual machines.
 	DeleteSshKey(ctx context.Context, in *DeleteSshKeyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Get an SSH key
+	//
+	// Retrieves the details of an SSH key.
 	GetSshKey(ctx context.Context, in *GetSshKeyRequest, opts ...grpc.CallOption) (*SshKey, error)
+	// List project SSH keys
+	//
+	// Lists the SSH keys associated with members of a project.
 	ListProjectSshKeys(ctx context.Context, in *ListProjectSshKeysRequest, opts ...grpc.CallOption) (*ListProjectSshKeysResponse, error)
+	// List SSH keys
+	//
+	// Lists the SSH keys of the current user.
 	ListSshKeys(ctx context.Context, in *ListSshKeysRequest, opts ...grpc.CallOption) (*ListSshKeysResponse, error)
 }
 
@@ -100,10 +115,25 @@ func (c *sshKeyServiceClient) ListSshKeys(ctx context.Context, in *ListSshKeysRe
 // All implementations must embed UnimplementedSshKeyServiceServer
 // for forward compatibility.
 type SshKeyServiceServer interface {
+	// Create an SSH key
+	//
+	// Creates an SSH key that can be used to access bare-metal and virtual machines.
 	CreateSshKey(context.Context, *CreateSshKeyRequest) (*SshKey, error)
+	// Delete an SSH key
+	//
+	// Deletes an SSH key. This will not remove the SSH key from existing bare-metal and virtual machines.
 	DeleteSshKey(context.Context, *DeleteSshKeyRequest) (*emptypb.Empty, error)
+	// Get an SSH key
+	//
+	// Retrieves the details of an SSH key.
 	GetSshKey(context.Context, *GetSshKeyRequest) (*SshKey, error)
+	// List project SSH keys
+	//
+	// Lists the SSH keys associated with members of a project.
 	ListProjectSshKeys(context.Context, *ListProjectSshKeysRequest) (*ListProjectSshKeysResponse, error)
+	// List SSH keys
+	//
+	// Lists the SSH keys of the current user.
 	ListSshKeys(context.Context, *ListSshKeysRequest) (*ListSshKeysResponse, error)
 	mustEmbedUnimplementedSshKeyServiceServer()
 }

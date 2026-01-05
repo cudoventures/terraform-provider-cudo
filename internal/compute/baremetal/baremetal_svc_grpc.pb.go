@@ -28,7 +28,6 @@ const (
 	BareMetalService_PowerOffMachine_FullMethodName             = "/org.cudo.compute.v1.BareMetalService/PowerOffMachine"
 	BareMetalService_PowerOnMachine_FullMethodName              = "/org.cudo.compute.v1.BareMetalService/PowerOnMachine"
 	BareMetalService_DeployMachineOS_FullMethodName             = "/org.cudo.compute.v1.BareMetalService/DeployMachineOS"
-	BareMetalService_UndeployMachineOS_FullMethodName           = "/org.cudo.compute.v1.BareMetalService/UndeployMachineOS"
 	BareMetalService_ListMachineOperatingSystems_FullMethodName = "/org.cudo.compute.v1.BareMetalService/ListMachineOperatingSystems"
 	BareMetalService_ListMachineTypes_FullMethodName            = "/org.cudo.compute.v1.BareMetalService/ListMachineTypes"
 	BareMetalService_ListClusterMachineTypes_FullMethodName     = "/org.cudo.compute.v1.BareMetalService/ListClusterMachineTypes"
@@ -48,27 +47,89 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BareMetalServiceClient interface {
+	// Create a machine
+	//
+	// Creates a new bare-metal machine.
 	CreateMachine(ctx context.Context, in *CreateMachineRequest, opts ...grpc.CallOption) (*Machine, error)
+	// Delete a machine
+	//
+	// Deletes a bare-metal machine. Machines that are still within a commitment term cannot be deleted.
 	DeleteMachine(ctx context.Context, in *DeleteMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Get a machine
+	//
+	// Gets the details of a bare-metal machine.
 	GetMachine(ctx context.Context, in *GetMachineRequest, opts ...grpc.CallOption) (*Machine, error)
+	// List machines
+	//
+	// Lists bare-metal machines within a project.
 	ListMachines(ctx context.Context, in *ListMachinesRequest, opts ...grpc.CallOption) (*ListMachinesResponse, error)
+	// Update a machine
+	//
+	// Updates a bare-metal machine.
 	UpdateMachine(ctx context.Context, in *UpdateMachineRequest, opts ...grpc.CallOption) (*Machine, error)
+	// Power a machine off
+	//
+	// Turns a bare-metal machine off. Machines that are powered off still accrue charges.
 	PowerOffMachine(ctx context.Context, in *PowerOffMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Power a machine on
+	//
+	// Turns a bare-metal machine on.
 	PowerOnMachine(ctx context.Context, in *PowerOnMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Deploy an operating system onto a machine
+	//
+	// Deploys an operating system onto a bare-metal machine. All data on the machine will be lost.
 	DeployMachineOS(ctx context.Context, in *DeployMachineOSRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	UndeployMachineOS(ctx context.Context, in *UndeployMachineOSRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// List machine operating systems
+	//
+	// Lists operating systems that can be deployed to bare-metal machines.
 	ListMachineOperatingSystems(ctx context.Context, in *ListMachineOperatingSystemsRequest, opts ...grpc.CallOption) (*ListMachineOperatingSystemsResponse, error)
+	// List machine types
+	//
+	// Lists the types of bare-metal machines that can be provisioned.
 	ListMachineTypes(ctx context.Context, in *ListMachineTypesRequest, opts ...grpc.CallOption) (*ListMachineTypesResponse, error)
+	// List cluster machine types
+	//
+	// Lists the types of cluster machines that can be provisioned.
 	ListClusterMachineTypes(ctx context.Context, in *ListClusterMachineTypesRequest, opts ...grpc.CallOption) (*ListClusterMachineTypesResponse, error)
+	// Get a cluster machine type
+	//
+	// Gets the details of a cluster machine type.
 	GetClusterMachineType(ctx context.Context, in *GetClusterMachineTypeRequest, opts ...grpc.CallOption) (*GetClusterMachineTypeResponse, error)
+	// Create a cluster
+	//
+	// Creates a new cluster.
 	CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*Cluster, error)
+	// Delete a cluster
+	//
+	// Deletes a cluster. All data on machines within the cluster will be lost.
 	DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Get a cluster
+	//
+	// Gets the details of a cluster.
 	GetCluster(ctx context.Context, in *GetClusterRequest, opts ...grpc.CallOption) (*Cluster, error)
+	// List clusters
+	//
+	// Lists clusters within a project.
 	ListClusters(ctx context.Context, in *ListClustersRequest, opts ...grpc.CallOption) (*ListClustersResponse, error)
+	// Update a cluster
+	//
+	// Updates a cluster.
 	UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*Cluster, error)
+	// Delete a cluster machine
+	//
+	// Removes a machine from a cluster. All data on the machine will be lost.
 	DeleteClusterMachine(ctx context.Context, in *DeleteClusterMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Reboot a cluster machine
+	//
+	// Reboots a machine in a cluster.
 	RebootClusterMachine(ctx context.Context, in *RebootClusterMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Rename a cluster machine
+	//
+	// Renames a machine in a cluster. This can be useful if you are assigning specific roles to machines in the cluster.
 	RenameClusterMachine(ctx context.Context, in *RenameClusterMachineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Update a cluster machine
+	//
+	// Updates a machine in a cluster.
 	UpdateClusterMachine(ctx context.Context, in *UpdateClusterMachineRequest, opts ...grpc.CallOption) (*ClusterMachine, error)
 }
 
@@ -154,16 +215,6 @@ func (c *bareMetalServiceClient) DeployMachineOS(ctx context.Context, in *Deploy
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, BareMetalService_DeployMachineOS_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *bareMetalServiceClient) UndeployMachineOS(ctx context.Context, in *UndeployMachineOSRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, BareMetalService_UndeployMachineOS_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -304,27 +355,89 @@ func (c *bareMetalServiceClient) UpdateClusterMachine(ctx context.Context, in *U
 // All implementations must embed UnimplementedBareMetalServiceServer
 // for forward compatibility.
 type BareMetalServiceServer interface {
+	// Create a machine
+	//
+	// Creates a new bare-metal machine.
 	CreateMachine(context.Context, *CreateMachineRequest) (*Machine, error)
+	// Delete a machine
+	//
+	// Deletes a bare-metal machine. Machines that are still within a commitment term cannot be deleted.
 	DeleteMachine(context.Context, *DeleteMachineRequest) (*emptypb.Empty, error)
+	// Get a machine
+	//
+	// Gets the details of a bare-metal machine.
 	GetMachine(context.Context, *GetMachineRequest) (*Machine, error)
+	// List machines
+	//
+	// Lists bare-metal machines within a project.
 	ListMachines(context.Context, *ListMachinesRequest) (*ListMachinesResponse, error)
+	// Update a machine
+	//
+	// Updates a bare-metal machine.
 	UpdateMachine(context.Context, *UpdateMachineRequest) (*Machine, error)
+	// Power a machine off
+	//
+	// Turns a bare-metal machine off. Machines that are powered off still accrue charges.
 	PowerOffMachine(context.Context, *PowerOffMachineRequest) (*emptypb.Empty, error)
+	// Power a machine on
+	//
+	// Turns a bare-metal machine on.
 	PowerOnMachine(context.Context, *PowerOnMachineRequest) (*emptypb.Empty, error)
+	// Deploy an operating system onto a machine
+	//
+	// Deploys an operating system onto a bare-metal machine. All data on the machine will be lost.
 	DeployMachineOS(context.Context, *DeployMachineOSRequest) (*emptypb.Empty, error)
-	UndeployMachineOS(context.Context, *UndeployMachineOSRequest) (*emptypb.Empty, error)
+	// List machine operating systems
+	//
+	// Lists operating systems that can be deployed to bare-metal machines.
 	ListMachineOperatingSystems(context.Context, *ListMachineOperatingSystemsRequest) (*ListMachineOperatingSystemsResponse, error)
+	// List machine types
+	//
+	// Lists the types of bare-metal machines that can be provisioned.
 	ListMachineTypes(context.Context, *ListMachineTypesRequest) (*ListMachineTypesResponse, error)
+	// List cluster machine types
+	//
+	// Lists the types of cluster machines that can be provisioned.
 	ListClusterMachineTypes(context.Context, *ListClusterMachineTypesRequest) (*ListClusterMachineTypesResponse, error)
+	// Get a cluster machine type
+	//
+	// Gets the details of a cluster machine type.
 	GetClusterMachineType(context.Context, *GetClusterMachineTypeRequest) (*GetClusterMachineTypeResponse, error)
+	// Create a cluster
+	//
+	// Creates a new cluster.
 	CreateCluster(context.Context, *CreateClusterRequest) (*Cluster, error)
+	// Delete a cluster
+	//
+	// Deletes a cluster. All data on machines within the cluster will be lost.
 	DeleteCluster(context.Context, *DeleteClusterRequest) (*emptypb.Empty, error)
+	// Get a cluster
+	//
+	// Gets the details of a cluster.
 	GetCluster(context.Context, *GetClusterRequest) (*Cluster, error)
+	// List clusters
+	//
+	// Lists clusters within a project.
 	ListClusters(context.Context, *ListClustersRequest) (*ListClustersResponse, error)
+	// Update a cluster
+	//
+	// Updates a cluster.
 	UpdateCluster(context.Context, *UpdateClusterRequest) (*Cluster, error)
+	// Delete a cluster machine
+	//
+	// Removes a machine from a cluster. All data on the machine will be lost.
 	DeleteClusterMachine(context.Context, *DeleteClusterMachineRequest) (*emptypb.Empty, error)
+	// Reboot a cluster machine
+	//
+	// Reboots a machine in a cluster.
 	RebootClusterMachine(context.Context, *RebootClusterMachineRequest) (*emptypb.Empty, error)
+	// Rename a cluster machine
+	//
+	// Renames a machine in a cluster. This can be useful if you are assigning specific roles to machines in the cluster.
 	RenameClusterMachine(context.Context, *RenameClusterMachineRequest) (*emptypb.Empty, error)
+	// Update a cluster machine
+	//
+	// Updates a machine in a cluster.
 	UpdateClusterMachine(context.Context, *UpdateClusterMachineRequest) (*ClusterMachine, error)
 	mustEmbedUnimplementedBareMetalServiceServer()
 }
@@ -359,9 +472,6 @@ func (UnimplementedBareMetalServiceServer) PowerOnMachine(context.Context, *Powe
 }
 func (UnimplementedBareMetalServiceServer) DeployMachineOS(context.Context, *DeployMachineOSRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeployMachineOS not implemented")
-}
-func (UnimplementedBareMetalServiceServer) UndeployMachineOS(context.Context, *UndeployMachineOSRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UndeployMachineOS not implemented")
 }
 func (UnimplementedBareMetalServiceServer) ListMachineOperatingSystems(context.Context, *ListMachineOperatingSystemsRequest) (*ListMachineOperatingSystemsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMachineOperatingSystems not implemented")
@@ -563,24 +673,6 @@ func _BareMetalService_DeployMachineOS_Handler(srv interface{}, ctx context.Cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BareMetalServiceServer).DeployMachineOS(ctx, req.(*DeployMachineOSRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _BareMetalService_UndeployMachineOS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UndeployMachineOSRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BareMetalServiceServer).UndeployMachineOS(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: BareMetalService_UndeployMachineOS_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BareMetalServiceServer).UndeployMachineOS(ctx, req.(*UndeployMachineOSRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -857,10 +949,6 @@ var BareMetalService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeployMachineOS",
 			Handler:    _BareMetalService_DeployMachineOS_Handler,
-		},
-		{
-			MethodName: "UndeployMachineOS",
-			Handler:    _BareMetalService_UndeployMachineOS_Handler,
 		},
 		{
 			MethodName: "ListMachineOperatingSystems",
