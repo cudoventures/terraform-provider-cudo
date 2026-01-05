@@ -251,6 +251,7 @@ func waitForMachineDeploying(ctx context.Context, c baremetal.BareMetalServiceCl
 			baremetal.Machine_DELETING.String(),
 			baremetal.Machine_DEPLOYING.String(),
 			baremetal.Machine_FAILED.String(),
+			baremetal.Machine_UPDATING.String(),
 			"NOT_FOUND",
 		},
 		Refresh:    refreshFunc,
