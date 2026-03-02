@@ -646,7 +646,7 @@ func appendVmState(instance *vm.VM, state *VMResourceModel) diag.Diagnostics {
 		}
 
 		networks = append(networks, &VMNICResourceModel{
-			AssignPublicIP:    types.BoolNull(),
+			AssignPublicIP:    types.BoolValue(network.ExternalIpAddress != ""),
 			ExternalIPAddress: types.StringValue(network.ExternalIpAddress),
 			InternalIPAddress: types.StringValue(network.InternalIpAddress),
 			NetworkID:         types.StringValue(network.NetworkId),
