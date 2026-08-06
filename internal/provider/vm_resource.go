@@ -682,12 +682,14 @@ func appendVmState(instance *vm.VM, state *VMResourceModel) diag.Diagnostics {
 
 	switch instance.SshKeySource {
 	case sshkey.SshKeySource_SSH_KEY_SOURCE_NONE:
-		state.SSHKeySource = types.StringValue("none")
+		state.SSHKeySource = types.StringValue("custom")
+		state.SSHKeys = []types.String{}
 		for authorizedKey := range strings.Lines(instance.AuthorizedSshKeys) {
 			state.SSHKeys = append(state.SSHKeys, types.StringValue(authorizedKey))
 		}
-	case sshkey.SshKeySource_SSH_KEY_SOURCE_PROJECT,
-		sshkey.SshKeySource_SSH_KEY_SOURCE_UNKNOWN:
+	case sshkey.SshKeySource_SSH_KEY_SOURCE_PROJECT:
+		state.SSHKeySource = types.StringValue("project")
+	case sshkey.SshKeySource_SSH_KEY_SOURCE_UNKNOWN:
 		state.SSHKeySource = types.StringNull()
 	case sshkey.SshKeySource_SSH_KEY_SOURCE_USER:
 		state.SSHKeySource = types.StringValue("user")
